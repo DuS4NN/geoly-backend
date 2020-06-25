@@ -18,7 +18,7 @@ public class Log {
     @NotNull
     private int createdAt;
 
-    @Column(name = "data", columnDefinition = "VARCHAR(10000)")
+    @Column(name = "data", columnDefinition = "JSON")
     @NotNull
     private String data;
 
