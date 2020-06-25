@@ -37,7 +37,7 @@ public class Stage {
     @Column(name = "answer", columnDefinition = "VARCHAR(200)")
     private String answer;
 
-    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "stage")
+    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "stage", cascade = CascadeType.ALL)
     private Set<UserQuest> userQuest;
 
     public Stage() {

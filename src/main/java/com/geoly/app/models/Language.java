@@ -23,7 +23,7 @@ public class Language {
     @NotNull
     private String imageUrl;
 
-    @OneToMany(targetEntity = UserOption.class, fetch = FetchType.LAZY, mappedBy = "language")
+    @OneToMany(targetEntity = UserOption.class, fetch = FetchType.LAZY, mappedBy = "language", cascade = CascadeType.ALL)
     private Set<UserOption> userOption;
 
     public Language() {

@@ -28,7 +28,7 @@ public class Premium {
     @NotNull
     private String endAt;
 
-    @OneToMany(targetEntity = Transaction.class, fetch = FetchType.LAZY, mappedBy = "premium")
+    @OneToMany(targetEntity = Transaction.class, fetch = FetchType.LAZY, mappedBy = "premium", cascade = CascadeType.ALL)
     private Set<Transaction> transaction;
 
     public Premium() {

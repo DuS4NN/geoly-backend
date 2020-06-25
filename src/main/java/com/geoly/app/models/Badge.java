@@ -23,7 +23,7 @@ public class Badge {
     @NotNull
     private String imageUrl;
 
-    @OneToMany(targetEntity = UserBadge.class, fetch = FetchType.LAZY, mappedBy = "badge")
+    @OneToMany(targetEntity = UserBadge.class, fetch = FetchType.LAZY, mappedBy = "badge", cascade = CascadeType.ALL)
     private Set<UserBadge> userBadge;
 
     public Badge() {

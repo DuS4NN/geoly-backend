@@ -53,49 +53,49 @@ public class User {
     @Column(name = "address", columnDefinition = "VARCHAR(30)")
     private String address;
 
-    @OneToMany(targetEntity = Quest.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = Quest.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Quest> quest;
 
-    @OneToMany(targetEntity = UserBadge.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = UserBadge.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserBadge> userBadge;
 
-    @OneToMany(targetEntity = Token.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = Token.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Token> token;
 
-    @OneToMany(targetEntity = UserOption.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = UserOption.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserOption> userOption;
 
-    @OneToMany(targetEntity = Premium.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = Premium.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Premium> premium;
 
-    @OneToMany(targetEntity = Transaction.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = Transaction.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Transaction> transaction;
 
-    @OneToMany(targetEntity = Point.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = Point.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Point> point;
 
-    @OneToMany(targetEntity = UserRole.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = UserRole.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserRole> userRole;
 
-    @OneToMany(targetEntity = Party.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = Party.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Party> party;
 
-    @OneToMany(targetEntity = PartyUser.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = PartyUser.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<PartyUser> partyUser;
 
-    @OneToMany(targetEntity = QuestReport.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = QuestReport.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<QuestReport> questReport;
 
-    @OneToMany(targetEntity = QuestReview.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = QuestReview.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<QuestReview> questReview;
 
-    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserQuest> userQuest;
 
-    @OneToMany(targetEntity = UserReport.class, fetch = FetchType.LAZY, mappedBy = "userReported")
+    @OneToMany(targetEntity = UserReport.class, fetch = FetchType.LAZY, mappedBy = "userReported", cascade = CascadeType.ALL)
     private Set<UserReport> userReported;
 
-    @OneToMany(targetEntity = UserReport.class, fetch = FetchType.LAZY, mappedBy = "userComplainant")
+    @OneToMany(targetEntity = UserReport.class, fetch = FetchType.LAZY, mappedBy = "userComplainant", cascade = CascadeType.ALL)
     private Set<UserReport> userComplainant;
 
     public User() {

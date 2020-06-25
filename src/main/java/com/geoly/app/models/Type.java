@@ -19,7 +19,7 @@ public class Type {
     @NotNull
     private String name;
 
-    @OneToMany(targetEntity = Stage.class, fetch = FetchType.LAZY, mappedBy = "type")
+    @OneToMany(targetEntity = Stage.class, fetch = FetchType.LAZY, mappedBy = "type", cascade = CascadeType.ALL)
     private Set<Stage> stage;
 
     public Type() {

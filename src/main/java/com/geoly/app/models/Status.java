@@ -19,7 +19,7 @@ public class Status {
     @NotNull
     private String name;
 
-    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "status")
+    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "status", cascade = CascadeType.ALL)
     private Set<UserQuest> userQuest;
 
     public Status() {

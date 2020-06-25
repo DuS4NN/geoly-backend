@@ -28,10 +28,10 @@ public class Party {
     @NotNull
     private String createdAt;
 
-    @OneToMany(targetEntity = PartyUser.class, fetch = FetchType.LAZY, mappedBy = "party")
+    @OneToMany(targetEntity = PartyUser.class, fetch = FetchType.LAZY, mappedBy = "party", cascade = CascadeType.ALL)
     private Set<PartyUser> partyUser;
 
-    @OneToMany(targetEntity = PartyQuest.class, fetch = FetchType.LAZY, mappedBy = "party")
+    @OneToMany(targetEntity = PartyQuest.class, fetch = FetchType.LAZY, mappedBy = "party", cascade = CascadeType.ALL)
     private Set<PartyQuest> partyQuest;
 
     public Party() {

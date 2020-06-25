@@ -48,22 +48,22 @@ public class Quest {
     @NotNull
     private boolean daily;
 
-    @OneToMany(targetEntity = Stage.class, fetch = FetchType.LAZY, mappedBy = "quest")
+    @OneToMany(targetEntity = Stage.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
     private Set<Stage> stage;
 
-    @OneToMany(targetEntity = Image.class, fetch = FetchType.LAZY, mappedBy = "quest")
+    @OneToMany(targetEntity = Image.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
     private Set<Image> image;
 
-    @OneToMany(targetEntity = PartyQuest.class, fetch = FetchType.LAZY, mappedBy = "quest")
+    @OneToMany(targetEntity = PartyQuest.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
     private Set<PartyQuest> partyQuest;
 
-    @OneToMany(targetEntity = QuestReport.class, fetch = FetchType.LAZY, mappedBy = "quest")
+    @OneToMany(targetEntity = QuestReport.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
     private Set<QuestReport> questReport;
 
-    @OneToMany(targetEntity = QuestReview.class, fetch = FetchType.LAZY, mappedBy = "quest")
+    @OneToMany(targetEntity = QuestReview.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
     private Set<QuestReview> questReview;
 
-    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "quest")
+    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
     private Set<UserQuest> userQuest;
 
     public Quest() {

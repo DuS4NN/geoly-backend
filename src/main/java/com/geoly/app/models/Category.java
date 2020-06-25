@@ -23,7 +23,7 @@ public class Category {
     @NotNull
     private String imageUrl;
 
-    @OneToMany(targetEntity = Quest.class, fetch = FetchType.LAZY, mappedBy = "category")
+    @OneToMany(targetEntity = Quest.class, fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL)
     private Set<Quest> quest;
 
     public Category() {
