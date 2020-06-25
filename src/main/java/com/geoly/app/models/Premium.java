@@ -20,6 +20,11 @@ public class Premium {
     @NotNull
     private User user;
 
+    @ManyToOne(targetEntity = Transaction.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "transaction_id")
+    @NotNull
+    private Transaction transaction;
+
     @Column(name = "start_at", columnDefinition = "TIMESTAMP")
     @NotNull
     private String startAt;
@@ -28,8 +33,6 @@ public class Premium {
     @NotNull
     private String endAt;
 
-    @OneToMany(targetEntity = Transaction.class, fetch = FetchType.LAZY, mappedBy = "premium", cascade = CascadeType.ALL)
-    private Set<Transaction> transaction;
 
     public Premium() {
     }

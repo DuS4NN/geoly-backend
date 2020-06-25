@@ -3,6 +3,7 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "transaction")
@@ -19,11 +20,6 @@ public class Transaction {
     @NotNull
     private User user;
 
-    @ManyToOne(targetEntity = Premium.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "premium_id")
-    @NotNull
-    private Premium premium;
-
     @Column(name = "uuid", columnDefinition = "VARCHAR(100)")
     @NotNull
     private String uuid;
@@ -39,6 +35,9 @@ public class Transaction {
     @Column(name = "verified", columnDefinition = "TINYINT")
     @NotNull
     private boolean verified;
+
+    @OneToMany(targetEntity = Premium.class, fetch = FetchType.LAZY, mappedBy = "transaction", cascade = CascadeType.ALL)
+    private Set<Premium> premium;
 
     public Transaction() {
     }
