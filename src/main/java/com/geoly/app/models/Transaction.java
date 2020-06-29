@@ -3,6 +3,7 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -30,7 +31,7 @@ public class Transaction {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @NotNull
-    private String createdAt;
+    private Date createdAt;
 
     @Column(name = "verified", columnDefinition = "TINYINT")
     @NotNull

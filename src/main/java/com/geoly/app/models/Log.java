@@ -3,6 +3,7 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "log")
@@ -16,7 +17,7 @@ public class Log {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @NotNull
-    private int createdAt;
+    private Date createdAt;
 
     @Column(name = "data", columnDefinition = "JSON")
     @NotNull

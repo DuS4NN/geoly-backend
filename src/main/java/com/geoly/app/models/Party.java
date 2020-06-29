@@ -3,6 +3,7 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -26,7 +27,7 @@ public class Party {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @NotNull
-    private String createdAt;
+    private Date createdAt;
 
     @OneToMany(targetEntity = PartyUser.class, fetch = FetchType.LAZY, mappedBy = "party", cascade = CascadeType.ALL)
     private Set<PartyUser> partyUser;

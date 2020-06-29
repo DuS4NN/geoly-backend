@@ -3,6 +3,7 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "user_quest")
@@ -36,7 +37,7 @@ public class UserQuest {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @NotNull
-    private String createdAt;
+    private Date createdAt;
 
     public UserQuest() {
     }

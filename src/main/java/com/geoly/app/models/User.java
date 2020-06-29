@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -48,7 +49,7 @@ public class User {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @NotNull
-    private String createdAt;
+    private Date createdAt;
 
     @Column(name = "address", columnDefinition = "VARCHAR(30)")
     private String address;

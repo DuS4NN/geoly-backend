@@ -3,6 +3,7 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "token")
@@ -25,7 +26,7 @@ public class Token {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @NotNull
-    private String createdAt;
+    private Date createdAt;
 
     @Column(name = "action", columnDefinition = "VARCHAR(20)")
     @NotNull
