@@ -37,4 +37,52 @@ public class Party {
 
     public Party() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Set<PartyUser> getPartyUser() {
+        return partyUser;
+    }
+
+    public void setPartyUser(Set<PartyUser> partyUser) {
+        this.partyUser = partyUser;
+    }
+
+    public Set<PartyQuest> getPartyQuest() {
+        return partyQuest;
+    }
+
+    public void setPartyQuest(Set<PartyQuest> partyQuest) {
+        this.partyQuest = partyQuest;
+    }
 }

@@ -29,4 +29,36 @@ public class Point {
 
     public Point() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public String getReceiveAt() {
+        return receiveAt;
+    }
+
+    public void setReceiveAt(String receiveAt) {
+        this.receiveAt = receiveAt;
+    }
 }

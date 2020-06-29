@@ -30,4 +30,36 @@ public class UserBadge {
 
     public UserBadge() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Badge getBadge() {
+        return badge;
+    }
+
+    public void setBadge(Badge badge) {
+        this.badge = badge;
+    }
+
+    public String getReceivedAt() {
+        return receivedAt;
+    }
+
+    public void setReceivedAt(String receivedAt) {
+        this.receivedAt = receivedAt;
+    }
 }

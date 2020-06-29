@@ -28,4 +28,36 @@ public class Language {
 
     public Language() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Set<UserOption> getUserOption() {
+        return userOption;
+    }
+
+    public void setUserOption(Set<UserOption> userOption) {
+        this.userOption = userOption;
+    }
 }

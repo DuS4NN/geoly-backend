@@ -24,5 +24,29 @@ public class Type {
 
     public Type() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<Stage> getStage() {
+        return stage;
+    }
+
+    public void setStage(Set<Stage> stage) {
+        this.stage = stage;
+    }
 }
 

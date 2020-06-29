@@ -42,4 +42,68 @@ public class Stage {
 
     public Stage() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Quest getQuest() {
+        return quest;
+    }
+
+    public void setQuest(Quest quest) {
+        this.quest = quest;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public String getLatiude() {
+        return latiude;
+    }
+
+    public void setLatiude(String latiude) {
+        this.latiude = latiude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public Set<UserQuest> getUserQuest() {
+        return userQuest;
+    }
+
+    public void setUserQuest(Set<UserQuest> userQuest) {
+        this.userQuest = userQuest;
+    }
 }

@@ -101,4 +101,204 @@ public class User {
 
     public User() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Set<Quest> getQuest() {
+        return quest;
+    }
+
+    public void setQuest(Set<Quest> quest) {
+        this.quest = quest;
+    }
+
+    public Set<UserBadge> getUserBadge() {
+        return userBadge;
+    }
+
+    public void setUserBadge(Set<UserBadge> userBadge) {
+        this.userBadge = userBadge;
+    }
+
+    public Set<Token> getToken() {
+        return token;
+    }
+
+    public void setToken(Set<Token> token) {
+        this.token = token;
+    }
+
+    public Set<UserOption> getUserOption() {
+        return userOption;
+    }
+
+    public void setUserOption(Set<UserOption> userOption) {
+        this.userOption = userOption;
+    }
+
+    public Set<Premium> getPremium() {
+        return premium;
+    }
+
+    public void setPremium(Set<Premium> premium) {
+        this.premium = premium;
+    }
+
+    public Set<Transaction> getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Set<Transaction> transaction) {
+        this.transaction = transaction;
+    }
+
+    public Set<Point> getPoint() {
+        return point;
+    }
+
+    public void setPoint(Set<Point> point) {
+        this.point = point;
+    }
+
+    public Set<UserRole> getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(Set<UserRole> userRole) {
+        this.userRole = userRole;
+    }
+
+    public Set<Party> getParty() {
+        return party;
+    }
+
+    public void setParty(Set<Party> party) {
+        this.party = party;
+    }
+
+    public Set<PartyUser> getPartyUser() {
+        return partyUser;
+    }
+
+    public void setPartyUser(Set<PartyUser> partyUser) {
+        this.partyUser = partyUser;
+    }
+
+    public Set<QuestReport> getQuestReport() {
+        return questReport;
+    }
+
+    public void setQuestReport(Set<QuestReport> questReport) {
+        this.questReport = questReport;
+    }
+
+    public Set<QuestReview> getQuestReview() {
+        return questReview;
+    }
+
+    public void setQuestReview(Set<QuestReview> questReview) {
+        this.questReview = questReview;
+    }
+
+    public Set<UserQuest> getUserQuest() {
+        return userQuest;
+    }
+
+    public void setUserQuest(Set<UserQuest> userQuest) {
+        this.userQuest = userQuest;
+    }
+
+    public Set<UserReport> getUserReported() {
+        return userReported;
+    }
+
+    public void setUserReported(Set<UserReport> userReported) {
+        this.userReported = userReported;
+    }
+
+    public Set<UserReport> getUserComplainant() {
+        return userComplainant;
+    }
+
+    public void setUserComplainant(Set<UserReport> userComplainant) {
+        this.userComplainant = userComplainant;
+    }
 }

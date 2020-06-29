@@ -35,4 +35,44 @@ public class UserReport {
 
     public UserReport() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUserReported() {
+        return userReported;
+    }
+
+    public void setUserReported(User userReported) {
+        this.userReported = userReported;
+    }
+
+    public User getUserComplainant() {
+        return userComplainant;
+    }
+
+    public void setUserComplainant(User userComplainant) {
+        this.userComplainant = userComplainant;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 }
