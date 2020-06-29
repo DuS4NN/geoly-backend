@@ -25,9 +25,9 @@ public class Transaction {
     @NotNull
     private String uuid;
 
-    @Column(name = "amount", columnDefinition = "INT")
+    @Column(name = "amount", columnDefinition = "FLOAT")
     @NotNull
-    private int amount;
+    private float amount;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @NotNull
@@ -67,11 +67,11 @@ public class Transaction {
         this.uuid = uuid;
     }
 
-    public int getAmount() {
+    public float getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(float amount) {
         this.amount = amount;
     }
 
