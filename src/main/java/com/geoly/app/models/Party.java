@@ -35,6 +35,9 @@ public class Party {
     @OneToMany(targetEntity = PartyQuest.class, fetch = FetchType.LAZY, mappedBy = "party", cascade = CascadeType.ALL)
     private Set<PartyQuest> partyQuest;
 
+    @OneToMany(targetEntity = PartyInvate.class, fetch = FetchType.LAZY, mappedBy = "party", cascade = CascadeType.ALL)
+    private Set<PartyInvate> partyInvate;
+
     public Party() {
     }
 
@@ -84,5 +87,13 @@ public class Party {
 
     public void setPartyQuest(Set<PartyQuest> partyQuest) {
         this.partyQuest = partyQuest;
+    }
+
+    public Set<PartyInvate> getPartyInvate() {
+        return partyInvate;
+    }
+
+    public void setPartyInvate(Set<PartyInvate> partyInvate) {
+        this.partyInvate = partyInvate;
     }
 }

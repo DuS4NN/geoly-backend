@@ -99,6 +99,9 @@ public class User {
     @OneToMany(targetEntity = UserReport.class, fetch = FetchType.LAZY, mappedBy = "userComplainant", cascade = CascadeType.ALL)
     private Set<UserReport> userComplainant;
 
+    @OneToMany(targetEntity = PartyInvate.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<PartyInvate> partyInvate;
+
     public User() {
     }
 
@@ -300,5 +303,13 @@ public class User {
 
     public void setUserComplainant(Set<UserReport> userComplainant) {
         this.userComplainant = userComplainant;
+    }
+
+    public Set<PartyInvate> getPartyInvate() {
+        return partyInvate;
+    }
+
+    public void setPartyInvate(Set<PartyInvate> partyInvate) {
+        this.partyInvate = partyInvate;
     }
 }
