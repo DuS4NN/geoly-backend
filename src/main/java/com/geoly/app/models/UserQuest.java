@@ -1,6 +1,8 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -36,8 +38,12 @@ public class UserQuest {
     private Status status;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    @NotNull
+    @CreationTimestamp
     private Date createdAt;
+
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
+    @UpdateTimestamp
+    private Date updatedAt;
 
     public UserQuest() {
     }

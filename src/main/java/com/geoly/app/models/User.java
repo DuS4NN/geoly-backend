@@ -1,9 +1,12 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 import java.util.Set;
 
@@ -17,11 +20,11 @@ public class User {
     @NotNull
     private int id;
 
-    @Column(name = "nick_name", columnDefinition = "VARCHAR(15)")
+    @Column(name = "nick_name", columnDefinition = "VARCHAR(15)", unique = true)
     @NotNull
     private String nickName;
 
-    @Column(name = "email", columnDefinition = "VARCHAR(254)")
+    @Column(name = "email", columnDefinition = "VARCHAR(254)", unique = true)
     @NotNull
     private String email;
 
@@ -48,7 +51,7 @@ public class User {
     private boolean verified;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    @NotNull
+    @CreationTimestamp
     private Date createdAt;
 
     @Column(name = "address", columnDefinition = "VARCHAR(30)")

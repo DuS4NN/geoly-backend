@@ -1,6 +1,7 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -26,7 +27,7 @@ public class Party {
     private String name;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    @NotNull
+    @CreationTimestamp
     private Date createdAt;
 
     @OneToMany(targetEntity = PartyUser.class, fetch = FetchType.LAZY, mappedBy = "party", cascade = CascadeType.ALL)

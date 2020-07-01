@@ -1,8 +1,10 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "user_role")
@@ -23,6 +25,10 @@ public class UserRole {
     @JoinColumn(name = "role_id")
     @NotNull
     private Role role;
+
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    @CreationTimestamp
+    private Date createdAt;
 
     public UserRole() {
     }
@@ -49,5 +55,13 @@ public class UserRole {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

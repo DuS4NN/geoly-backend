@@ -1,6 +1,7 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 
@@ -24,9 +25,9 @@ public class UserBadge {
     @NotNull
     private Badge badge;
 
-    @Column(name = "received_at", columnDefinition = "TIMESTAMP")
-    @NotNull
-    private String receivedAt;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    @CreationTimestamp
+    private String createdAt;
 
     public UserBadge() {
     }
@@ -55,11 +56,11 @@ public class UserBadge {
         this.badge = badge;
     }
 
-    public String getReceivedAt() {
-        return receivedAt;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setReceivedAt(String receivedAt) {
-        this.receivedAt = receivedAt;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

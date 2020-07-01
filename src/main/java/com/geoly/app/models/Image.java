@@ -1,8 +1,10 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "image")
@@ -22,6 +24,10 @@ public class Image {
     @Column(name = "image_url", columnDefinition = "VARCHAR(100)")
     @NotNull
     private String imageUrl;
+
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    @CreationTimestamp
+    private Date createdAt;
 
     public Image() {
     }
@@ -48,5 +54,13 @@ public class Image {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

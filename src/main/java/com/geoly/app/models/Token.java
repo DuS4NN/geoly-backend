@@ -1,6 +1,7 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -25,7 +26,7 @@ public class Token {
     private String token;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    @NotNull
+    @CreationTimestamp
     private Date createdAt;
 
     @Column(name = "action", columnDefinition = "VARCHAR(20)")

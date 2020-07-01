@@ -1,8 +1,10 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "quest_review")
@@ -31,6 +33,10 @@ public class QuestReview {
     @Column(name = "review", columnDefinition = "TINYINT")
     @NotNull
     private int review;
+
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    @CreationTimestamp
+    private Date createdAt;
 
     public QuestReview() {
     }
@@ -73,5 +79,13 @@ public class QuestReview {
 
     public void setReview(int review) {
         this.review = review;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }
