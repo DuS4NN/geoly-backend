@@ -32,10 +32,10 @@ public class UserQuest {
     @NotNull
     private Stage stage;
 
-    @ManyToOne(targetEntity = Status.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     @NotNull
-    private Status status;
+    private UserQuestStatus status;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
@@ -80,11 +80,11 @@ public class UserQuest {
         this.stage = stage;
     }
 
-    public Status getStatus() {
+    public UserQuestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(UserQuestStatus status) {
         this.status = status;
     }
 

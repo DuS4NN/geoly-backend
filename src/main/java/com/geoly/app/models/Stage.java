@@ -20,10 +20,10 @@ public class Stage {
     @NotNull
     private Quest quest;
 
-    @ManyToOne(targetEntity = Type.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     @NotNull
-    private Type type;
+    private StageType type;
 
     @Column(name = "latiude", columnDefinition = "VARCHAR(10)")
     private String latiude;
@@ -59,11 +59,11 @@ public class Stage {
         this.quest = quest;
     }
 
-    public Type getType() {
+    public StageType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(StageType type) {
         this.type = type;
     }
 

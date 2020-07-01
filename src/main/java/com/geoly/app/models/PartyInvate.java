@@ -26,7 +26,8 @@ public class PartyInvate {
     @NotNull
     private Party party;
 
-    @Column(name = "state", columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "VARCHAR(20)")
     @NotNull
     private String state;
 
