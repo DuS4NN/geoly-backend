@@ -7,8 +7,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "party_invate")
-public class PartyInvate {
+@Table(name = "party_invite")
+public class PartyInvite {
 
     @Id
     @Column(name = "id")
@@ -35,7 +35,7 @@ public class PartyInvate {
     @CreationTimestamp
     private Date created_at;
 
-    public PartyInvate() {
+    public PartyInvite() {
     }
 
     public int getId() {

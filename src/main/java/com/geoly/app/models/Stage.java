@@ -25,8 +25,8 @@ public class Stage {
     @NotNull
     private StageType type;
 
-    @Column(name = "latiude", columnDefinition = "VARCHAR(10)")
-    private String latiude;
+    @Column(name = "latitude", columnDefinition = "VARCHAR(10)")
+    private String latitude;
 
     @Column(name = "longitude", columnDefinition = "VARCHAR(10)")
     private String longitude;
@@ -67,12 +67,12 @@ public class Stage {
         this.type = type;
     }
 
-    public String getLatiude() {
-        return latiude;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setLatiude(String latiude) {
-        this.latiude = latiude;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getLongitude() {

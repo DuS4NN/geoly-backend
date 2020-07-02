@@ -102,8 +102,8 @@ public class User {
     @OneToMany(targetEntity = UserReport.class, fetch = FetchType.LAZY, mappedBy = "userComplainant", cascade = CascadeType.ALL)
     private Set<UserReport> userComplainant;
 
-    @OneToMany(targetEntity = PartyInvate.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<PartyInvate> partyInvate;
+    @OneToMany(targetEntity = PartyInvite.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<PartyInvite> partyInvite;
 
     public User() {
     }
@@ -308,11 +308,11 @@ public class User {
         this.userComplainant = userComplainant;
     }
 
-    public Set<PartyInvate> getPartyInvate() {
-        return partyInvate;
+    public Set<PartyInvite> getPartyInvite() {
+        return partyInvite;
     }
 
-    public void setPartyInvate(Set<PartyInvate> partyInvate) {
-        this.partyInvate = partyInvate;
+    public void setPartyInvite(Set<PartyInvite> partyInvite) {
+        this.partyInvite = partyInvite;
     }
 }

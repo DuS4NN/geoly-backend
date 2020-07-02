@@ -17,11 +17,6 @@ public class UserQuest {
     @NotNull
     private int id;
 
-    @ManyToOne(targetEntity = Quest.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "quest_id")
-    @NotNull
-    private Quest quest;
-
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @NotNull
@@ -54,14 +49,6 @@ public class UserQuest {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Quest getQuest() {
-        return quest;
-    }
-
-    public void setQuest(Quest quest) {
-        this.quest = quest;
     }
 
     public User getUser() {

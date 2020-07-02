@@ -65,9 +65,6 @@ public class Quest {
     @OneToMany(targetEntity = QuestReview.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
     private Set<QuestReview> questReview;
 
-    @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "quest", cascade = CascadeType.ALL)
-    private Set<UserQuest> userQuest;
-
     public Quest() {
     }
 
@@ -181,13 +178,5 @@ public class Quest {
 
     public void setQuestReview(Set<QuestReview> questReview) {
         this.questReview = questReview;
-    }
-
-    public Set<UserQuest> getUserQuest() {
-        return userQuest;
-    }
-
-    public void setUserQuest(Set<UserQuest> userQuest) {
-        this.userQuest = userQuest;
     }
 }

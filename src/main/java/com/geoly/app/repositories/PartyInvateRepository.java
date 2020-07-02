@@ -1,10 +1,10 @@
 package com.geoly.app.repositories;
 
-import com.geoly.app.models.PartyInvate;
+import com.geoly.app.models.PartyInvite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PartyInvateRepository extends JpaRepository<PartyInvate, Integer> {
+public interface PartyInvateRepository extends JpaRepository<PartyInvite, Integer> {
 }
 
