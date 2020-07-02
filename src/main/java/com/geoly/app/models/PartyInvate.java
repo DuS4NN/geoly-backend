@@ -27,9 +27,9 @@ public class PartyInvate {
     private Party party;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "VARCHAR(20)")
+    @Column(name = "status")
     @NotNull
-    private String state;
+    private PartyInvateStatus status;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
@@ -62,12 +62,12 @@ public class PartyInvate {
         this.party = party;
     }
 
-    public String getState() {
-        return state;
+    public PartyInvateStatus getStatus() {
+        return status;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStatus(PartyInvateStatus status) {
+        this.status = status;
     }
 
     public Date getCreated_at() {

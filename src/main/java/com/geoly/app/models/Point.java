@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "point")
@@ -26,7 +27,7 @@ public class Point {
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
-    private String createdAt;
+    private Date createdAt;
 
     public Point() {
     }
@@ -55,11 +56,11 @@ public class Point {
         this.amount = amount;
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 }
