@@ -24,9 +24,10 @@ public class Log {
     @NotNull
     private String data;
 
-    @Column(name = "log_type", columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "log_type")
     @NotNull
-    private String logType;
+    private LogType logType;
 
     public Log() {
     }
@@ -55,11 +56,11 @@ public class Log {
         this.data = data;
     }
 
-    public String getLogType() {
+    public LogType getLogType() {
         return logType;
     }
 
-    public void setLogType(String logType) {
+    public void setLogType(LogType logType) {
         this.logType = logType;
     }
 }

@@ -26,9 +26,10 @@ public class QuestReport {
     @NotNull
     private Quest quest;
 
-    @Column(name = "reason", columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reason")
     @NotNull
-    private String reason;
+    private QuestReportReason reason;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
@@ -61,11 +62,11 @@ public class QuestReport {
         this.quest = quest;
     }
 
-    public String getReason() {
+    public QuestReportReason getReason() {
         return reason;
     }
 
-    public void setReason(String reason) {
+    public void setReason(QuestReportReason reason) {
         this.reason = reason;
     }
 

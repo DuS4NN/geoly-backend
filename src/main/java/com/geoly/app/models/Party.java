@@ -37,7 +37,7 @@ public class Party {
     private Set<PartyQuest> partyQuest;
 
     @OneToMany(targetEntity = PartyInvite.class, fetch = FetchType.LAZY, mappedBy = "party", cascade = CascadeType.ALL)
-    private Set<PartyInvite> partyInvate;
+    private Set<PartyInvite> partyInvite;
 
     public Party() {
     }
@@ -91,10 +91,10 @@ public class Party {
     }
 
     public Set<PartyInvite> getPartyInvate() {
-        return partyInvate;
+        return partyInvite;
     }
 
     public void setPartyInvate(Set<PartyInvite> partyInvate) {
-        this.partyInvate = partyInvate;
+        this.partyInvite = partyInvate;
     }
 }

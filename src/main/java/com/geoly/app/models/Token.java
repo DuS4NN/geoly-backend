@@ -29,9 +29,10 @@ public class Token {
     @CreationTimestamp
     private Date createdAt;
 
-    @Column(name = "action", columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "action")
     @NotNull
-    private String action;
+    private TokenType action;
 
     public Token() {
     }
@@ -68,11 +69,11 @@ public class Token {
         this.createdAt = createdAt;
     }
 
-    public String getAction() {
+    public TokenType getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(TokenType action) {
         this.action = action;
     }
 }

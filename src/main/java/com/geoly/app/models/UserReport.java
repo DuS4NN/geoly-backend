@@ -26,9 +26,10 @@ public class UserReport {
     @NotNull
     private User userComplainant;
 
-    @Column(name = "reason", columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reason")
     @NotNull
-    private String reason;
+    private UserReportReason reason;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
@@ -61,11 +62,11 @@ public class UserReport {
         this.userComplainant = userComplainant;
     }
 
-    public String getReason() {
+    public UserReportReason getReason() {
         return reason;
     }
 
-    public void setReason(String reason) {
+    public void setReason(UserReportReason reason) {
         this.reason = reason;
     }
 
