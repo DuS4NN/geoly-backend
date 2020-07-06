@@ -32,7 +32,7 @@ public class Quest {
     private int difficulty;
 
     @Column(name = "description", nullable = false, columnDefinition = "VARCHAR(500)")
-    private String decription;
+    private String description;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
@@ -100,12 +100,12 @@ public class Quest {
         this.difficulty = difficulty;
     }
 
-    public String getDecription() {
-        return decription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDecription(String decription) {
-        this.decription = decription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getCreatedAt() {

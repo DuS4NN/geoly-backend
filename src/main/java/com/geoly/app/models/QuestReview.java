@@ -17,12 +17,12 @@ public class QuestReview {
     private int id;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "Id")
+    @JoinColumn(name = "user_id")
     @NotNull
     private User user;
 
     @ManyToOne(targetEntity = Quest.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "quest_id", referencedColumnName = "Id")
+    @JoinColumn(name = "quest_id")
     @NotNull
     private Quest quest;
 
