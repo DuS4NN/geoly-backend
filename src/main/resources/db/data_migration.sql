@@ -13,9 +13,9 @@ VALUES
     
 INSERT INTO `user` (`id`, `nick_name`, `email`, `password`, `profile_image_url`, `about`, `active`, `verified`, `created_at`, `address`)
 VALUES
-	('1', '___DuS4NN', 'dusan@gmail.com', 'c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Volám sa Dušan :)', '1', '1', '2020-06-10 11:32:48', '51.952659, 7.632473'),
-	('2', 'Marek123', 'marek@gmail.com','c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Volám sa Marek :)', '1', '1', '2020-05-23 22:15:40', '48.141666319004486,17.15601670703128'),
-    ('3', 'Petiir', 'petiir@gmail.com','c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Volám sa Peto :)', '1', '1', '2020-04-18 18:23:12', '51.952659, 7.632473');
+	('1', '___DuS4NN', 'dusan@gmail.com', 'c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Volï¿½m sa Duï¿½an :)', '1', '1', '2020-06-10 11:32:48', '51.952659, 7.632473'),
+	('2', 'Marek123', 'marek@gmail.com','c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Volï¿½m sa Marek :)', '1', '1', '2020-05-23 22:15:40', '48.141666319004486,17.15601670703128'),
+    ('3', 'Petiir', 'petiir@gmail.com','c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Volï¿½m sa Peto :)', '1', '1', '2020-04-18 18:23:12', '51.952659, 7.632473');
     
 INSERT INTO `user_badge` (`id`, `user_id`, `badge_id`, `created_at`)
 VALUES
@@ -87,7 +87,7 @@ INSERT INTO `party` (`id`, `user_id`, `name`, `created_at`)
 VALUES
     ('1', '2', 'ELITA', '2020-06-20 13:05:10');
     
-INSERT INTO `party_invate` (`id`, `user_id`, `party_id`, `status`, `created_at`)
+INSERT INTO `party_invite` (`id`, `user_id`, `party_id`, `status`, `created_at`)
 VALUES
     ('1', '2', '1', 'ACCEPTED', '2020-06-20 10:45:10'),
     ('2', '3', '1', 'PENDING', '2020-06-19 14:45:10');
@@ -100,14 +100,14 @@ INSERT INTO `party_quest` (`id`, `party_id`, `quest_id`, `active`)
 VALUES
     ('1', '1', '3', '1');
     
-INSERT INTO `stage` (`id`, `quest_id`, `type`, `latiude`, `longitude`, `question`, `answer`)
+INSERT INTO `stage` (`id`, `quest_id`, `type`, `latitude`, `longitude`, `question`, `answer`)
 VALUES
     ('1', '1', 'GO_TO_PLACE', '48.336169', '17.838933', '', ''),
     ('2', '1', 'ANSWER_QUESTION', '', '', 'Ako sa mas', 'Dobre'),
     ('3', '2', 'GO_TO_PLACE', '48.336149', '17.832933', '', '');
     
-INSERT INTO `user_quest` (`id`, `quest_id`, `user_id`, `status`, `created_at`, `updated_at`)
+INSERT INTO `user_quest` (`id`, `stage_id`, `user_id`, `status`, `created_at`, `updated_at`)
 VALUES
-    ('1', '1', '1', 'FINISHED', '2020-06-20 14:45:10', '2020-06-20 15:45:10'),
-    ('2', '1', '1', 'ON_STAGE', '2020-06-20 14:45:10', '2020-06-20 14:45:10'),
-    ('3', '2', '2', 'CANCELED', '2020-07-01 12:15:18', '2020-07-01 12:20:42');
+    ('1', '1', '1' ,'FINISHED', '2020-06-20 14:45:10', '2020-06-20 15:45:10'),
+    ('2', '2', '1' ,'ON_STAGE', '2020-06-20 14:45:10', '2020-06-20 14:45:10'),
+    ('3', '3', '2' ,'CANCELED', '2020-07-01 12:15:18', '2020-07-01 12:20:42');
