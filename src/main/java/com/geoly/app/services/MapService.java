@@ -3,6 +3,7 @@ package com.geoly.app.services;
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.UserQuestStatus;
+import com.geoly.app.repositories.CategoryRepository;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -23,10 +24,12 @@ public class MapService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private CategoryRepository categoryRepository;
 
-    public MapService(EntityManager entityManager, DSLContext create){
+    public MapService(EntityManager entityManager, DSLContext create, CategoryRepository categoryRepository){
         this.entityManager = entityManager;
         this.create = create;
+        this.categoryRepository = categoryRepository;
     }
 
     public List getQuestDetailsById(int id){
@@ -154,5 +157,9 @@ public class MapService {
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
         return q.getResultList();
+    }
+
+    public List<com.geoly.app.models.Category> getAllCategories(){
+        return categoryRepository.findAll();
     }
 }
