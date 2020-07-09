@@ -1,9 +1,7 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.services.MapService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,10 +15,12 @@ public class MapController {
     }
 
     @GetMapping(path = "/{id}")
-    public List getQuestDetailsById(@PathVariable int id){
+    public List getQuestDetailsById(@PathVariable("id") Integer id){
         return mapService.getQuestDetailsById(id);
     }
 
-
-
+    @GetMapping(path = "/")
+    public List getAllQuestByParameters(@RequestParam(required = false, name = "categoryId") List<Integer> categoryId, @RequestParam(required = false, name = "difficulty") List<Integer> difficulty, @RequestParam(required = false, name = "review") List<Integer> review, @RequestParam(required = false, name = "unreviewed") boolean unreviewed){
+        return mapService.getAllQuestsByParameters(categoryId, difficulty, review, unreviewed);
+    }
 }

@@ -9,7 +9,6 @@ public class GeolyAPI {
         List<Object> values = jooqQuery.getBindValues();
         for(int i = 0; i < values.size(); i++){
             hibernateQuery.setParameter(i + 1, values.get(i));
-            System.out.println(values.get(i).toString());
         }
     }
 }
