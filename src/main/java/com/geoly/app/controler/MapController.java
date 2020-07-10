@@ -16,7 +16,7 @@ public class MapController {
     }
 
     @GetMapping(path = "/{id}")
-    public List getQuestDetailsById(@PathVariable("id") Integer id){
+    public List getQuestDetailsById(@PathVariable(name = "id") Integer id){
         return mapService.getQuestDetailsById(id);
     }
 

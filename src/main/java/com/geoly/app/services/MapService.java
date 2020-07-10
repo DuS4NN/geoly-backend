@@ -101,7 +101,11 @@ public class MapService {
                         .on(coordinates.field("id").isNotNull())
                     .leftJoin(avgReview)
                         .on(avgReview.field("id").isNotNull())
-                    .where(Quest.QUEST.ID.eq(id));
+                    .where(Quest.QUEST.ID.eq(id))
+                    .and(Quest.QUEST.ACTIVE.isTrue())
+                    .and(User.USER.ACTIVE.isTrue())
+                    .and(Quest.QUEST.PRIVATE_QUEST.isFalse())
+                    .and(Quest.QUEST.DAILY.isFalse());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
