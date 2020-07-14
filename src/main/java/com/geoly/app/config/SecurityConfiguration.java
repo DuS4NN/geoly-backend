@@ -1,13 +1,13 @@
-package com.geoly.app.security;
+package com.geoly.app.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -18,14 +18,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/").permitAll()
                 .and().formLogin();
+            //.csrf().and().cors().disable();
 
-        http.cors().and().csrf().disable();
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+        //http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
     }
 
     @Bean
-    public PasswordEncoder getPasswordEncoder(){
+    public Argon2PasswordEncoder argon2PasswordEncoder(){
         return new Argon2PasswordEncoder();
     }
 }

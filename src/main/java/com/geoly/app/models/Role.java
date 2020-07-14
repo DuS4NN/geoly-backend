@@ -15,12 +15,13 @@ public class Role {
     @NotNull
     private int id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "name", columnDefinition = "VARCHAR(20)")
     @NotNull
-    private String name;
+    private RoleList name;
 
-    @OneToMany(targetEntity = UserRole.class, fetch = FetchType.LAZY, mappedBy = "role", cascade = CascadeType.ALL)
-    private Set<UserRole> userRole;
+    @ManyToMany(targetEntity = User.class, fetch = FetchType.LAZY, mappedBy = "role", cascade = CascadeType.ALL)
+    private Set<User> user;
 
     public Role() {
     }
@@ -33,19 +34,19 @@ public class Role {
         this.id = id;
     }
 
-    public String getName() {
+    public RoleList getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(RoleList name) {
         this.name = name;
     }
 
-    public Set<UserRole> getUserRole() {
-        return userRole;
+    public Set<User> getUser() {
+        return user;
     }
 
-    public void setUserRole(Set<UserRole> userRole) {
-        this.userRole = userRole;
+    public void setUser(Set<User> user) {
+        this.user = user;
     }
 }

@@ -57,6 +57,10 @@ public class User {
     @Column(name = "address", columnDefinition = "VARCHAR(30)")
     private String address;
 
+    @ManyToMany
+    @JoinTable(name = "user_role")
+    private Set<Role> role;
+
     @OneToMany(targetEntity = Quest.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Quest> quest;
 
@@ -77,9 +81,6 @@ public class User {
 
     @OneToMany(targetEntity = Point.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Point> point;
-
-    @OneToMany(targetEntity = UserRole.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<UserRole> userRole;
 
     @OneToMany(targetEntity = Party.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Party> party;
@@ -244,14 +245,6 @@ public class User {
         this.point = point;
     }
 
-    public Set<UserRole> getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(Set<UserRole> userRole) {
-        this.userRole = userRole;
-    }
-
     public Set<Party> getParty() {
         return party;
     }
@@ -314,5 +307,13 @@ public class User {
 
     public void setPartyInvite(Set<PartyInvite> partyInvite) {
         this.partyInvite = partyInvite;
+    }
+
+    public Set<Role> getRole() {
+        return role;
+    }
+
+    public void setRole(Set<Role> role) {
+        this.role = role;
     }
 }

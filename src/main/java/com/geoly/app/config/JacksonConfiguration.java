@@ -12,7 +12,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebMvc
-public class ApplicationConfig implements WebMvcConfigurer {
+public class JacksonConfiguration implements WebMvcConfigurer {
 
     public MappingJackson2HttpMessageConverter jacksonMessageConverter(){
         MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
