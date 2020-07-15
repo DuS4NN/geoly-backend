@@ -3,11 +3,14 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(name = "role")
-public class Role {
+public class Role implements Serializable {
+
+    private static final long serialVersionUID = -8662448150071768410L;
 
     @Id
     @Column(name = "id")

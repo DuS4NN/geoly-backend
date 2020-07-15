@@ -1,11 +1,11 @@
 package com.geoly.app.services;
 
+import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.Role;
 import com.geoly.app.models.User;
 import com.geoly.app.repositories.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Transactional
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(email);
         user.orElseThrow(() -> new UsernameNotFoundException("Email not found"));
 
@@ -34,6 +34,13 @@ public class CustomUserDetailService implements UserDetailsService {
         for (Role role : user.get().getRole()){
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getName().name()));
         }
-        return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), grantedAuthorities);
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(user.get());
+        customUserDetails.setAuthorities(grantedAuthorities);
+        return customUserDetails;
     }
+
+
+
+
 }

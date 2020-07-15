@@ -7,13 +7,15 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements Serializable {
 
+    private static final long serialVersionUID = 7592344600184573441L;
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
