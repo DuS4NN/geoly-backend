@@ -2,6 +2,9 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.ServerResponse;
+import com.geoly.app.models.ServerResponseMessage;
+import com.geoly.app.models.ServerResponseType;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.CategoryRepository;
 import org.jooq.Condition;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import static org.jooq.impl.DSL.*;
@@ -109,6 +113,9 @@ public class MapService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
+
+        if(q.getResultList().isEmpty()) return Collections.singletonList(new ServerResponse(ServerResponseType.ERROR, ServerResponseMessage.QUEST_NOT_FOUND));
+
         return q.getResultList();
     }
 
@@ -160,6 +167,9 @@ public class MapService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
+
+        if(q.getResultList().isEmpty()) return Collections.singletonList(new ServerResponse(ServerResponseType.ERROR, ServerResponseMessage.QUESTS_WITH_PARAMETERS_NOT_FOUND));
+
         return q.getResultList();
     }
 
