@@ -2,9 +2,7 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.jooq.tables.*;
-import com.geoly.app.models.ServerResponse;
-import com.geoly.app.models.ServerResponseMessage;
-import com.geoly.app.models.ServerResponseType;
+import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.CategoryRepository;
 import org.jooq.Condition;
@@ -12,6 +10,8 @@ import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -114,9 +114,9 @@ public class MapService {
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
 
-        if(q.getResultList().isEmpty()) return Collections.singletonList(new ServerResponse(ServerResponseType.ERROR, ServerResponseMessage.QUEST_NOT_FOUND));
-
-        return q.getResultList();
+        List response = q.getResultList();
+        if(response.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        return response;
     }
 
     public List getAllQuestsByParameters(List<Integer> categoryId, List<Integer> difficulty, List<Integer> review, boolean unreviewed){
@@ -168,9 +168,9 @@ public class MapService {
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
 
-        if(q.getResultList().isEmpty()) return Collections.singletonList(new ServerResponse(ServerResponseType.ERROR, ServerResponseMessage.QUESTS_WITH_PARAMETERS_NOT_FOUND));
-
-        return q.getResultList();
+        List response = q.getResultList();
+        if(response.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUESTS_WITH_PARAMETERS_NOT_FOUND, HttpStatus.NOT_FOUND));
+        return response;
     }
 
     public List<com.geoly.app.models.Category> getAllCategories(){
