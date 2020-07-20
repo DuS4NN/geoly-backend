@@ -24,7 +24,7 @@ public class MapController {
 
     @GetMapping(path = "/{id}")
     public List getQuestDetailsById(@PathVariable(name = "id") Integer id) throws Exception {
-        ValidatorResponse validatorResponse = validator.getQuestDetailsByIdValidator(id);
+        ValidatorResponse validatorResponse = validator.questDetailsByIdValidator(id);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
         try{

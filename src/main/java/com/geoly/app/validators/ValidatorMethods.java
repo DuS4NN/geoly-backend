@@ -18,4 +18,16 @@ public class ValidatorMethods {
     boolean reviewIsValid(List<Integer> review){
         return (review.size() == 2 && review.get(0) <= review.get(1));
     }
+
+    boolean reviewTextFormatIsValid(String reviewText){
+        return (reviewText != null && reviewText.length() > 0);
+    }
+
+    boolean reviewTextLengthIsValid(String reviewText){
+        return reviewText.length() < 1001;
+    }
+
+    boolean reviewFormatIsValid(int review){
+        return (review > 0 && review < 6);
+    }
 }

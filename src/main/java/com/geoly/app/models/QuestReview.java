@@ -2,12 +2,17 @@ package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "quest_review")
+@Table(
+    name = "quest_review",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "quest_id"})}
+)
+
 public class QuestReview {
 
     @Id
@@ -26,7 +31,7 @@ public class QuestReview {
     @NotNull
     private Quest quest;
 
-    @Column(name = "review_text", columnDefinition = "VARCHAR(500)")
+    @Column(name = "review_text", columnDefinition = "VARCHAR(1000)")
     @NotNull
     private String reviewText;
 
@@ -37,6 +42,10 @@ public class QuestReview {
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
     private Date createdAt;
+
+    @Column(name = "update_at", columnDefinition = "TIMESTAMP")
+    @UpdateTimestamp
+    private Date updateAt;
 
     public QuestReview() {
     }
@@ -87,5 +96,13 @@ public class QuestReview {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Date getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Date updateAt) {
+        this.updateAt = updateAt;
     }
 }

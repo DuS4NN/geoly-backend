@@ -2,15 +2,26 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
+import com.geoly.app.repositories.QuestRepository;
+import com.geoly.app.repositories.QuestReviewRepository;
+import com.geoly.app.repositories.StageRepository;
+import com.geoly.app.repositories.UserRepository;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.jooq.impl.DSL.avg;
 import static org.jooq.impl.DSL.count;
@@ -21,14 +32,21 @@ public class QuestDetailService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private QuestRepository questRepository;
+    private UserRepository userRepository;
+    private QuestReviewRepository questReviewRepository;
+    private StageRepository stageRepository;
 
-    public QuestDetailService(EntityManager entityManager, DSLContext create){
+    public QuestDetailService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository){
         this.entityManager = entityManager;
         this.create = create;
+        this.questRepository = questRepository;
+        this.userRepository = userRepository;
+        this.questReviewRepository = questReviewRepository;
+        this.stageRepository = stageRepository;
     }
 
     public List getReviewsOfQuest(int id){
-
         Select<?> query =
             create.select(QuestReview.QUEST_REVIEW.ID, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.REVIEW, QuestReview.QUEST_REVIEW.CREATED_AT, User.USER.NICK_NAME)
             .from(QuestReview.QUEST_REVIEW)
@@ -43,7 +61,6 @@ public class QuestDetailService {
     }
 
     public List getStagesOfQuest(int id){
-
         Select<?> query =
             create.select()
             .from(Stage.STAGE)
@@ -55,7 +72,6 @@ public class QuestDetailService {
     }
 
     public List getDetailsOfQuest(int id){
-
         Table<?> avgReview =
                 create.select(avg(QuestReview.QUEST_REVIEW.REVIEW).as("avg"), QuestReview.QUEST_REVIEW.ID.as("id"))
                         .from(QuestReview.QUEST_REVIEW)
@@ -125,7 +141,6 @@ public class QuestDetailService {
     }
 
     public List getImagesOfQuest(int id){
-
         Select<?> query =
             create.select(Image.IMAGE.IMAGE_URL)
             .from(Image.IMAGE)
@@ -136,11 +151,113 @@ public class QuestDetailService {
         return q.getResultList();
     }
 
-    public void createReview(){
+    @Transactional(rollbackOn = Exception.class)
+    public List createReview(int userId, int questId, com.geoly.app.models.QuestReview questReview){
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
 
+        Table<?> ifReviewExist =
+                create.select(count().as("count_exist"))
+                        .from(QuestReview.QUEST_REVIEW)
+                        .where(QuestReview.QUEST_REVIEW.QUEST_ID.eq(questId))
+                        .and(QuestReview.QUEST_REVIEW.USER_ID.eq(userId))
+                        .asTable("exist_review");
+
+        Table<?> ifUserStartedQuest =
+                create.select(count().as("count_quest"))
+                        .from(UserQuest.USER_QUEST)
+                        .where(UserQuest.USER_QUEST.STAGE_ID.in(
+                                create.select(Stage.STAGE.ID)
+                                        .from(Stage.STAGE)
+                                        .where(Stage.STAGE.QUEST_ID.eq(questId))))
+                        .and(UserQuest.USER_QUEST.USER_ID.eq(userId))
+                        .asTable("user_quest");
+
+        Select<?> query =
+                create.select(ifReviewExist.field("count_exist"), ifUserStartedQuest.field("count_quest"))
+                        .from(ifReviewExist, ifUserStartedQuest);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object[] result = (Object[]) q.getSingleResult();
+
+        if(Integer.parseInt(String.valueOf(result[0])) > 0) return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_ALREADY_EXIST, HttpStatus.METHOD_NOT_ALLOWED));
+        if(Integer.parseInt(String.valueOf(result[1])) < 0) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_PLAY_QUEST, HttpStatus.METHOD_NOT_ALLOWED));
+
+        questReview.setQuest(quest.get());
+        questReview.setUser(user.get());
+        entityManager.persist(questReview);
+        return Collections.singletonList(questReview);
     }
 
-    public void signUpOnQuest(){
+    @Transactional(rollbackOn = Exception.class)
+    public List removeReview(int userId ,int questId, int reviewId){
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Optional<com.geoly.app.models.QuestReview> questReview = questReviewRepository.findByIdAndUserAndQuest(reviewId, user.get(), quest.get());
+        if(!questReview.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_NOT_FOUND, HttpStatus.BAD_REQUEST));
 
+        entityManager.remove(questReview.get());
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_DELETED, HttpStatus.OK));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List updateReview(int userId, int questId, com.geoly.app.models.QuestReview questReview){
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        Optional<com.geoly.app.models.QuestReview> review = questReviewRepository.findByIdAndUserAndQuest(questReview.getId(), user.get(), quest.get());
+        if(!review.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        questReview.setUser(user.get());
+        questReview.setQuest(quest.get());
+
+        entityManager.merge(questReview);
+        return Collections.singletonList(questReview);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List signUpOnQuest(int userId, int questId){
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        Optional<List<com.geoly.app.models.Stage>> stage = stageRepository.findAllByQuest(quest.get());
+        if(!stage.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.STAGE_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        Table<?> stages =
+            create.select(Stage.STAGE.ID.as("stage_id"))
+            .from(Stage.STAGE)
+            .where(Stage.STAGE.QUEST_ID.eq(questId))
+            .asTable("stage");
+
+        Select<?> query =
+            create.select()
+            .from(UserQuest.USER_QUEST, stages)
+            .where(UserQuest.USER_QUEST.USER_ID.eq(userId))
+            .and(UserQuest.USER_QUEST.STAGE_ID.in(stages.field("stage_id")))
+            .and(UserQuest.USER_QUEST.STATUS.notEqual(UserQuestStatus.CANCELED.name()))
+            .orderBy(UserQuest.USER_QUEST.ID.desc())
+            .limit(1);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+
+        if(!q.getResultList().isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_HAS_ACTIVE_QUEST, HttpStatus.METHOD_NOT_ALLOWED));
+
+        com.geoly.app.models.UserQuest userQuest = new com.geoly.app.models.UserQuest();
+        userQuest.setStatus(UserQuestStatus.ON_STAGE);
+        userQuest.setUser(user.get());
+        userQuest.setStage(stage.get().get(0));
+        entityManager.persist(userQuest);
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_SIGNED_UP_ON_QUEST, HttpStatus.CREATED));
     }
 }
