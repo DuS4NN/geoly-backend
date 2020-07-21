@@ -37,7 +37,6 @@ public class MapService {
     }
 
     public List getQuestDetailsById(int id){
-
         Table<?> avgReview =
                 create.select(avg(QuestReview.QUEST_REVIEW.REVIEW).as("avg"), QuestReview.QUEST_REVIEW.ID.as("id"))
                     .from(QuestReview.QUEST_REVIEW)
@@ -68,7 +67,8 @@ public class MapService {
                     .leftJoin(u2)
                         .on(u1.USER_ID.eq(u2.USER_ID))
                         .and(u1.ID.lessThan(u2.ID))
-                    .leftJoin(Stage.STAGE).on(Stage.STAGE.ID.eq(u1.STAGE_ID))
+                    .leftJoin(Stage.STAGE)
+                        .on(Stage.STAGE.ID.eq(u1.STAGE_ID))
                     .where(u2.ID.isNull())
                     .and(Stage.STAGE.QUEST_ID.eq(id))
                     .and(u1.STATUS.eq(UserQuestStatus.ON_STAGE.name()))
@@ -120,7 +120,6 @@ public class MapService {
     }
 
     public List getAllQuestsByParameters(List<Integer> categoryId, List<Integer> difficulty, List<Integer> review, boolean unreviewed){
-
         Condition where = DSL.trueCondition();
 
         if(categoryId != null && !categoryId.isEmpty()){

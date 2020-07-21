@@ -1,6 +1,12 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    QUEST_REPORT_CREATED,
+    USER_REPORT_CREATED,
+    BADGES_EMPTY,
+    CREATED_QUESTS_EMPTY,
+    PLAYED_QUESTS_EMPTY,
+    INVALID_NICKNAME,
     USER_SIGNED_UP_ON_QUEST,
     STAGE_NOT_FOUND,
     USER_HAS_ACTIVE_QUEST,

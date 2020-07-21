@@ -16,7 +16,7 @@ public class Validator {
         this.validatorMethods = validatorMethods;
     }
 
-    public ValidatorResponse questDetailsByIdValidator(int id) {
+    public ValidatorResponse checkOnlyId(int id) {
         if (!validatorMethods.idIsValid(id)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
         return new ValidatorResponse(true);
     }
@@ -60,8 +60,8 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
-    public ValidatorResponse signUpOnQuestValidator(int id) {
-        if (!validatorMethods.idIsValid(id)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
+    public ValidatorResponse getProfileValidator(String nickName){
+        if(!validatorMethods.nickNameIsValid(nickName)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME);
         return new ValidatorResponse(true);
     }
 }

@@ -2,12 +2,10 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
-import com.geoly.app.repositories.QuestRepository;
-import com.geoly.app.repositories.QuestReviewRepository;
-import com.geoly.app.repositories.StageRepository;
-import com.geoly.app.repositories.UserRepository;
+import com.geoly.app.repositories.*;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
@@ -36,14 +34,16 @@ public class QuestDetailService {
     private UserRepository userRepository;
     private QuestReviewRepository questReviewRepository;
     private StageRepository stageRepository;
+    private QuestReportRepository questReportRepository;
 
-    public QuestDetailService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository){
+    public QuestDetailService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository){
         this.entityManager = entityManager;
         this.create = create;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
         this.questReviewRepository = questReviewRepository;
         this.stageRepository = stageRepository;
+        this.questReportRepository = questReportRepository;
     }
 
     public List getReviewsOfQuest(int id){
@@ -259,5 +259,24 @@ public class QuestDetailService {
         entityManager.persist(userQuest);
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_SIGNED_UP_ON_QUEST, HttpStatus.CREATED));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List reportQuest(int userId, int questId, QuestReportReason questReportReason){
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        Optional<com.geoly.app.models.QuestReport> report = questReportRepository.findAllByQuestAndUser(quest.get(), user.get());
+        if(report.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_REPORT_CREATED, HttpStatus.CREATED));
+
+        com.geoly.app.models.QuestReport questReport = new com.geoly.app.models.QuestReport();
+        questReport.setReason(questReportReason);
+        questReport.setQuest(quest.get());
+        questReport.setUser(user.get());
+        entityManager.persist(questReport);
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_REPORT_CREATED, HttpStatus.CREATED));
     }
 }

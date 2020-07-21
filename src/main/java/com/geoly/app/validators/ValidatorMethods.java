@@ -30,4 +30,8 @@ public class ValidatorMethods {
     boolean reviewFormatIsValid(int review){
         return (review > 0 && review < 6);
     }
+
+    boolean nickNameIsValid(String nickName){
+        return (nickName.length() > 3 && nickName.length() < 16);
+    }
 }

@@ -7,7 +7,9 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "user_report")
+@Table(
+    name = "user_report",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"reported", "complainant"}))
 public class UserReport {
 
     @Id

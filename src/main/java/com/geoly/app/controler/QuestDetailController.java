@@ -1,6 +1,7 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.models.CustomUserDetails;
+import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.QuestReview;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.services.QuestDetailService;
@@ -31,7 +32,7 @@ public class QuestDetailController {
 
     @GetMapping(path = "quest/{id}")
     public List getDetailsOfQuest(@PathVariable(name = "id") int id){
-        ValidatorResponse validatorResponse = validator.questDetailsByIdValidator(id);
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
         try{
@@ -104,12 +105,28 @@ public class QuestDetailController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("quest/{id}/sign")
     public List signUpOnQuest(@PathVariable(name = "id") int id, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.signUpOnQuestValidator(id);
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.signUpOnQuest(customUserDetails.getUser().getId(), id);
+        }catch (Exception e){
+            Sentry.capture(e);
+            e.printStackTrace();
+            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    //@PreAuthorize("isAuthenticated()")
+    @PostMapping("quest/{id}/report")
+    public List reportQuest(@PathVariable(name = "id") int id, Authentication authentication, @RequestParam(name = "reason") QuestReportReason reason){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            //CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questDetailService.reportQuest(1, id, reason);
         }catch (Exception e){
             Sentry.capture(e);
             e.printStackTrace();
