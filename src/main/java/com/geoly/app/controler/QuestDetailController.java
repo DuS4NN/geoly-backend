@@ -30,7 +30,7 @@ public class QuestDetailController {
     }
 
     @GetMapping(path = "quest/{id}")
-    public List getDetailsOfQuest(@PathVariable(name = "id") int id) throws Exception{
+    public List getDetailsOfQuest(@PathVariable(name = "id") int id){
         ValidatorResponse validatorResponse = validator.questDetailsByIdValidator(id);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
@@ -39,7 +39,7 @@ public class QuestDetailController {
 
             questDetails.add(questDetailService.getDetailsOfQuest(id));
 
-            if(questDetails.isEmpty()) return null;
+            if(questDetails.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
 
             questDetails.add(questDetailService.getReviewsOfQuest(id));
             questDetails.add(questDetailService.getStagesOfQuest(id));
@@ -48,7 +48,8 @@ public class QuestDetailController {
             return questDetails;
         }catch (Exception e){
             Sentry.capture(e);
-            throw new Exception(e.getMessage());
+            e.printStackTrace();
+            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
         }
     }
 
