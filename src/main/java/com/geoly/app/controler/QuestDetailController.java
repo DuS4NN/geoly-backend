@@ -118,15 +118,15 @@ public class QuestDetailController {
         }
     }
 
-    //@PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("quest/{id}/report")
     public List reportQuest(@PathVariable(name = "id") int id, Authentication authentication, @RequestParam(name = "reason") QuestReportReason reason){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
         try{
-            //CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questDetailService.reportQuest(1, id, reason);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questDetailService.reportQuest(customUserDetails.getUser().getId(), id, reason);
         }catch (Exception e){
             Sentry.capture(e);
             e.printStackTrace();
