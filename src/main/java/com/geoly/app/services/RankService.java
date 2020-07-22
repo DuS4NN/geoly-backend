@@ -1,20 +1,31 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.jooq.Geoly;
 import com.geoly.app.jooq.tables.Point;
 import com.geoly.app.jooq.tables.User;
+import com.geoly.app.models.Badge;
+import com.geoly.app.models.BadgeType;
 import com.geoly.app.models.StatusMessage;
+import com.geoly.app.models.UserBadge;
+import com.geoly.app.repositories.BadgeRepository;
+import com.geoly.app.repositories.UserRepository;
+import io.sentry.Sentry;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.jooq.impl.DSL.*;
 
@@ -23,10 +34,14 @@ public class RankService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private BadgeRepository badgeRepository;
+    private UserRepository userRepository;
 
-    public RankService(EntityManager entityManager, DSLContext create){
+    public RankService(EntityManager entityManager, DSLContext create, BadgeRepository badgeRepository, UserRepository userRepository){
         this.entityManager = entityManager;
         this.create = create;
+        this.badgeRepository = badgeRepository;
+        this.userRepository = userRepository;
     }
 
     public List getTopPlayers(){
@@ -82,5 +97,63 @@ public class RankService {
         }
 
         return result;
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    @Scheduled(cron = "0 0 0 1 1/1 *")
+    public void createUserBadge(){
+        try{
+            Badge badge_1st = badgeRepository.getBadgeByName(BadgeType.FIRST_IN_SEASON.name());
+            Badge badge_2nd = badgeRepository.getBadgeByName(BadgeType.SECOND_IN_SEASON.name());
+            Badge badge_3rd = badgeRepository.getBadgeByName(BadgeType.THIRD_IN_SEASON.name());
+            Badge badge_10top = badgeRepository.getBadgeByName(BadgeType.TOP_10_IN_SEASON.name());
+            Badge badge_50top = badgeRepository.getBadgeByName(BadgeType.TOP_50_IN_SEASON.name());
+
+            LocalDate lastMonth = LocalDate.now().minusMonths(1);
+
+            Select<?> query =
+                    create.select(Point.POINT.USER_ID)
+                            .from(Point.POINT)
+                            .where(month(Point.POINT.CREATED_AT).eq(month(lastMonth)))
+                            .groupBy(Point.POINT.USER_ID)
+                            .orderBy(sum(Point.POINT.AMOUNT).desc())
+                            .limit(50);
+
+            Query q = entityManager.createNativeQuery(query.getSQL());
+            GeolyAPI.setBindParameterValues(q, query);
+            List result = q.getResultList();
+
+            for(int i = 0; i < result.size(); i++){
+                int id = Integer.parseInt(String.valueOf(result.get(i)));
+
+                Optional<com.geoly.app.models.User> user = userRepository.findById(id);
+                if(!user.isPresent()){
+                    Sentry.capture("User not found in RankService/createUserBadge");
+                    continue;
+                }
+
+                UserBadge userBadge = new UserBadge();
+                userBadge.setUser(user.get());
+                //O jedno menej pretože indexujem od 0
+                if(i > 9){
+                    userBadge.setBadge(badge_50top);
+                }
+                else if(i > 2){
+                    userBadge.setBadge(badge_10top);
+                }
+                else if(i==2){
+                    userBadge.setBadge(badge_3rd);
+                }
+                else if(i==1){
+                    userBadge.setBadge(badge_2nd);
+                }
+                else{
+                    userBadge.setBadge(badge_1st);
+                }
+                entityManager.persist(userBadge);
+            }
+        }catch (Exception e){
+            GeolyAPI.catchException(e);
+        }
     }
 }

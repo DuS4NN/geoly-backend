@@ -26,7 +26,6 @@ public class RankController {
     @GetMapping("/rank")
     public List getTopPlayers(Authentication authentication){
         try{
-
             List<List> rank = new ArrayList<>();
             rank.add(rankService.getTopPlayers());
 
