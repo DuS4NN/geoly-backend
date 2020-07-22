@@ -1,12 +1,12 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserReportReason;
 import com.geoly.app.services.ProfileService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
-import io.sentry.Sentry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,9 +45,7 @@ public class ProfileController {
 
             return profile;
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 
@@ -60,9 +58,7 @@ public class ProfileController {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return profileService.reportUser(nickName, userReportReason, customUserDetails.getUser().getId());
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 }

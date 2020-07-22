@@ -1,5 +1,6 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.QuestReview;
@@ -7,7 +8,6 @@ import com.geoly.app.models.StatusMessage;
 import com.geoly.app.services.QuestDetailService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
-import io.sentry.Sentry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +40,7 @@ public class QuestDetailController {
 
             questDetails.add(questDetailService.getDetailsOfQuest(id));
 
-            if(questDetails.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+            if(questDetails.get(0).isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
 
             questDetails.add(questDetailService.getReviewsOfQuest(id));
             questDetails.add(questDetailService.getStagesOfQuest(id));
@@ -48,9 +48,7 @@ public class QuestDetailController {
 
             return questDetails;
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 
@@ -64,9 +62,7 @@ public class QuestDetailController {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.createReview(customUserDetails.getUser().getId(), id, questReview);
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 
@@ -80,9 +76,7 @@ public class QuestDetailController {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.removeReview(customUserDetails.getUser().getId(), id, reviewId);
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 
@@ -96,9 +90,7 @@ public class QuestDetailController {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.updateReview(customUserDetails.getUser().getId(), id, questReview);
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 
@@ -112,9 +104,7 @@ public class QuestDetailController {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.signUpOnQuest(customUserDetails.getUser().getId(), id);
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 
@@ -128,9 +118,7 @@ public class QuestDetailController {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.reportQuest(customUserDetails.getUser().getId(), id, reason);
         }catch (Exception e){
-            Sentry.capture(e);
-            e.printStackTrace();
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR));
+            return GeolyAPI.catchException(e);
         }
     }
 }
