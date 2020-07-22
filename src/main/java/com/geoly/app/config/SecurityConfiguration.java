@@ -31,7 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception{
         http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionFixation().migrateSession()
                 .and()
             .logout()

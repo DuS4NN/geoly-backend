@@ -1,6 +1,9 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    USER_ALREADY_IN_TOP,
+    USER_NOT_LOGGED_IN,
+    TOP_PLAYERS_NOT_FOUND,
     QUEST_REPORT_CREATED,
     USER_REPORT_CREATED,
     BADGES_EMPTY,
