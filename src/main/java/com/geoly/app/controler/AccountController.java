@@ -39,12 +39,14 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/verify/{token}")
-    public List verifyAccount(@PathVariable(name = "token") String token){
+    @GetMapping("/verify")
+    public List verifyAccount(@RequestParam(name = "token") String token){
         try{
             return accountService.verifyAccount(token);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            e.printStackTrace();
+            return null;
+            //return GeolyAPI.catchException(e);
         }
     }
 

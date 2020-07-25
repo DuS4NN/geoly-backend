@@ -128,6 +128,15 @@ public class AccountService {
 
     @Transactional(rollbackOn = Exception.class)
     public List verifyAccount(String tokenValue){
-        return null;
+        Optional<Token> token = tokenRepository.findByTokenAndAction(tokenValue, TokenType.CONFIRM_EMAIL);
+        if(!token.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_TOKEN, HttpStatus.BAD_REQUEST));
+
+        User user = token.get().getUser();
+        user.setVerified(true);
+
+        entityManager.remove(token.get());
+        entityManager.merge(user);
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_ACTIVATED, HttpStatus.OK));
     }
 }
