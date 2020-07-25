@@ -30,20 +30,18 @@ public class User implements Serializable {
     @NotNull
     private String email;
 
-    @Column(name = "password", columnDefinition = "VARCHAR(60)")
+    @Column(name = "password", columnDefinition = "VARCHAR(100)")
     @NotNull
     private String password;
 
-    @Column(name = "profile_image_url", columnDefinition = "VARCHAR(100)")
-    @ColumnDefault("'/static/image/default_profile_image.png'")
+    @Column(name = "profile_image_url", columnDefinition = "VARCHAR(100), default '/static/image/default_profile_image.png'")
     @NotNull
     private String profileImageUrl;
 
     @Column(name = "about", nullable = false, columnDefinition = "VARCHAR(500)")
     private String about;
 
-    @Column(name = "active", columnDefinition = "TINYINT")
-    @ColumnDefault("1")
+    @Column(name = "active", columnDefinition = "TINYINT, default 1")
     @NotNull
     private boolean active;
 

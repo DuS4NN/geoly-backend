@@ -34,13 +34,7 @@ VALUES
     ('1', 'USER'),
     ('2', 'MOD'),
     ('3', 'ADMIN');
-    
-INSERT INTO `user_role` (`id`, `user_id`, `role_id`, `created_at`)
-VALUES
-    ('1', '1', '1', '2020-05-11 20:48:20'),
-    ('2', '2', '1', '2020-06-22 19:25:15'),
-    ('3', '3', '2', '2020-06-09 16:12:34');
-    
+
 INSERT INTO `point` (`id`, `user_id`, `amount`, `created_at`)
 VALUES
     ('1', '1', '100', '2020-05-11 20:48:20'),

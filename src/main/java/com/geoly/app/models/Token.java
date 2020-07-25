@@ -21,7 +21,7 @@ public class Token {
     @NotNull
     private User user;
 
-    @Column(name = "token", columnDefinition = "VARCHAR(60)")
+    @Column(name = "token", columnDefinition = "VARCHAR(100)")
     @NotNull
     private String token;
 

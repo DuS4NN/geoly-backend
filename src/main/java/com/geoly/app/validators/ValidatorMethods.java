@@ -3,6 +3,8 @@ package com.geoly.app.validators;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class ValidatorMethods {
@@ -33,5 +35,15 @@ public class ValidatorMethods {
 
     boolean nickNameIsValid(String nickName){
         return (nickName.length() > 3 && nickName.length() < 16);
+    }
+
+    boolean passwordIsValid(String password){
+        return (password.length() > 3 && password.length() < 21);
+    }
+
+    boolean emailIsValid(String email){
+        Pattern r = Pattern.compile(".+@.+\\..+");
+        Matcher m = r.matcher(email);
+        return m.find();
     }
 }

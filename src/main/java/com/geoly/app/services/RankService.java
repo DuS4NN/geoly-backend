@@ -1,7 +1,6 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
-import com.geoly.app.jooq.Geoly;
 import com.geoly.app.jooq.tables.Point;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.models.Badge;

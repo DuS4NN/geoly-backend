@@ -2,6 +2,7 @@ package com.geoly.app.validators;
 
 import com.geoly.app.models.QuestReview;
 import com.geoly.app.models.StatusMessage;
+import com.geoly.app.models.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +63,15 @@ public class Validator {
 
     public ValidatorResponse getProfileValidator(String nickName){
         if(!validatorMethods.nickNameIsValid(nickName)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME);
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse registerValidator(User user, int languageId){
+        if(user.getNickName() == null || user.getEmail() == null || user.getPassword() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.USER_INFO_IS_NULL);
+        if(!validatorMethods.nickNameIsValid(user.getNickName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME);
+        if(!validatorMethods.emailIsValid(user.getEmail())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_EMAIL);
+        if(!validatorMethods.passwordIsValid(user.getPassword())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_PASSWORD);
+        if(!validatorMethods.idIsValid(languageId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_LANGUAGE);
         return new ValidatorResponse(true);
     }
 }

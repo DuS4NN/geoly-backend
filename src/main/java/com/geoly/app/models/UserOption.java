@@ -29,13 +29,11 @@ public class UserOption {
     @NotNull
     private boolean darkMode;
 
-    @Column(name = "map_theme", columnDefinition = "TINYINT")
-    @ColumnDefault("1")
+    @Column(name = "map_theme", columnDefinition = "INT default 1")
     @NotNull
-    private boolean mapTheme;
+    private int mapTheme;
 
-    @Column(name = "private_profile", columnDefinition = "TINYINT")
-    @ColumnDefault("0")
+    @Column(name = "private_profile", columnDefinition = "TINYINT default 0")
     @NotNull
     private boolean privateProfile;
 
@@ -74,11 +72,11 @@ public class UserOption {
         this.darkMode = darkMode;
     }
 
-    public boolean isMapTheme() {
+    public int isMapTheme() {
         return mapTheme;
     }
 
-    public void setMapTheme(boolean mapTheme) {
+    public void setMapTheme(int mapTheme) {
         this.mapTheme = mapTheme;
     }
 
