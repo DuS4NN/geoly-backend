@@ -44,14 +44,28 @@ public class AccountController {
         try{
             return accountService.verifyAccount(token);
         }catch (Exception e){
-            e.printStackTrace();
-            return null;
-            //return GeolyAPI.catchException(e);
+            return GeolyAPI.catchException(e);
         }
     }
 
-    public List resetPassword(){
-        return null;
+    @GetMapping("/reset")
+    public List sendResetPasswordEmail(@RequestParam("email") String email){
+        ValidatorResponse validatorResponse = validator.checkOnlyEmail(email);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            return accountService.sendResetPasswordEmail(email);
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
     }
 
+    @GetMapping("/reset")
+    public List resetPassword(@RequestParam("token") String token, @RequestParam("password") String password){
+        try{
+            return accountService.resetPassword(token, password);
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
 }

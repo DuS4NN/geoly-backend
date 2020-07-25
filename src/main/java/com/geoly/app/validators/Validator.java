@@ -17,12 +17,17 @@ public class Validator {
         this.validatorMethods = validatorMethods;
     }
 
-    public ValidatorResponse checkOnlyId(int id) {
+    public ValidatorResponse checkOnlyId(int id){
         if (!validatorMethods.idIsValid(id)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
         return new ValidatorResponse(true);
     }
 
-    public ValidatorResponse getAllQuestByParametersValidator(List<Integer> difficulty, List<Integer> review) {
+    public ValidatorResponse checkOnlyEmail(String email){
+        if (!validatorMethods.emailIsValid(email)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_EMAIL);
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse getAllQuestByParametersValidator(List<Integer> difficulty, List<Integer> review){
         if (difficulty != null) {
             if (!validatorMethods.difficultyIsValid(difficulty))
                 return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);

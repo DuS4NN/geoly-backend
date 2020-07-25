@@ -1,6 +1,10 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    PASSWORD_RESET,
+    EMAIL_SENT,
+    ACCOUNT_NOT_ACTIVE,
+    ACCOUNT_NOT_VERIFIED,
     ACCOUNT_ACTIVATED,
     INVALID_TOKEN,
     USER_CREATED,

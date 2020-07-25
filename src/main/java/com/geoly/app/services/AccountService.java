@@ -23,6 +23,7 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.net.InetAddress;
@@ -85,12 +86,10 @@ public class AccountService {
         token.setUser(newUser);
         String tokenValue = DigestUtils.sha256Hex(user.getEmail() + RandomString.make(10));
         token.setToken(tokenValue);
-        System.out.println(tokenValue);
         entityManager.persist(token);
 
         SocketLabsClient client = new SocketLabsClient(1, "");
         BulkMessage message = new BulkMessage();
-
         message.setSubject("Email verification");
         message.setHtmlBody("<h1>Verify");
         message.setFrom(new EmailAddress("noreply@geoly.com"));
@@ -129,7 +128,7 @@ public class AccountService {
     @Transactional(rollbackOn = Exception.class)
     public List verifyAccount(String tokenValue){
         Optional<Token> token = tokenRepository.findByTokenAndAction(tokenValue, TokenType.CONFIRM_EMAIL);
-        if(!token.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_TOKEN, HttpStatus.BAD_REQUEST));
+        if(!token.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_TOKEN, HttpStatus.NOT_FOUND));
 
         User user = token.get().getUser();
         user.setVerified(true);
@@ -138,5 +137,48 @@ public class AccountService {
         entityManager.merge(user);
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_ACTIVATED, HttpStatus.OK));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List sendResetPasswordEmail(String email){
+        Optional<User> user = userRepository.findByEmail(email);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_EMAIL, HttpStatus.NOT_FOUND));
+
+        if(!user.get().isVerified()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_NOT_VERIFIED, HttpStatus.METHOD_NOT_ALLOWED));
+        if(!user.get().isActive()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_NOT_ACTIVE, HttpStatus.METHOD_NOT_ALLOWED));
+
+        Token token = new Token();
+        token.setAction(TokenType.PASSWORD_RESET);
+        token.setUser(user.get());
+        String tokenValue = DigestUtils.sha256Hex(user.get().getEmail() + RandomString.make(10));
+        token.setToken(tokenValue);
+        entityManager.persist(token);
+
+        SocketLabsClient client = new SocketLabsClient(1, "");
+        BulkMessage message = new BulkMessage();
+        message.setSubject("Email verification");
+        message.setHtmlBody("<h1>Verify");
+        message.setFrom(new EmailAddress("noreply@geoly.com"));
+        message.getTo().add(new BulkRecipient(user.get().getEmail()));
+
+        try{
+            SendResponse response = client.send(message);
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.EMAIL_SENT, HttpStatus.OK));
+    }
+
+    public List resetPassword(String tokenValue, String password){
+        Optional<Token> token = tokenRepository.findByTokenAndAction(tokenValue, TokenType.PASSWORD_RESET);
+        if(!token.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_TOKEN, HttpStatus.NOT_FOUND));
+
+        User user = token.get().getUser();
+        user.setPassword(argon2PasswordEncoder.encode(password));
+
+        entityManager.remove(token.get());
+        entityManager.merge(user);
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.PASSWORD_RESET, HttpStatus.OK));
     }
 }
