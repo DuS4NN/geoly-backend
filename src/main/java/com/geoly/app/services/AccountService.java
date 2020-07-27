@@ -142,7 +142,7 @@ public class AccountService {
     @Transactional(rollbackOn = Exception.class)
     public List sendResetPasswordEmail(String email){
         Optional<User> user = userRepository.findByEmail(email);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_EMAIL, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
         if(!user.get().isVerified()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_NOT_VERIFIED, HttpStatus.METHOD_NOT_ALLOWED));
         if(!user.get().isActive()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_NOT_ACTIVE, HttpStatus.METHOD_NOT_ALLOWED));

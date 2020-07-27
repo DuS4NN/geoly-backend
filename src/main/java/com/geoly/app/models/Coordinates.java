@@ -8,6 +8,12 @@ public class Coordinates {
     public Coordinates(){
     }
 
+    public void createFromString(String coordinates){
+        String[] splitCoordinates = coordinates.split(",");
+        this.latitude = Double.parseDouble(splitCoordinates[0]);
+        this.longitude = Double.parseDouble(splitCoordinates[1]);
+    }
+
     public Double getLongitude() {
         return longitude;
     }

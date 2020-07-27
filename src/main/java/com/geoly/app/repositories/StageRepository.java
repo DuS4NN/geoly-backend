@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface StageRepository extends JpaRepository<Stage, Integer> {
 
     Optional<List<Stage>> findAllByQuest(Quest quest);
+    Optional<Stage> findByQuest(Quest quest);
 }

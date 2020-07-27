@@ -46,4 +46,8 @@ public class ValidatorMethods {
         Matcher m = r.matcher(email);
         return m.find();
     }
+
+    boolean aboutIsValid(String about){
+        return (about.length() > 0 && about.length() < 1000);
+    }
 }
