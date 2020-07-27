@@ -46,6 +46,11 @@ public class QuestService {
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByDaily(true);
+
+        if(user.get().getAddress() == null){
+            return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED));
+        }
+
         if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
         Optional<com.geoly.app.models.Stage> stage = stageRepository.findByQuest(quest.get());
         if(!stage.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND));

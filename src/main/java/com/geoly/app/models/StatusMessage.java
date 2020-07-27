@@ -1,6 +1,7 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    USER_ADDRESS_NULL,
     USER_QUEST_NOT_FOUND,
     SIGNED_OUT_OF_QUEST,
     INVALID_ABOUT,
