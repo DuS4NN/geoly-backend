@@ -72,7 +72,7 @@ public class UserOption {
         this.darkMode = darkMode;
     }
 
-    public int isMapTheme() {
+    public int getMapTheme() {
         return mapTheme;
     }
 
