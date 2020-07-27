@@ -95,7 +95,7 @@ public class QuestDetailController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("quest/{id}/sign")
+    @PostMapping("quest/{id}/signin")
     public List signUpOnQuest(@PathVariable(name = "id") int id, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
@@ -103,6 +103,20 @@ public class QuestDetailController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.signUpOnQuest(customUserDetails.getUser().getId(), id);
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("quest/{id}/signout")
+    public List signOutOfQuest(@PathVariable(name = "id") int id, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questDetailService.signOutOfQuest(customUserDetails.getUser().getId(), id);
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }
