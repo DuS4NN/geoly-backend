@@ -60,7 +60,7 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/reset")
+    @GetMapping("/resetpassword")
     public List resetPassword(@RequestParam("token") String token, @RequestParam("password") String password){
         try{
             return accountService.resetPassword(token, password);
