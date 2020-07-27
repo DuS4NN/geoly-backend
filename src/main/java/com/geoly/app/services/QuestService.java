@@ -96,6 +96,10 @@ public class QuestService {
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
+        if(user.get().getAddress() == null){
+            return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED));
+        }
+
         Select<?> query =
             create.select(Quest.QUEST.ID.as("questId"), Quest.QUEST.DESCRIPTION, Stage.STAGE.ID.as("stageId"))
             .from(Stage.STAGE)
