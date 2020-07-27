@@ -35,8 +35,9 @@ public class QuestDetailService {
     private QuestReviewRepository questReviewRepository;
     private StageRepository stageRepository;
     private QuestReportRepository questReportRepository;
+    private UserQuestRepository userQuestRepository;
 
-    public QuestDetailService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository){
+    public QuestDetailService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository, UserQuestRepository userQuestRepository){
         this.entityManager = entityManager;
         this.create = create;
         this.questRepository = questRepository;
@@ -44,6 +45,7 @@ public class QuestDetailService {
         this.questReviewRepository = questReviewRepository;
         this.stageRepository = stageRepository;
         this.questReportRepository = questReportRepository;
+        this.userQuestRepository = userQuestRepository;
     }
 
     public List getReviewsOfQuest(int id){
@@ -153,7 +155,7 @@ public class QuestDetailService {
 
     @Transactional(rollbackOn = Exception.class)
     public List createReview(int userId, int questId, com.geoly.app.models.QuestReview questReview){
-        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDaily(questId, false);
         if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
@@ -224,8 +226,9 @@ public class QuestDetailService {
 
     @Transactional(rollbackOn = Exception.class)
     public List signUpOnQuest(int userId, int questId){
-        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDaily(questId, false);
         if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
 
@@ -262,8 +265,34 @@ public class QuestDetailService {
     }
 
     @Transactional(rollbackOn = Exception.class)
+    public List signOutOfQuest(int userId, int questId){
+        Select<?> query =
+            create.select(UserQuest.USER_QUEST.ID)
+            .from(UserQuest.USER_QUEST)
+            .join(Stage.STAGE)
+                .on(Stage.STAGE.ID.eq(UserQuest.USER_QUEST.STAGE_ID))
+            .where(Stage.STAGE.QUEST_ID.eq(questId))
+            .and(UserQuest.USER_QUEST.USER_ID.eq(userId))
+            .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()))
+            .orderBy(UserQuest.USER_QUEST.ID.desc())
+            .limit(1);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object stageId = q.getSingleResult();
+
+        Optional<com.geoly.app.models.UserQuest> userQuest = userQuestRepository.findById(Integer.parseInt(String.valueOf(stageId)));
+        if(!userQuest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        userQuest.get().setStatus(UserQuestStatus.CANCELED);
+        entityManager.merge(userQuest.get());
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.SIGNED_OUT_OF_QUEST, HttpStatus.OK));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
     public List reportQuest(int userId, int questId, QuestReportReason questReportReason){
-        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDaily(questId, false);
         if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
