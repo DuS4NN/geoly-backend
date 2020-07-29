@@ -50,4 +50,12 @@ public class ValidatorMethods {
     boolean aboutIsValid(String about){
         return (about.length() > 0 && about.length() < 1000);
     }
+
+    boolean imageTypeIsValid(String type){
+        return (type.endsWith("jpeg") || type.endsWith("bmp") || type.endsWith("png") || type.endsWith("jpg"));
+    }
+
+    boolean imageSizeIsValid(long size){
+        return  size > 0 && size < 1048576;
+    }
 }

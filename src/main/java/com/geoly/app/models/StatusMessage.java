@@ -1,6 +1,10 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    PROFILE_IMAGE_DELETED,
+    PROFILE_IMAGE_SET,
+    UNSUPPORTED_IMAGE_TYPE,
+    IMAGE_SIZE_TOO_BIG,
     USER_ADDRESS_NULL,
     USER_QUEST_NOT_FOUND,
     SIGNED_OUT_OF_QUEST,
