@@ -2,12 +2,14 @@ package com.geoly.app.controler;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.models.CustomUserDetails;
+import com.geoly.app.models.UserOption;
 import com.geoly.app.services.SettingsService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +25,20 @@ public class SettingsController {
     public SettingsController(SettingsService settingsService, Validator validator) {
         this.settingsService = settingsService;
         this.validator = validator;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/settings")
+    public List changeSettings(@RequestBody @Validated UserOption userOption, @RequestParam(name = "about") String about,@RequestParam(name = "language") int languageId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.changeSettingsValidator(userOption, about, languageId);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return settingsService.changeSettings(userOption, about, languageId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -45,6 +61,20 @@ public class SettingsController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return settingsService.deleteProfileImage(customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/settings/changepassword")
+    public List changePassword(String newPassword, String oldPassword, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.changePasswordValidator(newPassword);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return settingsService.changePassword(oldPassword, newPassword, customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

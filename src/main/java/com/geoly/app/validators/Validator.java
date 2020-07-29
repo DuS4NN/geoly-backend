@@ -83,17 +83,24 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
-    public ValidatorResponse setOptionsValidator(UserOption userOption, User user){
-        if(user.getAbout() == null || user.getProfileImageUrl() == null || userOption.getLanguage() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_SETTINGS);
-        if(!validatorMethods.idIsValid(userOption.getMapTheme())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
-        if(!validatorMethods.aboutIsValid(user.getAbout())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ABOUT);
+    public ValidatorResponse imageValidator(String type, long size){
+        if(!validatorMethods.imageTypeIsValid(type)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.UNSUPPORTED_IMAGE_TYPE);
+        if(!validatorMethods.imageSizeIsValid(size)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.IMAGE_SIZE_TOO_BIG);
 
         return new ValidatorResponse(true);
     }
 
-    public ValidatorResponse imageValidator(String type, long size){
-        if(!validatorMethods.imageTypeIsValid(type)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.UNSUPPORTED_IMAGE_TYPE);
-        if(!validatorMethods.imageSizeIsValid(size)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.IMAGE_SIZE_TOO_BIG);
+    public ValidatorResponse changePasswordValidator(String password){
+        if(!validatorMethods.passwordIsValid(password)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_PASSWORD);
+
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse changeSettingsValidator(UserOption userOption, String about, int languageId){
+        if(!validatorMethods.idIsValid(languageId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_LANGUAGE);
+        if(!validatorMethods.idIsValid(userOption.getMapTheme())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_MAP_THEME);
+        if(!validatorMethods.reviewTextFormatIsValid(about)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ABOUT);
+        if(!validatorMethods.reviewTextLengthIsValid(about)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.ABOUT_TOO_LONG);
 
         return new ValidatorResponse(true);
     }
