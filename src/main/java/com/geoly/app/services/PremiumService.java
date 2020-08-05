@@ -72,8 +72,9 @@ public class PremiumService {
         merchantPreferences.setSetupFee(currency);
         merchantPreferences.setCancelUrl(cancelUrl);
         merchantPreferences.setReturnUrl(successUrl);
+        merchantPreferences.setSetupFee(currency);
         merchantPreferences.setMaxFailAttempts("0");
-        merchantPreferences.setAutoBillAmount("YES");
+        merchantPreferences.setAutoBillAmount("NO");
         merchantPreferences.setInitialFailAmountAction("CONTINUE");
         plan.setMerchantPreferences(merchantPreferences);
 
@@ -98,8 +99,13 @@ public class PremiumService {
         agreement.setName("Geoly Agreement");
         agreement.setDescription("Geoly Agreement");
 
-        Date date = new Date(System.currentTimeMillis());
+
+        Calendar current = Calendar.getInstance();
+        current.add(Calendar.DAY_OF_YEAR, 30);
+
+        Date date = new Date(current.getTimeInMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
         agreement.setStartDate(sdf.format(date));
 
         Plan plan = new Plan();
@@ -144,7 +150,7 @@ public class PremiumService {
         Premium premium = new Premium();
         premium.setAgreementId(activeAgreement.getId());
         premium.setState(activeAgreement.getState());
-        premium.setStartAt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(activeAgreement.getStartDate()));
+        premium.setStartAt(new Date());
         premium.setEndAt(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(activeAgreement.getAgreementDetails().getNextBillingDate()));
         premium.setUser(user.get());
         entityManager.persist(premium);
@@ -174,7 +180,7 @@ public class PremiumService {
         String answer = restTemplate.postForObject(url, httpEntity, String.class);
 
         if(answer == null){
-            premium.get().setState("Cancel");
+            premium.get().setState("Cancelled");
             entityManager.merge(premium.get());
             return Collections.singletonList(new ResponseEntity<>(StatusMessage.SUBSCRIPTION_CANCELED, HttpStatus.METHOD_NOT_ALLOWED));
         }else{
