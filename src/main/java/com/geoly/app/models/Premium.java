@@ -1,8 +1,11 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "premium")
@@ -19,18 +22,19 @@ public class Premium {
     @NotNull
     private User user;
 
-    @ManyToOne(targetEntity = Transaction.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "transaction_id")
+    @Column(name = "state", columnDefinition = "VARCHAR(20)")
     @NotNull
-    private Transaction transaction;
+    private String state;
+
+    @Column(name = "agreementId", columnDefinition = "VARCHAR(100)")
+    @NotNull
+    private String agreementId;
 
     @Column(name = "start_at", columnDefinition = "TIMESTAMP")
-    @NotNull
-    private String startAt;
+    private Date startAt;
 
     @Column(name = "end_at", columnDefinition = "TIMESTAMP")
-    @NotNull
-    private String endAt;
+    private Date endAt;
 
     public Premium() {
     }
@@ -51,27 +55,35 @@ public class Premium {
         this.user = user;
     }
 
-    public Transaction getTransaction() {
-        return transaction;
+    public String getState() {
+        return state;
     }
 
-    public void setTransaction(Transaction transaction) {
-        this.transaction = transaction;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    public String getStartAt() {
+    public String getAgreementId() {
+        return agreementId;
+    }
+
+    public void setAgreementId(String agreementId) {
+        this.agreementId = agreementId;
+    }
+
+    public Date getStartAt() {
         return startAt;
     }
 
-    public void setStartAt(String startAt) {
+    public void setStartAt(Date startAt) {
         this.startAt = startAt;
     }
 
-    public String getEndAt() {
+    public Date getEndAt() {
         return endAt;
     }
 
-    public void setEndAt(String endAt) {
+    public void setEndAt(Date endAt) {
         this.endAt = endAt;
     }
 }

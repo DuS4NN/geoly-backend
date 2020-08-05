@@ -34,14 +34,14 @@ public class User implements Serializable {
     @NotNull
     private String password;
 
-    @Column(name = "profile_image_url", columnDefinition = "VARCHAR(100), default '/static/image/default_profile_image.png'")
+    @Column(name = "profile_image_url", columnDefinition = "VARCHAR(100)")
     @NotNull
     private String profileImageUrl;
 
     @Column(name = "about", nullable = false, columnDefinition = "VARCHAR(500)")
     private String about;
 
-    @Column(name = "active", columnDefinition = "TINYINT, default 1")
+    @Column(name = "active", columnDefinition = "TINYINT")
     @NotNull
     private boolean active;
 
@@ -75,9 +75,6 @@ public class User implements Serializable {
 
     @OneToMany(targetEntity = Premium.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Premium> premium;
-
-    @OneToMany(targetEntity = Transaction.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Transaction> transaction;
 
     @OneToMany(targetEntity = Point.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Point> point;
@@ -227,14 +224,6 @@ public class User implements Serializable {
 
     public void setPremium(Set<Premium> premium) {
         this.premium = premium;
-    }
-
-    public Set<Transaction> getTransaction() {
-        return transaction;
-    }
-
-    public void setTransaction(Set<Transaction> transaction) {
-        this.transaction = transaction;
     }
 
     public Set<Point> getPoint() {

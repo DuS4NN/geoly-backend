@@ -13,9 +13,9 @@ VALUES
     
 INSERT INTO `user` (`id`, `nick_name`, `email`, `password`, `profile_image_url`, `about`, `active`, `verified`, `created_at`, `address`)
 VALUES
-	('1', '___DuS4NN', 'dusan@gmail.com', 'c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Vol�m sa Du�an :)', '1', '1', '2020-06-10 11:32:48', '51.952659, 7.632473'),
-	('2', 'Marek123', 'marek@gmail.com','c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Vol�m sa Marek :)', '1', '1', '2020-05-23 22:15:40', '48.141666319004486,17.15601670703128'),
-    ('3', 'Petiir', 'petiir@gmail.com','c8dce9d507f88191ca7b1f65a42810eb', 'static/image/default_profile_picture.png', 'Vol�m sa Peto :)', '1', '1', '2020-04-18 18:23:12', '51.952659, 7.632473');
+	('1', '___DuS4NN', 'dusan@gmail.com', '$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/image/default_profile_picture.png', 'Vol�m sa Du�an :)', '1', '1', '2020-06-10 11:32:48', '51.952659, 7.632473'),
+	('2', 'Marek123', 'marek@gmail.com','$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/image/default_profile_picture.png', 'Vol�m sa Marek :)', '1', '1', '2020-05-23 22:15:40', '48.141666319004486,17.15601670703128'),
+    ('3', 'Petiir', 'petiir@gmail.com','$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/image/default_profile_picture.png', 'Vol�m sa Peto :)', '1', '1', '2020-04-18 18:23:12', '51.952659, 7.632473');
     
 INSERT INTO `user_badge` (`id`, `user_id`, `badge_id`, `created_at`)
 VALUES
@@ -42,18 +42,6 @@ VALUES
     ('3', '2', '80', '2020-06-15 14:10:43'),
     ('4', '2', '55', '2020-06-12 23:54:24'),
     ('5', '3', '120', '2020-06-09 16:12:34');
-    
-INSERT INTO `transaction` (`id`, `user_id`, `uuid`, `amount`, `created_at`, `verified`)
-VALUES
-    ('1', '1', 'c9e9a2e2-b9fd-11ea-b3de-0242ac130004', '2.0', '2020-05-1 20:48:20', '1'),
-    ('2', '1', '3dc22ffd-172a-4822-bcbd-1aae56a8fd85', '3.0', '2020-06-1 19:25:15', '1'),
-    ('3', '2', '46961a6f-e64a-4dac-b36d-24c6bf212984', '3.0', '2020-06-2 14:10:43', '1');
-    
-INSERT INTO `premium` (`id`, `user_id`, `transaction_id`, `start_at`, `end_at`)
-VALUES
-    ('1', '1', '1', '2020-05-1 20:48:20', '2020-06-1 20:48:20'),
-    ('2', '1', '2', '2020-06-1 19:25:15', '2020-07-1 19:25:15'),
-    ('3', '2', '3', '2020-06-2 14:10:43', '2020-07-2 14:10:43');
     
 INSERT INTO `user_report` (`id`, `reported`, `complainant`, `reason`, `created_at`)
 VALUES
