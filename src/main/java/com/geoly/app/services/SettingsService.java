@@ -9,7 +9,6 @@ import com.geoly.app.repositories.UserOptionRepository;
 import com.geoly.app.repositories.UserRepository;
 import com.tinify.Source;
 import com.tinify.Tinify;
-import org.apache.commons.codec.language.bm.Lang;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -64,27 +63,25 @@ public class SettingsService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List setProfileImage(MultipartFile file, int userId){
+    public List setProfileImage(MultipartFile file, int userId) throws Exception{
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
-        try{
-            File dir = new File("src/main/resources/static/image/user_profile_image/"+userId);
-            if(!dir.exists()){
-                dir.mkdirs();
-            }else{
-            File oldImage = new File("src/main/resources/static/image/user_profile_image/"+userId+"/"+userId+".jpg");
-            oldImage.delete();
-            }
 
-            Source source = Tinify.fromBuffer(file.getBytes());
-            source.toFile("src/main/resources/static/image/user_profile_image/"+userId+"/"+userId+".jpg");
-
-            user.get().setProfileImageUrl("src/main/resources/static/image/user_profile_image/"+userId+".jpg");
-            entityManager.merge(user.get());
-        }catch (Exception e){
-            e.printStackTrace();
+        File dir = new File("src/main/resources/static/image/user_profile_image/"+userId);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }else{
+        File oldImage = new File("src/main/resources/static/image/user_profile_image/"+userId+"/"+userId+".jpg");
+        oldImage.delete();
         }
+
+        Source source = Tinify.fromBuffer(file.getBytes());
+        source.toFile("src/main/resources/static/image/user_profile_image/"+userId+"/"+userId+".jpg");
+
+        user.get().setProfileImageUrl("src/main/resources/static/image/user_profile_image/"+userId+".jpg");
+        entityManager.merge(user.get());
+
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.PROFILE_IMAGE_SET, HttpStatus.OK));
     }
 

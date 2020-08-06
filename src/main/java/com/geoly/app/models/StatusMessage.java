@@ -1,6 +1,8 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    IMAGES_SAVED,
+    TOO_MANY_IMAGES,
     QUEST_EDITED,
     CATEGORY_NOT_FOUND,
     INVALID_DESCRIPTION,

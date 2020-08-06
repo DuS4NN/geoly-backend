@@ -66,4 +66,8 @@ public class ValidatorMethods {
     boolean difficultyIsValidInt(int difficulty){
         return difficulty > 0 && difficulty < 6;
     }
+
+    boolean imageCountIsValid(int size){
+        return size < 5;
+    }
 }

@@ -7,6 +7,7 @@ import com.geoly.app.models.User;
 import com.geoly.app.models.UserOption;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -111,6 +112,17 @@ public class Validator {
         if(!validatorMethods.idIsValid(questDetails.getCategoryId())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
         if(!validatorMethods.difficultyIsValidInt(questDetails.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
         if(questDetails.getDescription() != null && !validatorMethods.descriptionIsValid(questDetails.getDescription())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DESCRIPTION);
+
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse imagesValidator(List<MultipartFile> files, int questId){
+        if(!validatorMethods.idIsValid(questId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
+        if(!validatorMethods.imageCountIsValid(files.size())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.TOO_MANY_IMAGES);
+        for(MultipartFile file : files){
+            if(!validatorMethods.imageSizeIsValid(file.getSize())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.IMAGE_SIZE_TOO_BIG);
+            if(!validatorMethods.imageTypeIsValid(file.getContentType())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.UNSUPPORTED_IMAGE_TYPE);
+        }
 
         return new ValidatorResponse(true);
     }

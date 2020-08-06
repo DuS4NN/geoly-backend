@@ -6,6 +6,8 @@ import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.*;
+import com.tinify.Source;
+import com.tinify.Tinify;
 import io.sentry.Sentry;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -13,14 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.io.File;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,8 +35,9 @@ public class QuestService {
     private StageRepository stageRepository;
     private UserQuestRepository userQuestRepository;
     private CategoryRepository categoryRepository;
+    private ImageRepository imageRepository;
 
-    public QuestService(EntityManager entityManager, DSLContext create, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository) {
+    public QuestService(EntityManager entityManager, DSLContext create, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
@@ -44,6 +45,43 @@ public class QuestService {
         this.stageRepository = stageRepository;
         this.userQuestRepository = userQuestRepository;
         this.categoryRepository = categoryRepository;
+        this.imageRepository = imageRepository;
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List editQuestImage(List<MultipartFile> files, int userId, int questId) throws Exception{
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        imageRepository.deleteAllByQuest(quest.get());
+
+        File dir = new File("src/main/resources/static/image/quest_image/"+questId);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        else{
+            dir.delete();
+            dir.mkdirs();
+        }
+
+        int count = 1;
+
+        for(MultipartFile file : files){
+            Source source = Tinify.fromBuffer(file.getBytes());
+            source.toFile("src/main/resources/static/image/quest_image/"+questId+"/"+count+".jpg");
+
+            Image image = new Image();
+            image.setQuest(quest.get());
+            image.setImageUrl("src/main/resources/static/image/quest_image/"+questId+"/"+count+".jpg");
+            entityManager.persist(image);
+
+            count++;
+        }
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.IMAGES_SAVED, HttpStatus.OK));
     }
 
     @Transactional(rollbackOn = Exception.class)
