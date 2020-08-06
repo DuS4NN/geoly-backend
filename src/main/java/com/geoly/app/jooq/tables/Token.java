@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Token extends TableImpl<TokenRecord> {
 
-    private static final long serialVersionUID = 560142299;
+    private static final long serialVersionUID = -747249856;
 
     /**
      * The reference instance of <code>geoly.TOKEN</code>
@@ -74,7 +74,7 @@ public class Token extends TableImpl<TokenRecord> {
     /**
      * The column <code>geoly.TOKEN.TOKEN</code>.
      */
-    public final TableField<TokenRecord, String> TOKEN_ = createField("TOKEN", org.jooq.impl.SQLDataType.VARCHAR(60), this, "");
+    public final TableField<TokenRecord, String> TOKEN_ = createField("TOKEN", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
 
     /**
      * The column <code>geoly.TOKEN.USER_ID</code>.

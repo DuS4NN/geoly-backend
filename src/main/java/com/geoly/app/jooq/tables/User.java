@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-    private static final long serialVersionUID = 546959369;
+    private static final long serialVersionUID = -1424222463;
 
     /**
      * The reference instance of <code>geoly.USER</code>
@@ -69,7 +69,7 @@ public class User extends TableImpl<UserRecord> {
     /**
      * The column <code>geoly.USER.ACTIVE</code>.
      */
-    public final TableField<UserRecord, Byte> ACTIVE = createField("ACTIVE", org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<UserRecord, Byte> ACTIVE = createField("ACTIVE", org.jooq.impl.SQLDataType.TINYINT, this, "");
 
     /**
      * The column <code>geoly.USER.ADDRESS</code>.
@@ -94,12 +94,12 @@ public class User extends TableImpl<UserRecord> {
     /**
      * The column <code>geoly.USER.PASSWORD</code>.
      */
-    public final TableField<UserRecord, String> PASSWORD = createField("PASSWORD", org.jooq.impl.SQLDataType.VARCHAR(60), this, "");
+    public final TableField<UserRecord, String> PASSWORD = createField("PASSWORD", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
 
     /**
      * The column <code>geoly.USER.PROFILE_IMAGE_URL</code>.
      */
-    public final TableField<UserRecord, String> PROFILE_IMAGE_URL = createField("PROFILE_IMAGE_URL", org.jooq.impl.SQLDataType.VARCHAR(100).defaultValue(org.jooq.impl.DSL.field("'/static/image/default_profile_image.png'", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<UserRecord, String> PROFILE_IMAGE_URL = createField("PROFILE_IMAGE_URL", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
 
     /**
      * The column <code>geoly.USER.VERIFIED</code>.

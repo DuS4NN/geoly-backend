@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserOption extends TableImpl<UserOptionRecord> {
 
-    private static final long serialVersionUID = 346855313;
+    private static final long serialVersionUID = 1129113753;
 
     /**
      * The reference instance of <code>geoly.USER_OPTION</code>
@@ -68,7 +68,7 @@ public class UserOption extends TableImpl<UserOptionRecord> {
     /**
      * The column <code>geoly.USER_OPTION.MAP_THEME</code>.
      */
-    public final TableField<UserOptionRecord, Byte> MAP_THEME = createField("MAP_THEME", org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<UserOptionRecord, Integer> MAP_THEME = createField("MAP_THEME", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>geoly.USER_OPTION.PRIVATE_PROFILE</code>.

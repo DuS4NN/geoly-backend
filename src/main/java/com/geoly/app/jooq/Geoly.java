@@ -21,7 +21,6 @@ import com.geoly.app.jooq.tables.Role;
 import com.geoly.app.jooq.tables.Sale;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.Token;
-import com.geoly.app.jooq.tables.Transaction;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserBadge;
 import com.geoly.app.jooq.tables.UserOption;
@@ -54,7 +53,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Geoly extends SchemaImpl {
 
-    private static final long serialVersionUID = -1060999475;
+    private static final long serialVersionUID = 2125973484;
 
     /**
      * The reference instance of <code>geoly</code>
@@ -147,11 +146,6 @@ public class Geoly extends SchemaImpl {
     public final Token TOKEN = com.geoly.app.jooq.tables.Token.TOKEN;
 
     /**
-     * The table <code>geoly.TRANSACTION</code>.
-     */
-    public final Transaction TRANSACTION = com.geoly.app.jooq.tables.Transaction.TRANSACTION;
-
-    /**
      * The table <code>geoly.USER</code>.
      */
     public final User USER = com.geoly.app.jooq.tables.User.USER;
@@ -235,7 +229,6 @@ public class Geoly extends SchemaImpl {
             Sale.SALE,
             Stage.STAGE,
             Token.TOKEN,
-            Transaction.TRANSACTION,
             User.USER,
             UserBadge.USER_BADGE,
             UserOption.USER_OPTION,

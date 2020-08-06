@@ -21,7 +21,6 @@ import com.geoly.app.jooq.tables.Role;
 import com.geoly.app.jooq.tables.Sale;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.Token;
-import com.geoly.app.jooq.tables.Transaction;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserBadge;
 import com.geoly.app.jooq.tables.UserOption;
@@ -45,7 +44,6 @@ import com.geoly.app.jooq.tables.records.RoleRecord;
 import com.geoly.app.jooq.tables.records.SaleRecord;
 import com.geoly.app.jooq.tables.records.StageRecord;
 import com.geoly.app.jooq.tables.records.TokenRecord;
-import com.geoly.app.jooq.tables.records.TransactionRecord;
 import com.geoly.app.jooq.tables.records.UserBadgeRecord;
 import com.geoly.app.jooq.tables.records.UserOptionRecord;
 import com.geoly.app.jooq.tables.records.UserQuestRecord;
@@ -96,11 +94,11 @@ public class Keys {
     public static final UniqueKey<QuestRecord> CONSTRAINT_49 = UniqueKeys0.CONSTRAINT_49;
     public static final UniqueKey<QuestReportRecord> CONSTRAINT_10 = UniqueKeys0.CONSTRAINT_10;
     public static final UniqueKey<QuestReviewRecord> CONSTRAINT_105 = UniqueKeys0.CONSTRAINT_105;
+    public static final UniqueKey<QuestReviewRecord> UKBO8AKQYL97OHGFN6T4O83Q6DR = UniqueKeys0.UKBO8AKQYL97OHGFN6T4O83Q6DR;
     public static final UniqueKey<RoleRecord> CONSTRAINT_26 = UniqueKeys0.CONSTRAINT_26;
     public static final UniqueKey<SaleRecord> CONSTRAINT_26B = UniqueKeys0.CONSTRAINT_26B;
     public static final UniqueKey<StageRecord> CONSTRAINT_4B = UniqueKeys0.CONSTRAINT_4B;
     public static final UniqueKey<TokenRecord> CONSTRAINT_4C = UniqueKeys0.CONSTRAINT_4C;
-    public static final UniqueKey<TransactionRecord> CONSTRAINT_F = UniqueKeys0.CONSTRAINT_F;
     public static final UniqueKey<UserRecord> CONSTRAINT_27 = UniqueKeys0.CONSTRAINT_27;
     public static final UniqueKey<UserRecord> UK_OB8KQYQQGMEFL0ACO34AKDTPE = UniqueKeys0.UK_OB8KQYQQGMEFL0ACO34AKDTPE;
     public static final UniqueKey<UserRecord> UK_D2IA11OQHSYNODBSI46M80VFC = UniqueKeys0.UK_D2IA11OQHSYNODBSI46M80VFC;
@@ -108,6 +106,7 @@ public class Keys {
     public static final UniqueKey<UserOptionRecord> CONSTRAINT_D = UniqueKeys0.CONSTRAINT_D;
     public static final UniqueKey<UserQuestRecord> CONSTRAINT_C6 = UniqueKeys0.CONSTRAINT_C6;
     public static final UniqueKey<UserReportRecord> CONSTRAINT_11 = UniqueKeys0.CONSTRAINT_11;
+    public static final UniqueKey<UserReportRecord> UKPT3UYBUWE0QPIJ09B9LHQV52S = UniqueKeys0.UKPT3UYBUWE0QPIJ09B9LHQV52S;
     public static final UniqueKey<UserRoleRecord> CONSTRAINT_B = UniqueKeys0.CONSTRAINT_B;
 
     // -------------------------------------------------------------------------
@@ -123,7 +122,6 @@ public class Keys {
     public static final ForeignKey<PartyUserRecord, PartyRecord> FKOATBT6TV26KK2R5VGUA7OJSM = ForeignKeys0.FKOATBT6TV26KK2R5VGUA7OJSM;
     public static final ForeignKey<PartyUserRecord, UserRecord> FKGBM3CRUYQ6N25LRIIYC2XAD43 = ForeignKeys0.FKGBM3CRUYQ6N25LRIIYC2XAD43;
     public static final ForeignKey<PointRecord, UserRecord> FKH4QXMN9MIG6KITH0ISH2R67KA = ForeignKeys0.FKH4QXMN9MIG6KITH0ISH2R67KA;
-    public static final ForeignKey<PremiumRecord, TransactionRecord> FKOTOO6BVI30QYEL0RVHS8OH9WO = ForeignKeys0.FKOTOO6BVI30QYEL0RVHS8OH9WO;
     public static final ForeignKey<PremiumRecord, UserRecord> FK55RHAW7HB4IB9USGJD0RVYUBB = ForeignKeys0.FK55RHAW7HB4IB9USGJD0RVYUBB;
     public static final ForeignKey<QuestRecord, CategoryRecord> FK4FOEBLYDMUA10QB2OEUANE6FB = ForeignKeys0.FK4FOEBLYDMUA10QB2OEUANE6FB;
     public static final ForeignKey<QuestRecord, UserRecord> FKLGSC5AJ1JQDFWJ8V3PKHBIDNX = ForeignKeys0.FKLGSC5AJ1JQDFWJ8V3PKHBIDNX;
@@ -133,7 +131,6 @@ public class Keys {
     public static final ForeignKey<QuestReviewRecord, UserRecord> FKQG1FBVCAVQ2LBPP8G8W8VTIAM = ForeignKeys0.FKQG1FBVCAVQ2LBPP8G8W8VTIAM;
     public static final ForeignKey<StageRecord, QuestRecord> FKMUJKS4H5F77VK9X2HH1L4YPVG = ForeignKeys0.FKMUJKS4H5F77VK9X2HH1L4YPVG;
     public static final ForeignKey<TokenRecord, UserRecord> FKE32EK7IXANAKFQSDAOKM4Q9Y2 = ForeignKeys0.FKE32EK7IXANAKFQSDAOKM4Q9Y2;
-    public static final ForeignKey<TransactionRecord, UserRecord> FKSG7JP0AJ6QIPR50856WF6VBW1 = ForeignKeys0.FKSG7JP0AJ6QIPR50856WF6VBW1;
     public static final ForeignKey<UserBadgeRecord, BadgeRecord> FKJQX9N26PK9MQF1QO8F7XVVOQ9 = ForeignKeys0.FKJQX9N26PK9MQF1QO8F7XVVOQ9;
     public static final ForeignKey<UserBadgeRecord, UserRecord> FK2JW9FPOTMMBDA07K27QC9T2UL = ForeignKeys0.FK2JW9FPOTMMBDA07K27QC9T2UL;
     public static final ForeignKey<UserOptionRecord, LanguageRecord> FKR6EERMF5AQ2NUA7HSSPMFFG02 = ForeignKeys0.FKR6EERMF5AQ2NUA7HSSPMFFG02;
@@ -142,8 +139,8 @@ public class Keys {
     public static final ForeignKey<UserQuestRecord, UserRecord> FK8JDYAKV4ATARQD05U7AXUBMYK = ForeignKeys0.FK8JDYAKV4ATARQD05U7AXUBMYK;
     public static final ForeignKey<UserReportRecord, UserRecord> FK2CM7CI55E41B6EAKUNXYDH3LG = ForeignKeys0.FK2CM7CI55E41B6EAKUNXYDH3LG;
     public static final ForeignKey<UserReportRecord, UserRecord> FKO1LNULINQCBVABO3W4NI3K4D1 = ForeignKeys0.FKO1LNULINQCBVABO3W4NI3K4D1;
-    public static final ForeignKey<UserRoleRecord, RoleRecord> FKA68196081FVOVJHKEK5M97N3Y = ForeignKeys0.FKA68196081FVOVJHKEK5M97N3Y;
     public static final ForeignKey<UserRoleRecord, UserRecord> FK859N2JVI8IVHUI0RL0ESWS6O = ForeignKeys0.FK859N2JVI8IVHUI0RL0ESWS6O;
+    public static final ForeignKey<UserRoleRecord, RoleRecord> FKA68196081FVOVJHKEK5M97N3Y = ForeignKeys0.FKA68196081FVOVJHKEK5M97N3Y;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -163,11 +160,11 @@ public class Keys {
         public static final UniqueKey<QuestRecord> CONSTRAINT_49 = Internal.createUniqueKey(Quest.QUEST, "CONSTRAINT_49", Quest.QUEST.ID);
         public static final UniqueKey<QuestReportRecord> CONSTRAINT_10 = Internal.createUniqueKey(QuestReport.QUEST_REPORT, "CONSTRAINT_10", QuestReport.QUEST_REPORT.ID);
         public static final UniqueKey<QuestReviewRecord> CONSTRAINT_105 = Internal.createUniqueKey(QuestReview.QUEST_REVIEW, "CONSTRAINT_105", QuestReview.QUEST_REVIEW.ID);
+        public static final UniqueKey<QuestReviewRecord> UKBO8AKQYL97OHGFN6T4O83Q6DR = Internal.createUniqueKey(QuestReview.QUEST_REVIEW, "UKBO8AKQYL97OHGFN6T4O83Q6DR", QuestReview.QUEST_REVIEW.USER_ID, QuestReview.QUEST_REVIEW.QUEST_ID);
         public static final UniqueKey<RoleRecord> CONSTRAINT_26 = Internal.createUniqueKey(Role.ROLE, "CONSTRAINT_26", Role.ROLE.ID);
         public static final UniqueKey<SaleRecord> CONSTRAINT_26B = Internal.createUniqueKey(Sale.SALE, "CONSTRAINT_26B", Sale.SALE.ID);
         public static final UniqueKey<StageRecord> CONSTRAINT_4B = Internal.createUniqueKey(Stage.STAGE, "CONSTRAINT_4B", Stage.STAGE.ID);
         public static final UniqueKey<TokenRecord> CONSTRAINT_4C = Internal.createUniqueKey(Token.TOKEN, "CONSTRAINT_4C", Token.TOKEN.ID);
-        public static final UniqueKey<TransactionRecord> CONSTRAINT_F = Internal.createUniqueKey(Transaction.TRANSACTION, "CONSTRAINT_F", Transaction.TRANSACTION.ID);
         public static final UniqueKey<UserRecord> CONSTRAINT_27 = Internal.createUniqueKey(User.USER, "CONSTRAINT_27", User.USER.ID);
         public static final UniqueKey<UserRecord> UK_OB8KQYQQGMEFL0ACO34AKDTPE = Internal.createUniqueKey(User.USER, "UK_OB8KQYQQGMEFL0ACO34AKDTPE", User.USER.EMAIL);
         public static final UniqueKey<UserRecord> UK_D2IA11OQHSYNODBSI46M80VFC = Internal.createUniqueKey(User.USER, "UK_D2IA11OQHSYNODBSI46M80VFC", User.USER.NICK_NAME);
@@ -175,7 +172,8 @@ public class Keys {
         public static final UniqueKey<UserOptionRecord> CONSTRAINT_D = Internal.createUniqueKey(UserOption.USER_OPTION, "CONSTRAINT_D", UserOption.USER_OPTION.ID);
         public static final UniqueKey<UserQuestRecord> CONSTRAINT_C6 = Internal.createUniqueKey(UserQuest.USER_QUEST, "CONSTRAINT_C6", UserQuest.USER_QUEST.ID);
         public static final UniqueKey<UserReportRecord> CONSTRAINT_11 = Internal.createUniqueKey(UserReport.USER_REPORT, "CONSTRAINT_11", UserReport.USER_REPORT.ID);
-        public static final UniqueKey<UserRoleRecord> CONSTRAINT_B = Internal.createUniqueKey(UserRole.USER_ROLE, "CONSTRAINT_B", UserRole.USER_ROLE.ID);
+        public static final UniqueKey<UserReportRecord> UKPT3UYBUWE0QPIJ09B9LHQV52S = Internal.createUniqueKey(UserReport.USER_REPORT, "UKPT3UYBUWE0QPIJ09B9LHQV52S", UserReport.USER_REPORT.REPORTED, UserReport.USER_REPORT.COMPLAINANT);
+        public static final UniqueKey<UserRoleRecord> CONSTRAINT_B = Internal.createUniqueKey(UserRole.USER_ROLE, "CONSTRAINT_B", UserRole.USER_ROLE.USER_ID, UserRole.USER_ROLE.ROLE_ID);
     }
 
     private static class ForeignKeys0 {
@@ -188,7 +186,6 @@ public class Keys {
         public static final ForeignKey<PartyUserRecord, PartyRecord> FKOATBT6TV26KK2R5VGUA7OJSM = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_48, PartyUser.PARTY_USER, "FKOATBT6TV26KK2R5VGUA7OJSM", PartyUser.PARTY_USER.PARTY_ID);
         public static final ForeignKey<PartyUserRecord, UserRecord> FKGBM3CRUYQ6N25LRIIYC2XAD43 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, PartyUser.PARTY_USER, "FKGBM3CRUYQ6N25LRIIYC2XAD43", PartyUser.PARTY_USER.USER_ID);
         public static final ForeignKey<PointRecord, UserRecord> FKH4QXMN9MIG6KITH0ISH2R67KA = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, Point.POINT, "FKH4QXMN9MIG6KITH0ISH2R67KA", Point.POINT.USER_ID);
-        public static final ForeignKey<PremiumRecord, TransactionRecord> FKOTOO6BVI30QYEL0RVHS8OH9WO = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_F, Premium.PREMIUM, "FKOTOO6BVI30QYEL0RVHS8OH9WO", Premium.PREMIUM.TRANSACTION_ID);
         public static final ForeignKey<PremiumRecord, UserRecord> FK55RHAW7HB4IB9USGJD0RVYUBB = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, Premium.PREMIUM, "FK55RHAW7HB4IB9USGJD0RVYUBB", Premium.PREMIUM.USER_ID);
         public static final ForeignKey<QuestRecord, CategoryRecord> FK4FOEBLYDMUA10QB2OEUANE6FB = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_31, Quest.QUEST, "FK4FOEBLYDMUA10QB2OEUANE6FB", Quest.QUEST.CATEGORY_ID);
         public static final ForeignKey<QuestRecord, UserRecord> FKLGSC5AJ1JQDFWJ8V3PKHBIDNX = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, Quest.QUEST, "FKLGSC5AJ1JQDFWJ8V3PKHBIDNX", Quest.QUEST.USER_ID);
@@ -198,7 +195,6 @@ public class Keys {
         public static final ForeignKey<QuestReviewRecord, UserRecord> FKQG1FBVCAVQ2LBPP8G8W8VTIAM = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, QuestReview.QUEST_REVIEW, "FKQG1FBVCAVQ2LBPP8G8W8VTIAM", QuestReview.QUEST_REVIEW.USER_ID);
         public static final ForeignKey<StageRecord, QuestRecord> FKMUJKS4H5F77VK9X2HH1L4YPVG = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_49, Stage.STAGE, "FKMUJKS4H5F77VK9X2HH1L4YPVG", Stage.STAGE.QUEST_ID);
         public static final ForeignKey<TokenRecord, UserRecord> FKE32EK7IXANAKFQSDAOKM4Q9Y2 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, Token.TOKEN, "FKE32EK7IXANAKFQSDAOKM4Q9Y2", Token.TOKEN.USER_ID);
-        public static final ForeignKey<TransactionRecord, UserRecord> FKSG7JP0AJ6QIPR50856WF6VBW1 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, Transaction.TRANSACTION, "FKSG7JP0AJ6QIPR50856WF6VBW1", Transaction.TRANSACTION.USER_ID);
         public static final ForeignKey<UserBadgeRecord, BadgeRecord> FKJQX9N26PK9MQF1QO8F7XVVOQ9 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_3, UserBadge.USER_BADGE, "FKJQX9N26PK9MQF1QO8F7XVVOQ9", UserBadge.USER_BADGE.BADGE_ID);
         public static final ForeignKey<UserBadgeRecord, UserRecord> FK2JW9FPOTMMBDA07K27QC9T2UL = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserBadge.USER_BADGE, "FK2JW9FPOTMMBDA07K27QC9T2UL", UserBadge.USER_BADGE.USER_ID);
         public static final ForeignKey<UserOptionRecord, LanguageRecord> FKR6EERMF5AQ2NUA7HSSPMFFG02 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_C, UserOption.USER_OPTION, "FKR6EERMF5AQ2NUA7HSSPMFFG02", UserOption.USER_OPTION.LANGUAGE_ID);
@@ -207,7 +203,7 @@ public class Keys {
         public static final ForeignKey<UserQuestRecord, UserRecord> FK8JDYAKV4ATARQD05U7AXUBMYK = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserQuest.USER_QUEST, "FK8JDYAKV4ATARQD05U7AXUBMYK", UserQuest.USER_QUEST.USER_ID);
         public static final ForeignKey<UserReportRecord, UserRecord> FK2CM7CI55E41B6EAKUNXYDH3LG = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserReport.USER_REPORT, "FK2CM7CI55E41B6EAKUNXYDH3LG", UserReport.USER_REPORT.COMPLAINANT);
         public static final ForeignKey<UserReportRecord, UserRecord> FKO1LNULINQCBVABO3W4NI3K4D1 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserReport.USER_REPORT, "FKO1LNULINQCBVABO3W4NI3K4D1", UserReport.USER_REPORT.REPORTED);
-        public static final ForeignKey<UserRoleRecord, RoleRecord> FKA68196081FVOVJHKEK5M97N3Y = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_26, UserRole.USER_ROLE, "FKA68196081FVOVJHKEK5M97N3Y", UserRole.USER_ROLE.ROLE_ID);
         public static final ForeignKey<UserRoleRecord, UserRecord> FK859N2JVI8IVHUI0RL0ESWS6O = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserRole.USER_ROLE, "FK859N2JVI8IVHUI0RL0ESWS6O", UserRole.USER_ROLE.USER_ID);
+        public static final ForeignKey<UserRoleRecord, RoleRecord> FKA68196081FVOVJHKEK5M97N3Y = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_26, UserRole.USER_ROLE, "FKA68196081FVOVJHKEK5M97N3Y", UserRole.USER_ROLE.ROLE_ID);
     }
 }

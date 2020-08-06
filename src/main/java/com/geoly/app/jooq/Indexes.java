@@ -21,7 +21,6 @@ import com.geoly.app.jooq.tables.Role;
 import com.geoly.app.jooq.tables.Sale;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.Token;
-import com.geoly.app.jooq.tables.Transaction;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserBadge;
 import com.geoly.app.jooq.tables.UserOption;
@@ -72,7 +71,6 @@ public class Indexes {
     public static final Index FKH4QXMN9MIG6KITH0ISH2R67KA_INDEX_4 = Indexes0.FKH4QXMN9MIG6KITH0ISH2R67KA_INDEX_4;
     public static final Index PRIMARY_KEY_48C = Indexes0.PRIMARY_KEY_48C;
     public static final Index FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1 = Indexes0.FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1;
-    public static final Index FKOTOO6BVI30QYEL0RVHS8OH9WO_INDEX_1 = Indexes0.FKOTOO6BVI30QYEL0RVHS8OH9WO_INDEX_1;
     public static final Index PRIMARY_KEY_1 = Indexes0.PRIMARY_KEY_1;
     public static final Index FK4FOEBLYDMUA10QB2OEUANE6FB_INDEX_4 = Indexes0.FK4FOEBLYDMUA10QB2OEUANE6FB_INDEX_4;
     public static final Index FKLGSC5AJ1JQDFWJ8V3PKHBIDNX_INDEX_4 = Indexes0.FKLGSC5AJ1JQDFWJ8V3PKHBIDNX_INDEX_4;
@@ -83,14 +81,13 @@ public class Indexes {
     public static final Index FK1HJWWRR4XDDJJ9C7IICVVM78J_INDEX_1 = Indexes0.FK1HJWWRR4XDDJJ9C7IICVVM78J_INDEX_1;
     public static final Index FKQG1FBVCAVQ2LBPP8G8W8VTIAM_INDEX_1 = Indexes0.FKQG1FBVCAVQ2LBPP8G8W8VTIAM_INDEX_1;
     public static final Index PRIMARY_KEY_105 = Indexes0.PRIMARY_KEY_105;
+    public static final Index UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1 = Indexes0.UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1;
     public static final Index PRIMARY_KEY_26 = Indexes0.PRIMARY_KEY_26;
     public static final Index PRIMARY_KEY_26B = Indexes0.PRIMARY_KEY_26B;
     public static final Index FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4 = Indexes0.FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4;
     public static final Index PRIMARY_KEY_4B = Indexes0.PRIMARY_KEY_4B;
     public static final Index FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4 = Indexes0.FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4;
     public static final Index PRIMARY_KEY_4C = Indexes0.PRIMARY_KEY_4C;
-    public static final Index FKSG7JP0AJ6QIPR50856WF6VBW1_INDEX_F = Indexes0.FKSG7JP0AJ6QIPR50856WF6VBW1_INDEX_F;
-    public static final Index PRIMARY_KEY_F = Indexes0.PRIMARY_KEY_F;
     public static final Index PRIMARY_KEY_27 = Indexes0.PRIMARY_KEY_27;
     public static final Index UK_D2IA11OQHSYNODBSI46M80VFC_INDEX_2 = Indexes0.UK_D2IA11OQHSYNODBSI46M80VFC_INDEX_2;
     public static final Index UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2 = Indexes0.UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2;
@@ -106,6 +103,7 @@ public class Indexes {
     public static final Index FK2CM7CI55E41B6EAKUNXYDH3LG_INDEX_1 = Indexes0.FK2CM7CI55E41B6EAKUNXYDH3LG_INDEX_1;
     public static final Index FKO1LNULINQCBVABO3W4NI3K4D1_INDEX_1 = Indexes0.FKO1LNULINQCBVABO3W4NI3K4D1_INDEX_1;
     public static final Index PRIMARY_KEY_11 = Indexes0.PRIMARY_KEY_11;
+    public static final Index UKPT3UYBUWE0QPIJ09B9LHQV52S_INDEX_1 = Indexes0.UKPT3UYBUWE0QPIJ09B9LHQV52S_INDEX_1;
     public static final Index FK859N2JVI8IVHUI0RL0ESWS6O_INDEX_B = Indexes0.FK859N2JVI8IVHUI0RL0ESWS6O_INDEX_B;
     public static final Index FKA68196081FVOVJHKEK5M97N3Y_INDEX_B = Indexes0.FKA68196081FVOVJHKEK5M97N3Y_INDEX_B;
     public static final Index PRIMARY_KEY_B = Indexes0.PRIMARY_KEY_B;
@@ -134,7 +132,6 @@ public class Indexes {
         public static Index FKH4QXMN9MIG6KITH0ISH2R67KA_INDEX_4 = Internal.createIndex("FKH4QXMN9MIG6KITH0ISH2R67KA_INDEX_4", Point.POINT, new OrderField[] { Point.POINT.USER_ID }, false);
         public static Index PRIMARY_KEY_48C = Internal.createIndex("PRIMARY_KEY_48C", Point.POINT, new OrderField[] { Point.POINT.ID }, true);
         public static Index FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1 = Internal.createIndex("FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1", Premium.PREMIUM, new OrderField[] { Premium.PREMIUM.USER_ID }, false);
-        public static Index FKOTOO6BVI30QYEL0RVHS8OH9WO_INDEX_1 = Internal.createIndex("FKOTOO6BVI30QYEL0RVHS8OH9WO_INDEX_1", Premium.PREMIUM, new OrderField[] { Premium.PREMIUM.TRANSACTION_ID }, false);
         public static Index PRIMARY_KEY_1 = Internal.createIndex("PRIMARY_KEY_1", Premium.PREMIUM, new OrderField[] { Premium.PREMIUM.ID }, true);
         public static Index FK4FOEBLYDMUA10QB2OEUANE6FB_INDEX_4 = Internal.createIndex("FK4FOEBLYDMUA10QB2OEUANE6FB_INDEX_4", Quest.QUEST, new OrderField[] { Quest.QUEST.CATEGORY_ID }, false);
         public static Index FKLGSC5AJ1JQDFWJ8V3PKHBIDNX_INDEX_4 = Internal.createIndex("FKLGSC5AJ1JQDFWJ8V3PKHBIDNX_INDEX_4", Quest.QUEST, new OrderField[] { Quest.QUEST.USER_ID }, false);
@@ -145,14 +142,13 @@ public class Indexes {
         public static Index FK1HJWWRR4XDDJJ9C7IICVVM78J_INDEX_1 = Internal.createIndex("FK1HJWWRR4XDDJJ9C7IICVVM78J_INDEX_1", QuestReview.QUEST_REVIEW, new OrderField[] { QuestReview.QUEST_REVIEW.QUEST_ID }, false);
         public static Index FKQG1FBVCAVQ2LBPP8G8W8VTIAM_INDEX_1 = Internal.createIndex("FKQG1FBVCAVQ2LBPP8G8W8VTIAM_INDEX_1", QuestReview.QUEST_REVIEW, new OrderField[] { QuestReview.QUEST_REVIEW.USER_ID }, false);
         public static Index PRIMARY_KEY_105 = Internal.createIndex("PRIMARY_KEY_105", QuestReview.QUEST_REVIEW, new OrderField[] { QuestReview.QUEST_REVIEW.ID }, true);
+        public static Index UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1 = Internal.createIndex("UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1", QuestReview.QUEST_REVIEW, new OrderField[] { QuestReview.QUEST_REVIEW.USER_ID, QuestReview.QUEST_REVIEW.QUEST_ID }, true);
         public static Index PRIMARY_KEY_26 = Internal.createIndex("PRIMARY_KEY_26", Role.ROLE, new OrderField[] { Role.ROLE.ID }, true);
         public static Index PRIMARY_KEY_26B = Internal.createIndex("PRIMARY_KEY_26B", Sale.SALE, new OrderField[] { Sale.SALE.ID }, true);
         public static Index FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4 = Internal.createIndex("FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4", Stage.STAGE, new OrderField[] { Stage.STAGE.QUEST_ID }, false);
         public static Index PRIMARY_KEY_4B = Internal.createIndex("PRIMARY_KEY_4B", Stage.STAGE, new OrderField[] { Stage.STAGE.ID }, true);
         public static Index FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4 = Internal.createIndex("FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4", Token.TOKEN, new OrderField[] { Token.TOKEN.USER_ID }, false);
         public static Index PRIMARY_KEY_4C = Internal.createIndex("PRIMARY_KEY_4C", Token.TOKEN, new OrderField[] { Token.TOKEN.ID }, true);
-        public static Index FKSG7JP0AJ6QIPR50856WF6VBW1_INDEX_F = Internal.createIndex("FKSG7JP0AJ6QIPR50856WF6VBW1_INDEX_F", Transaction.TRANSACTION, new OrderField[] { Transaction.TRANSACTION.USER_ID }, false);
-        public static Index PRIMARY_KEY_F = Internal.createIndex("PRIMARY_KEY_F", Transaction.TRANSACTION, new OrderField[] { Transaction.TRANSACTION.ID }, true);
         public static Index PRIMARY_KEY_27 = Internal.createIndex("PRIMARY_KEY_27", User.USER, new OrderField[] { User.USER.ID }, true);
         public static Index UK_D2IA11OQHSYNODBSI46M80VFC_INDEX_2 = Internal.createIndex("UK_D2IA11OQHSYNODBSI46M80VFC_INDEX_2", User.USER, new OrderField[] { User.USER.NICK_NAME }, true);
         public static Index UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2 = Internal.createIndex("UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2", User.USER, new OrderField[] { User.USER.EMAIL }, true);
@@ -168,8 +164,9 @@ public class Indexes {
         public static Index FK2CM7CI55E41B6EAKUNXYDH3LG_INDEX_1 = Internal.createIndex("FK2CM7CI55E41B6EAKUNXYDH3LG_INDEX_1", UserReport.USER_REPORT, new OrderField[] { UserReport.USER_REPORT.COMPLAINANT }, false);
         public static Index FKO1LNULINQCBVABO3W4NI3K4D1_INDEX_1 = Internal.createIndex("FKO1LNULINQCBVABO3W4NI3K4D1_INDEX_1", UserReport.USER_REPORT, new OrderField[] { UserReport.USER_REPORT.REPORTED }, false);
         public static Index PRIMARY_KEY_11 = Internal.createIndex("PRIMARY_KEY_11", UserReport.USER_REPORT, new OrderField[] { UserReport.USER_REPORT.ID }, true);
+        public static Index UKPT3UYBUWE0QPIJ09B9LHQV52S_INDEX_1 = Internal.createIndex("UKPT3UYBUWE0QPIJ09B9LHQV52S_INDEX_1", UserReport.USER_REPORT, new OrderField[] { UserReport.USER_REPORT.REPORTED, UserReport.USER_REPORT.COMPLAINANT }, true);
         public static Index FK859N2JVI8IVHUI0RL0ESWS6O_INDEX_B = Internal.createIndex("FK859N2JVI8IVHUI0RL0ESWS6O_INDEX_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.USER_ID }, false);
         public static Index FKA68196081FVOVJHKEK5M97N3Y_INDEX_B = Internal.createIndex("FKA68196081FVOVJHKEK5M97N3Y_INDEX_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.ROLE_ID }, false);
-        public static Index PRIMARY_KEY_B = Internal.createIndex("PRIMARY_KEY_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.ID }, true);
+        public static Index PRIMARY_KEY_B = Internal.createIndex("PRIMARY_KEY_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.USER_ID, UserRole.USER_ROLE.ROLE_ID }, true);
     }
 }

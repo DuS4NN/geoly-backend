@@ -21,7 +21,6 @@ import com.geoly.app.jooq.tables.Role;
 import com.geoly.app.jooq.tables.Sale;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.Token;
-import com.geoly.app.jooq.tables.Transaction;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserBadge;
 import com.geoly.app.jooq.tables.UserOption;
@@ -129,11 +128,6 @@ public class Tables {
      * The table <code>geoly.TOKEN</code>.
      */
     public static final Token TOKEN = com.geoly.app.jooq.tables.Token.TOKEN;
-
-    /**
-     * The table <code>geoly.TRANSACTION</code>.
-     */
-    public static final Transaction TRANSACTION = com.geoly.app.jooq.tables.Transaction.TRANSACTION;
 
     /**
      * The table <code>geoly.USER</code>.

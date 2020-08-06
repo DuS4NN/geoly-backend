@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserReport extends TableImpl<UserReportRecord> {
 
-    private static final long serialVersionUID = -965595409;
+    private static final long serialVersionUID = -1212470748;
 
     /**
      * The reference instance of <code>geoly.USER_REPORT</code>
@@ -127,7 +127,7 @@ public class UserReport extends TableImpl<UserReportRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK2CM7CI55E41B6EAKUNXYDH3LG_INDEX_1, Indexes.FKO1LNULINQCBVABO3W4NI3K4D1_INDEX_1, Indexes.PRIMARY_KEY_11);
+        return Arrays.<Index>asList(Indexes.FK2CM7CI55E41B6EAKUNXYDH3LG_INDEX_1, Indexes.FKO1LNULINQCBVABO3W4NI3K4D1_INDEX_1, Indexes.PRIMARY_KEY_11, Indexes.UKPT3UYBUWE0QPIJ09B9LHQV52S_INDEX_1);
     }
 
     /**
@@ -143,7 +143,7 @@ public class UserReport extends TableImpl<UserReportRecord> {
      */
     @Override
     public List<UniqueKey<UserReportRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserReportRecord>>asList(Keys.CONSTRAINT_11);
+        return Arrays.<UniqueKey<UserReportRecord>>asList(Keys.CONSTRAINT_11, Keys.UKPT3UYBUWE0QPIJ09B9LHQV52S);
     }
 
     /**

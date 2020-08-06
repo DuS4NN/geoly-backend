@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Premium extends TableImpl<PremiumRecord> {
 
-    private static final long serialVersionUID = 667231831;
+    private static final long serialVersionUID = 1683310017;
 
     /**
      * The reference instance of <code>geoly.PREMIUM</code>
@@ -62,6 +62,11 @@ public class Premium extends TableImpl<PremiumRecord> {
     public final TableField<PremiumRecord, Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
+     * The column <code>geoly.PREMIUM.AGREEMENTID</code>.
+     */
+    public final TableField<PremiumRecord, String> AGREEMENTID = createField("AGREEMENTID", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
+
+    /**
      * The column <code>geoly.PREMIUM.END_AT</code>.
      */
     public final TableField<PremiumRecord, Timestamp> END_AT = createField("END_AT", org.jooq.impl.SQLDataType.TIMESTAMP.precision(6), this, "");
@@ -72,9 +77,9 @@ public class Premium extends TableImpl<PremiumRecord> {
     public final TableField<PremiumRecord, Timestamp> START_AT = createField("START_AT", org.jooq.impl.SQLDataType.TIMESTAMP.precision(6), this, "");
 
     /**
-     * The column <code>geoly.PREMIUM.TRANSACTION_ID</code>.
+     * The column <code>geoly.PREMIUM.STATE</code>.
      */
-    public final TableField<PremiumRecord, Integer> TRANSACTION_ID = createField("TRANSACTION_ID", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<PremiumRecord, String> STATE = createField("STATE", org.jooq.impl.SQLDataType.VARCHAR(20), this, "");
 
     /**
      * The column <code>geoly.PREMIUM.USER_ID</code>.
@@ -127,7 +132,7 @@ public class Premium extends TableImpl<PremiumRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1, Indexes.FKOTOO6BVI30QYEL0RVHS8OH9WO_INDEX_1, Indexes.PRIMARY_KEY_1);
+        return Arrays.<Index>asList(Indexes.FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1, Indexes.PRIMARY_KEY_1);
     }
 
     /**
@@ -151,11 +156,7 @@ public class Premium extends TableImpl<PremiumRecord> {
      */
     @Override
     public List<ForeignKey<PremiumRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<PremiumRecord, ?>>asList(Keys.FKOTOO6BVI30QYEL0RVHS8OH9WO, Keys.FK55RHAW7HB4IB9USGJD0RVYUBB);
-    }
-
-    public Transaction transaction() {
-        return new Transaction(this, Keys.FKOTOO6BVI30QYEL0RVHS8OH9WO);
+        return Arrays.<ForeignKey<PremiumRecord, ?>>asList(Keys.FK55RHAW7HB4IB9USGJD0RVYUBB);
     }
 
     public User user() {

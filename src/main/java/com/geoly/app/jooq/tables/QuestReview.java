@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class QuestReview extends TableImpl<QuestReviewRecord> {
 
-    private static final long serialVersionUID = -1014456469;
+    private static final long serialVersionUID = 1941897903;
 
     /**
      * The reference instance of <code>geoly.QUEST_REVIEW</code>
@@ -74,7 +74,12 @@ public class QuestReview extends TableImpl<QuestReviewRecord> {
     /**
      * The column <code>geoly.QUEST_REVIEW.REVIEW_TEXT</code>.
      */
-    public final TableField<QuestReviewRecord, String> REVIEW_TEXT = createField("REVIEW_TEXT", org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
+    public final TableField<QuestReviewRecord, String> REVIEW_TEXT = createField("REVIEW_TEXT", org.jooq.impl.SQLDataType.VARCHAR(1000), this, "");
+
+    /**
+     * The column <code>geoly.QUEST_REVIEW.UPDATE_AT</code>.
+     */
+    public final TableField<QuestReviewRecord, Timestamp> UPDATE_AT = createField("UPDATE_AT", org.jooq.impl.SQLDataType.TIMESTAMP.precision(6), this, "");
 
     /**
      * The column <code>geoly.QUEST_REVIEW.QUEST_ID</code>.
@@ -132,7 +137,7 @@ public class QuestReview extends TableImpl<QuestReviewRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK1HJWWRR4XDDJJ9C7IICVVM78J_INDEX_1, Indexes.FKQG1FBVCAVQ2LBPP8G8W8VTIAM_INDEX_1, Indexes.PRIMARY_KEY_105);
+        return Arrays.<Index>asList(Indexes.FK1HJWWRR4XDDJJ9C7IICVVM78J_INDEX_1, Indexes.FKQG1FBVCAVQ2LBPP8G8W8VTIAM_INDEX_1, Indexes.PRIMARY_KEY_105, Indexes.UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1);
     }
 
     /**
@@ -148,7 +153,7 @@ public class QuestReview extends TableImpl<QuestReviewRecord> {
      */
     @Override
     public List<UniqueKey<QuestReviewRecord>> getKeys() {
-        return Arrays.<UniqueKey<QuestReviewRecord>>asList(Keys.CONSTRAINT_105);
+        return Arrays.<UniqueKey<QuestReviewRecord>>asList(Keys.CONSTRAINT_105, Keys.UKBO8AKQYL97OHGFN6T4O83Q6DR);
     }
 
     /**

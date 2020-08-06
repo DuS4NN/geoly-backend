@@ -9,7 +9,6 @@ import com.geoly.app.jooq.Indexes;
 import com.geoly.app.jooq.Keys;
 import com.geoly.app.jooq.tables.records.UserRoleRecord;
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserRole extends TableImpl<UserRoleRecord> {
 
-    private static final long serialVersionUID = -698632129;
+    private static final long serialVersionUID = -1023807620;
 
     /**
      * The reference instance of <code>geoly.USER_ROLE</code>
@@ -57,24 +56,14 @@ public class UserRole extends TableImpl<UserRoleRecord> {
     }
 
     /**
-     * The column <code>geoly.USER_ROLE.ID</code>.
+     * The column <code>geoly.USER_ROLE.USER_ID</code>.
      */
-    public final TableField<UserRoleRecord, Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
-     * The column <code>geoly.USER_ROLE.CREATED_AT</code>.
-     */
-    public final TableField<UserRoleRecord, Timestamp> CREATED_AT = createField("CREATED_AT", org.jooq.impl.SQLDataType.TIMESTAMP.precision(6), this, "");
+    public final TableField<UserRoleRecord, Integer> USER_ID = createField("USER_ID", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>geoly.USER_ROLE.ROLE_ID</code>.
      */
-    public final TableField<UserRoleRecord, Integer> ROLE_ID = createField("ROLE_ID", org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
-     * The column <code>geoly.USER_ROLE.USER_ID</code>.
-     */
-    public final TableField<UserRoleRecord, Integer> USER_ID = createField("USER_ID", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<UserRoleRecord, Integer> ROLE_ID = createField("ROLE_ID", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>geoly.USER_ROLE</code> table reference
@@ -146,15 +135,15 @@ public class UserRole extends TableImpl<UserRoleRecord> {
      */
     @Override
     public List<ForeignKey<UserRoleRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserRoleRecord, ?>>asList(Keys.FKA68196081FVOVJHKEK5M97N3Y, Keys.FK859N2JVI8IVHUI0RL0ESWS6O);
-    }
-
-    public Role role() {
-        return new Role(this, Keys.FKA68196081FVOVJHKEK5M97N3Y);
+        return Arrays.<ForeignKey<UserRoleRecord, ?>>asList(Keys.FK859N2JVI8IVHUI0RL0ESWS6O, Keys.FKA68196081FVOVJHKEK5M97N3Y);
     }
 
     public User user() {
         return new User(this, Keys.FK859N2JVI8IVHUI0RL0ESWS6O);
+    }
+
+    public Role role() {
+        return new Role(this, Keys.FKA68196081FVOVJHKEK5M97N3Y);
     }
 
     /**
