@@ -1,24 +1,29 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.EditQuest;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.services.QuestService;
+import com.geoly.app.validators.Validator;
+import com.geoly.app.validators.ValidatorResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
 public class QuestController {
 
     private QuestService questService;
+    private Validator validator;
 
-    public QuestController(QuestService questService) {
+    public QuestController(QuestService questService, Validator validator) {
         this.questService = questService;
+        this.validator = validator;
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -27,6 +32,53 @@ public class QuestController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.signInDailyQuest(customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/quest/{id}/edit")
+    public List editQuestDetails(@RequestBody @Validated EditQuest questDetails, @PathVariable(name = "id") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.editQuest(questDetails, questId);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.editQuestDetails(questDetails, questId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/quest/{id}/delete")
+    public List deleteQuest(@PathVariable(name = "id") int questId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "DELETE");
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/quest/{id}/activate")
+    public List activateQuest(@PathVariable(name = "id") int questId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "ACTIVATE");
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/quest/{id}/disable")
+    public List disableQuest(@PathVariable(name = "id") int questId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "DISABLE");
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

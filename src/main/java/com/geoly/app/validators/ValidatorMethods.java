@@ -58,4 +58,12 @@ public class ValidatorMethods {
     boolean imageSizeIsValid(long size){
         return  size > 0 && size < 1048576;
     }
+
+    boolean descriptionIsValid(String description){
+        return description.length() > 0 && description.length() < 500;
+    }
+
+    boolean difficultyIsValidInt(int difficulty){
+        return difficulty > 0 && difficulty < 6;
+    }
 }

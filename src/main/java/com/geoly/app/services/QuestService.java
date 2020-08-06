@@ -1,13 +1,11 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.EditQuest;
 import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.models.*;
-import com.geoly.app.repositories.QuestRepository;
-import com.geoly.app.repositories.StageRepository;
-import com.geoly.app.repositories.UserQuestRepository;
-import com.geoly.app.repositories.UserRepository;
+import com.geoly.app.repositories.*;
 import io.sentry.Sentry;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -15,6 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -32,16 +34,61 @@ public class QuestService {
     private QuestRepository questRepository;
     private StageRepository stageRepository;
     private UserQuestRepository userQuestRepository;
+    private CategoryRepository categoryRepository;
 
-    public QuestService(EntityManager entityManager, DSLContext create, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository) {
+    public QuestService(EntityManager entityManager, DSLContext create, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
         this.questRepository = questRepository;
         this.stageRepository = stageRepository;
         this.userQuestRepository = userQuestRepository;
+        this.categoryRepository = categoryRepository;
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public List editQuestDetails(EditQuest questDetails, int questId, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<Category> category = categoryRepository.findById(questDetails.getCategoryId());
+        if(!category.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        quest.get().setPrivateQuest(questDetails.isPrivateQuest());
+        quest.get().setCategory(category.get());
+        quest.get().setDescription(questDetails.getDescription());
+        quest.get().setDifficulty(questDetails.getDifficulty());
+        entityManager.merge(quest.get());
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_EDITED, HttpStatus.OK));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List doActionWithQuest(int questId, int userId, String action){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        switch (action){
+            case "DISABLE":
+                quest.get().setActive(false);
+                entityManager.merge(quest.get());
+                return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_DISABLED, HttpStatus.OK));
+            case "ACTIVATE":
+                quest.get().setActive(true);
+                entityManager.merge(quest.get());
+                return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_ACTIVATED, HttpStatus.OK));
+            case "DELETE":
+                entityManager.remove(quest.get());
+                return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_DELETED, HttpStatus.OK));
+        }
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_ACTION, HttpStatus.BAD_REQUEST));
+    }
 
     public List getQuestForEdit(int questId, int userId){
         Select<?> quest =
@@ -56,9 +103,8 @@ public class QuestService {
         GeolyAPI.setBindParameterValues(q1, quest);
         List resultQuest = q1.getResultList();
 
-        if(resultQuest.isEmpty()){
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
-        }
+        if(resultQuest.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
 
         Select<?> stage =
             create.select(Stage.STAGE.TYPE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.LONGITUDE, Stage.STAGE.LATITUDE, Stage.STAGE.ANSWER)
@@ -93,6 +139,7 @@ public class QuestService {
             .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
                 .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
             .where(Quest.QUEST.USER_ID.eq(userId))
+            .and(Quest.QUEST.ACTIVE.isTrue())
             .and(Quest.QUEST.DAILY.isFalse());
 
         Query q = entityManager.createNativeQuery(query.getSQL());

@@ -1,5 +1,6 @@
 package com.geoly.app.validators;
 
+import com.geoly.app.dao.EditQuest;
 import com.geoly.app.models.QuestReview;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -101,6 +102,15 @@ public class Validator {
         if(!validatorMethods.idIsValid(userOption.getMapTheme())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_MAP_THEME);
         if(!validatorMethods.reviewTextFormatIsValid(about)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ABOUT);
         if(!validatorMethods.reviewTextLengthIsValid(about)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.ABOUT_TOO_LONG);
+
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse editQuest(EditQuest questDetails, int questId){
+        if(!validatorMethods.idIsValid(questId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
+        if(!validatorMethods.idIsValid(questDetails.getCategoryId())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
+        if(!validatorMethods.difficultyIsValidInt(questDetails.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
+        if(questDetails.getDescription() != null && !validatorMethods.descriptionIsValid(questDetails.getDescription())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DESCRIPTION);
 
         return new ValidatorResponse(true);
     }
