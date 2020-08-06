@@ -21,6 +21,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.time.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestService {
@@ -41,17 +42,125 @@ public class QuestService {
         this.userQuestRepository = userQuestRepository;
     }
 
+
+    public List getQuestForEdit(int questId, int userId){
+        Select<?> quest =
+            create.select(Quest.QUEST.PRIVATE_QUEST, Quest.QUEST.DIFFICULTY, Quest.QUEST.DESCRIPTION, Quest.QUEST.CREATED_AT, Quest.QUEST.ACTIVE, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL)
+            .from(Quest.QUEST)
+            .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
+                .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+            .where(Quest.QUEST.ID.eq(questId))
+            .and(Quest.QUEST.USER_ID.eq(userId));
+
+        Query q1 = entityManager.createNativeQuery(quest.getSQL());
+        GeolyAPI.setBindParameterValues(q1, quest);
+        List resultQuest = q1.getResultList();
+
+        if(resultQuest.isEmpty()){
+            return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        }
+
+        Select<?> stage =
+            create.select(Stage.STAGE.TYPE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.LONGITUDE, Stage.STAGE.LATITUDE, Stage.STAGE.ANSWER)
+            .from(Stage.STAGE)
+            .where(Stage.STAGE.QUEST_ID.eq(questId));
+
+        Query q2 = entityManager.createNativeQuery(stage.getSQL());
+        GeolyAPI.setBindParameterValues(q2, stage);
+        List resultStage = q2.getResultList();
+
+        Select<?> image =
+            create.select(com.geoly.app.jooq.tables.Image.IMAGE.IMAGE_URL)
+            .from(com.geoly.app.jooq.tables.Image.IMAGE)
+            .where(com.geoly.app.jooq.tables.Image.IMAGE.QUEST_ID.eq(questId));
+
+        Query q3 = entityManager.createNativeQuery(image.getSQL());
+        GeolyAPI.setBindParameterValues(q3, image);
+        List resultImage = q3.getResultList();
+
+        List<List> finalResult = new ArrayList<>();
+        finalResult.add(resultQuest);
+        finalResult.add(resultStage);
+        finalResult.add(resultImage);
+
+        return finalResult;
+    }
+
+    public List getAllCreatedQuests(int userId){
+        Select<?> query =
+            create.select(Quest.QUEST.ID, Quest.QUEST.ACTIVE, Quest.QUEST.CREATED_AT, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Quest.QUEST.PRIVATE_QUEST, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL)
+            .from(Quest.QUEST)
+            .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
+                .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+            .where(Quest.QUEST.USER_ID.eq(userId))
+            .and(Quest.QUEST.DAILY.isFalse());
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.CREATED_QUESTS_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        return result;
+    }
+
+    public List getAllActiveQuests(int userId){
+        Select<?> query =
+            create.select(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stage_id"), Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE, Stage.STAGE.QUESTION, Stage.STAGE.TYPE, Stage.STAGE.QUEST_ID.as("quest_id"), Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL)
+            .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+            .leftJoin(Stage.STAGE)
+                .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
+            .leftJoin(Quest.QUEST)
+                .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+            .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
+                .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+            .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
+            .and(Quest.QUEST.DAILY.isFalse())
+            .and(Quest.QUEST.ACTIVE.isTrue())
+            .orderBy(Stage.STAGE.QUEST_ID, Stage.STAGE.ID);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACTIVE_QUESTS_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        List<List<Object[]>> finalResult = new ArrayList<>();
+        List<Object[]> oneQuest = new ArrayList<>();
+
+        Object[] firstStage = (Object[]) result.get(0);
+        int lastId = Integer.parseInt(String.valueOf(firstStage[6]));
+
+        for(int i=0; i<result.size(); i++){
+            Object[] array = (Object[]) result.get(i);
+
+            if(Integer.parseInt(String.valueOf(array[6])) == lastId ){
+                oneQuest.add(array);
+            }else{
+                lastId = Integer.parseInt(String.valueOf(array[6]));
+                finalResult.add(oneQuest.stream().collect(Collectors.toList()));
+                oneQuest.clear();
+                oneQuest.add(array);
+                if(i == result.size()-1){
+                    finalResult.add(oneQuest);
+                }
+            }
+        }
+        return finalResult;
+    }
+
     @Transactional(rollbackOn = Exception.class)
     public List signInDailyQuest(int userId){
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
-        Optional<com.geoly.app.models.Quest> quest = questRepository.findByDaily(true);
 
         if(user.get().getAddress() == null){
             return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED));
         }
 
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByDaily(true);
         if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
         Optional<com.geoly.app.models.Stage> stage = stageRepository.findByQuest(quest.get());
         if(!stage.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND));
 

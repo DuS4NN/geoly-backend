@@ -1,6 +1,8 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    CREATED_QUESTS_NOT_FOUND,
+    ACTIVE_QUESTS_NOT_FOUND,
     USER_DOESNT_HAVE_PREMIUM,
     SUBSCRIPTION_CAN_NOT_BE_CANCELED,
     SUBSCRIPTION_CANCELED,
