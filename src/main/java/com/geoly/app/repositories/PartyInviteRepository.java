@@ -13,5 +13,7 @@ import java.util.Optional;
 public interface PartyInviteRepository extends JpaRepository<PartyInvite, Integer> {
 
     Optional<PartyInvite> findByUserAndPartyAndStatus(User user, Party party, PartyInvateStatus partyInvateStatus);
+
+    Optional<PartyInvite> findByIdAndStatus(int id, PartyInvateStatus partyInvateStatus);
 }
 

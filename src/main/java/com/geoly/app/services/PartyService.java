@@ -189,7 +189,7 @@ public class PartyService {
         if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
 
         Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
-        if(partyUser.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_IS_ALREADY_IN_GROUP, HttpStatus.NOT_FOUND));
+        if(partyUser.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_IS_ALREADY_IN_GROUP, HttpStatus.METHOD_NOT_ALLOWED));
 
         Optional<com.geoly.app.models.PartyInvite> partyInviteOptional = partyInviteRepository.findByUserAndPartyAndStatus(user.get(), party.get(), PartyInvateStatus.PENDING);
         if(partyInviteOptional.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_INVITED, HttpStatus.OK));
