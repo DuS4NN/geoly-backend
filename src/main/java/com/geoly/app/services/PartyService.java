@@ -1,14 +1,14 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
-import com.geoly.app.jooq.tables.Party;
-import com.geoly.app.jooq.tables.PartyUser;
+import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
 import com.geoly.app.repositories.PartyRepository;
 import com.geoly.app.repositories.PartyUserRepository;
 import com.geoly.app.repositories.UserRepository;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Select;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,4 +105,56 @@ public class PartyService {
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_CREATED, HttpStatus.OK));
     }
+
+    public List getPartyDetails(int partyId, int userId){
+        Select<?> queryDetail =
+            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME, Party.PARTY.USER_ID, Party.PARTY.NAME, Party.PARTY.CREATED_AT)
+            .from(PartyUser.PARTY_USER)
+            .leftJoin(Party.PARTY)
+                .on(Party.PARTY.ID.eq(PartyUser.PARTY_USER.PARTY_ID))
+            .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                .on(com.geoly.app.jooq.tables.User.USER.ID.eq(Party.PARTY.USER_ID))
+            .where(PartyUser.PARTY_USER.USER_ID.eq(userId))
+            .and(PartyUser.PARTY_USER.PARTY_ID.eq(partyId));
+
+        Query q1 = entityManager.createNativeQuery(queryDetail.getSQL());
+        GeolyAPI.setBindParameterValues(q1, queryDetail);
+        List resultDetail = q1.getResultList();
+
+        if(resultDetail.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Select<?> queryUser =
+            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ID, PartyUser.PARTY_USER.CREATED_AT)
+            .from(PartyUser.PARTY_USER)
+            .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                .on(com.geoly.app.jooq.tables.User.USER.ID.eq(PartyUser.PARTY_USER.USER_ID))
+            .where(PartyUser.PARTY_USER.PARTY_ID.eq(partyId));
+
+        Query q2 = entityManager.createNativeQuery(queryUser.getSQL());
+        GeolyAPI.setBindParameterValues(q2, queryUser);
+        List resultUser = q2.getResultList();
+
+        Select<?> queryQuest =
+            create.select(PartyQuest.PARTY_QUEST.ACTIVE, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME)
+            .from(PartyQuest.PARTY_QUEST)
+            .leftJoin(Quest.QUEST)
+                .on(Quest.QUEST.ID.eq(PartyQuest.PARTY_QUEST.QUEST_ID))
+            .leftJoin(Category.CATEGORY)
+                    .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+            .where(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
+            .and(Quest.QUEST.ACTIVE.isTrue())
+            .and(Quest.QUEST.DAILY.isFalse());
+
+        Query q3 = entityManager.createNativeQuery(queryQuest.getSQL());
+        GeolyAPI.setBindParameterValues(q3, queryQuest);
+        List resultQuest = q3.getResultList();
+
+        List<List> finalResult = new ArrayList<>();
+        finalResult.add(resultDetail);
+        finalResult.add(resultUser);
+        finalResult.add(resultQuest);
+
+        return finalResult;
+    }
+
 }

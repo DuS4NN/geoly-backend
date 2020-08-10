@@ -76,4 +76,18 @@ public class PartyController {
             return GeolyAPI.catchException(e);
         }
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/group/{id}")
+    public List getPartyDetails(@PathVariable(name = "id") int partyId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.getPartyDetails(partyId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
 }
