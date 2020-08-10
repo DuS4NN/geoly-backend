@@ -25,6 +25,13 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
+    public ValidatorResponse checkOnlyNameOfParty(String name){
+        if (!validatorMethods.partyNameFormatIsValid(name)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_PARTY_NAME_FORMAT);
+        if (!validatorMethods.partyNameLengthIsValid(name)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_PARTY_NAME_LENGTH);
+
+        return new ValidatorResponse(true);
+    }
+
     public ValidatorResponse checkOnlyEmail(String email){
         if (!validatorMethods.emailIsValid(email)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_EMAIL);
         return new ValidatorResponse(true);
@@ -70,14 +77,16 @@ public class Validator {
     }
 
     public ValidatorResponse getProfileValidator(String nickName){
-        if(!validatorMethods.nickNameIsValid(nickName)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME);
+        if(!validatorMethods.nickNameFormatIsValid(nickName)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_FORMAT);
+        if(!validatorMethods.nickNameLengthIsValid(nickName)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_LENGTH);
 
         return new ValidatorResponse(true);
     }
 
     public ValidatorResponse registerValidator(User user, int languageId){
         if(user.getNickName() == null || user.getEmail() == null || user.getPassword() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.USER_INFO_IS_NULL);
-        if(!validatorMethods.nickNameIsValid(user.getNickName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME);
+        if(!validatorMethods.nickNameFormatIsValid(user.getNickName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_FORMAT);
+        if(!validatorMethods.nickNameLengthIsValid(user.getNickName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_LENGTH);
         if(!validatorMethods.emailIsValid(user.getEmail())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_EMAIL);
         if(!validatorMethods.passwordIsValid(user.getPassword())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_PASSWORD);
         if(!validatorMethods.idIsValid(languageId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_LANGUAGE);

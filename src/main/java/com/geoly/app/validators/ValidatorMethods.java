@@ -33,8 +33,14 @@ public class ValidatorMethods {
         return (review > 0 && review < 6);
     }
 
-    boolean nickNameIsValid(String nickName){
-        return (nickName.length() > 3 && nickName.length() < 16);
+    boolean nickNameLengthIsValid(String nickName){
+       return nickName.length() > 3 && nickName.length() < 16;
+    }
+
+    boolean nickNameFormatIsValid(String nickName){
+        Pattern r = Pattern.compile("[A-Z,a-z,\\-,_,.,0-9]*");
+        Matcher m = r.matcher(nickName);
+        return m.matches();
     }
 
     boolean passwordIsValid(String password){
@@ -44,7 +50,7 @@ public class ValidatorMethods {
     boolean emailIsValid(String email){
         Pattern r = Pattern.compile(".+@.+\\..+");
         Matcher m = r.matcher(email);
-        return m.find();
+        return m.matches();
     }
 
     boolean aboutIsValid(String about){
@@ -69,5 +75,15 @@ public class ValidatorMethods {
 
     boolean imageCountIsValid(int size){
         return size < 5;
+    }
+
+    boolean partyNameFormatIsValid(String name){
+        Pattern r = Pattern.compile("[A-Z,a-z,\\-,_,.,0-9]*");
+        Matcher m = r.matcher(name);
+        return m.matches();
+    }
+
+    boolean partyNameLengthIsValid(String name){
+        return name.length() > 1 && name.length()<16;
     }
 }
