@@ -2,13 +2,14 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.PartyInvateStatus;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
+import com.geoly.app.repositories.PartyInviteRepository;
 import com.geoly.app.repositories.PartyRepository;
 import com.geoly.app.repositories.PartyUserRepository;
 import com.geoly.app.repositories.UserRepository;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.Select;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,15 @@ public class PartyService {
     private UserRepository userRepository;
     private PartyRepository partyRepository;
     private PartyUserRepository partyUserRepository;
+    private PartyInviteRepository partyInviteRepository;
 
-    public PartyService(EntityManager entityManager, DSLContext create, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository) {
+    public PartyService(EntityManager entityManager, DSLContext create, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository, PartyInviteRepository partyInviteRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
         this.partyRepository = partyRepository;
         this.partyUserRepository = partyUserRepository;
+        this.partyInviteRepository = partyInviteRepository;
     }
 
     public List getAllParties(int userId){
@@ -172,6 +175,32 @@ public class PartyService {
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_KICKED, HttpStatus.OK));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List inviteUser(int partyId, String nickName, int userId){
+        Optional<User> creator = userRepository.findById(userId);
+        if(!creator.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<User> user = userRepository.findByNickName(nickName);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
+        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
+        if(partyUser.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_IS_ALREADY_IN_GROUP, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.PartyInvite> partyInviteOptional = partyInviteRepository.findByUserAndParty(user.get(), party.get());
+        if(partyInviteOptional.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_INVITED, HttpStatus.OK));
+
+        com.geoly.app.models.PartyInvite partyInvite = new com.geoly.app.models.PartyInvite();
+        partyInvite.setParty(party.get());
+        partyInvite.setUser(user.get());
+        partyInvite.setStatus(PartyInvateStatus.PENDING);
+        entityManager.persist(partyInvite);
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_INVITED, HttpStatus.OK));
     }
 
 }

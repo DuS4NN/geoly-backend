@@ -135,4 +135,12 @@ public class Validator {
 
         return new ValidatorResponse(true);
     }
+
+    public ValidatorResponse inviteUserValidator(int partyId, String nickName){
+        if(!validatorMethods.idIsValid(partyId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
+        if(!validatorMethods.nickNameFormatIsValid(nickName)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_FORMAT);
+        if(!validatorMethods.nickNameLengthIsValid(nickName)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_LENGTH);
+
+        return new ValidatorResponse(true);
+    }
 }

@@ -3,6 +3,9 @@ package com.geoly.app.models;
 public enum StatusMessage {
     CAN_NOT_KICK_OWNER,
     USER_KICKED,
+    USER_IS_ALREADY_IN_GROUP,
+    NO_INVITES,
+    USER_INVITED,
     GROUP_CREATED,
     INVALID_PARTY_NAME_FORMAT,
     INVALID_PARTY_NAME_LENGTH,
