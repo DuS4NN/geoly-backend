@@ -2,9 +2,11 @@ package com.geoly.app.controler;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.models.CustomUserDetails;
+import com.geoly.app.models.StatusMessage;
 import com.geoly.app.services.PartyService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -36,7 +38,7 @@ public class PartyController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/group/{id}/leave")
+    @DeleteMapping("/group/{id}/leave")
     public List leaveParty(@PathVariable(name = "id") int partyId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
@@ -50,7 +52,7 @@ public class PartyController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/group/{id}/delete")
+    @DeleteMapping("/group/{id}/delete")
     public List deleteParty(@PathVariable(name = "id") int partyId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
@@ -86,6 +88,21 @@ public class PartyController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.getPartyDetails(partyId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/group/{partyId}/kick/{userId}")
+    public List kickUserFromParty(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "userId") int userId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            if(customUserDetails.getUser().getId() == userId) return Collections.singletonList(new ResponseEntity<>(StatusMessage.CAN_NOT_KICK_OWNER, HttpStatus.OK));
+            return partyService.kickUserFromParty(partyId, userId, customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

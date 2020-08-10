@@ -157,4 +157,21 @@ public class PartyService {
         return finalResult;
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public List kickUserFromParty(int partyId, int userId, int creatorId){
+        Optional<User> creator = userRepository.findById(creatorId);
+        if(!creator.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
+        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_KICKED, HttpStatus.OK));
+    }
+
 }
