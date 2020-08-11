@@ -27,7 +27,7 @@ public class UserPartyQuest {
     @NotNull
     private Stage stage;
 
-    @ManyToOne(targetEntity = Stage.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = PartyQuest.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "party_quest_id")
     @NotNull
     private PartyQuest partyQuest;
