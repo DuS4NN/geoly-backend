@@ -178,15 +178,15 @@ public class PartyController {
         }
     }
 
-    //@PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/group/{partyId}/quest/{questId}/signout")
     public List signOutPartyQuest(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "questId") int questId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
         try{
-            //CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return partyService.signOutPartyQuest(partyId, questId,1);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.signOutPartyQuest(partyId, questId,customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }
