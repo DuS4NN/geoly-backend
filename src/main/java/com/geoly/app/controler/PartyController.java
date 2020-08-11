@@ -108,15 +108,57 @@ public class PartyController {
         }
     }
 
-    //@PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/group/{id}/invite/{nickName}")
     public List inviteUser(@PathVariable(name = "id") int partyId, @PathVariable(name = "nickName") String nickName, Authentication authentication){
         ValidatorResponse validatorResponse = validator.inviteUserValidator(partyId, nickName);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
         try{
-            //CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return  partyService.inviteUser(partyId, nickName, 1);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return  partyService.inviteUser(partyId, nickName, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/group/{partyId}/quest/{questId}/add")
+    public List addQuest(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "questId") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.addQuest(partyId, questId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/group/{partyId}/quest/{questId}/activate")
+    public List activateQuest(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "questId") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.changeActiveQuest(partyId, questId, customUserDetails.getUser().getId(), "ACTIVATE");
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/group/{partyId}/quest/{questId}/deactivate")
+    public List deactivateQuest(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "questId") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.changeActiveQuest(partyId, questId, customUserDetails.getUser().getId(), "DEACTIVATE");
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

@@ -3,8 +3,11 @@ package com.geoly.app.models;
 public enum StatusMessage {
     CAN_NOT_KICK_OWNER,
     INVITE_DENIED,
+    QUEST_ADDED_TO_GROUP,
     INVITE_ACCEPT,
     USER_KICKED,
+    QUEST_STATE_CHANGED,
+    QUEST_ALREADY_IN_GROUP,
     INVITE_NOT_FOUND,
     USER_IS_ALREADY_IN_GROUP,
     NO_INVITES,

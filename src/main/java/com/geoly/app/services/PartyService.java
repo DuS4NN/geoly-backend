@@ -5,10 +5,7 @@ import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.PartyInvateStatus;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
-import com.geoly.app.repositories.PartyInviteRepository;
-import com.geoly.app.repositories.PartyRepository;
-import com.geoly.app.repositories.PartyUserRepository;
-import com.geoly.app.repositories.UserRepository;
+import com.geoly.app.repositories.*;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.springframework.http.HttpStatus;
@@ -29,14 +26,18 @@ public class PartyService {
     private PartyRepository partyRepository;
     private PartyUserRepository partyUserRepository;
     private PartyInviteRepository partyInviteRepository;
+    private QuestRepository questRepository;
+    private PartyQuestRepository partyQuestRepository;
 
-    public PartyService(EntityManager entityManager, DSLContext create, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository, PartyInviteRepository partyInviteRepository) {
+    public PartyService(EntityManager entityManager, DSLContext create, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository, PartyInviteRepository partyInviteRepository, QuestRepository questRepository, PartyQuestRepository partyQuestRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
         this.partyRepository = partyRepository;
         this.partyUserRepository = partyUserRepository;
         this.partyInviteRepository = partyInviteRepository;
+        this.questRepository = questRepository;
+        this.partyQuestRepository = partyQuestRepository;
     }
 
     public List getAllParties(int userId){
@@ -201,6 +202,53 @@ public class PartyService {
         entityManager.persist(partyInvite);
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_INVITED, HttpStatus.OK));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List addQuest(int partyId, int questId, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, user.get());
+        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.PartyQuest> partyQuestOptional = partyQuestRepository.findByPartyAndQuest(party.get(), quest.get());
+        if(partyQuestOptional.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_ALREADY_IN_GROUP, HttpStatus.METHOD_NOT_ALLOWED));
+
+        com.geoly.app.models.PartyQuest partyQuest = new com.geoly.app.models.PartyQuest();
+        partyQuest.setParty(party.get());
+        partyQuest.setQuest(quest.get());
+        partyQuest.setActive(true);
+        entityManager.persist(partyQuest);
+
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_ADDED_TO_GROUP, HttpStatus.OK));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List changeActiveQuest(int partyId, int questId, int userId, String operation){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, user.get());
+        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
+        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        Optional<com.geoly.app.models.PartyQuest> partyQuest = partyQuestRepository.findByPartyAndQuest(party.get(), quest.get());
+        if(!partyQuest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+
+        if(operation.equals("ACTIVATE")){
+            partyQuest.get().setActive(true);
+        }else{
+            partyQuest.get().setActive(false);
+        }
+        entityManager.merge(partyQuest.get());
+        return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_STATE_CHANGED, HttpStatus.NOT_FOUND));
+
     }
 
 }
