@@ -163,4 +163,8 @@ public class PartyController {
             return GeolyAPI.catchException(e);
         }
     }
+
+    public List signInPartyQuest(){
+        return null;
+    }
 }

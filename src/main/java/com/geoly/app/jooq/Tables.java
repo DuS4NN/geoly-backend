@@ -24,6 +24,7 @@ import com.geoly.app.jooq.tables.Token;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserBadge;
 import com.geoly.app.jooq.tables.UserOption;
+import com.geoly.app.jooq.tables.UserPartyQuest;
 import com.geoly.app.jooq.tables.UserQuest;
 import com.geoly.app.jooq.tables.UserReport;
 import com.geoly.app.jooq.tables.UserRole;
@@ -143,6 +144,11 @@ public class Tables {
      * The table <code>geoly.USER_OPTION</code>.
      */
     public static final UserOption USER_OPTION = com.geoly.app.jooq.tables.UserOption.USER_OPTION;
+
+    /**
+     * The table <code>geoly.USER_PARTY_QUEST</code>.
+     */
+    public static final UserPartyQuest USER_PARTY_QUEST = com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST;
 
     /**
      * The table <code>geoly.USER_QUEST</code>.

@@ -8,8 +8,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "user_quest")
-public class UserQuest {
+@Table(name = "user_party_quest")
+public class UserPartyQuest {
 
     @Id
     @Column(name = "id")
@@ -27,6 +27,11 @@ public class UserQuest {
     @NotNull
     private Stage stage;
 
+    @ManyToOne(targetEntity = Stage.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "party_quest_id")
+    @NotNull
+    private PartyQuest partyQuest;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @NotNull
@@ -40,7 +45,7 @@ public class UserQuest {
     @UpdateTimestamp
     private Date updatedAt;
 
-    public UserQuest() {
+    public UserPartyQuest() {
     }
 
     public int getId() {
@@ -65,6 +70,14 @@ public class UserQuest {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public PartyQuest getPartyQuest() {
+        return partyQuest;
+    }
+
+    public void setPartyQuest(PartyQuest partyQuest) {
+        this.partyQuest = partyQuest;
     }
 
     public UserQuestStatus getStatus() {

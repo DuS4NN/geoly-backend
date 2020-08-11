@@ -43,6 +43,9 @@ public class Stage {
     @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "stage", cascade = CascadeType.ALL)
     private Set<UserQuest> userQuest;
 
+    @OneToMany(targetEntity = UserPartyQuest.class, fetch = FetchType.LAZY, mappedBy = "stage", cascade = CascadeType.ALL)
+    private Set<UserPartyQuest> userPartyQuest;
+
     public Stage() {
     }
 
@@ -116,5 +119,13 @@ public class Stage {
 
     public void setQrCodeUrl(String qrCodeUrl) {
         this.qrCodeUrl = qrCodeUrl;
+    }
+
+    public Set<UserPartyQuest> getUserPartyQuest() {
+        return userPartyQuest;
+    }
+
+    public void setUserPartyQuest(Set<UserPartyQuest> userPartyQuest) {
+        this.userPartyQuest = userPartyQuest;
     }
 }

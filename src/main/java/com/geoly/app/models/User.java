@@ -103,6 +103,9 @@ public class User implements Serializable {
     @OneToMany(targetEntity = PartyInvite.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<PartyInvite> partyInvite;
 
+    @OneToMany(targetEntity = UserPartyQuest.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserPartyQuest> userPartyQuest;
+
     public User() {
     }
 
@@ -304,5 +307,13 @@ public class User implements Serializable {
 
     public void setRole(Set<Role> role) {
         this.role = role;
+    }
+
+    public Set<UserPartyQuest> getUserPartyQuest() {
+        return userPartyQuest;
+    }
+
+    public void setUserPartyQuest(Set<UserPartyQuest> userPartyQuest) {
+        this.userPartyQuest = userPartyQuest;
     }
 }

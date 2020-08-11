@@ -24,6 +24,7 @@ import com.geoly.app.jooq.tables.Token;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserBadge;
 import com.geoly.app.jooq.tables.UserOption;
+import com.geoly.app.jooq.tables.UserPartyQuest;
 import com.geoly.app.jooq.tables.UserQuest;
 import com.geoly.app.jooq.tables.UserReport;
 import com.geoly.app.jooq.tables.UserRole;
@@ -53,7 +54,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Geoly extends SchemaImpl {
 
-    private static final long serialVersionUID = 2125973484;
+    private static final long serialVersionUID = -1130164587;
 
     /**
      * The reference instance of <code>geoly</code>
@@ -161,6 +162,11 @@ public class Geoly extends SchemaImpl {
     public final UserOption USER_OPTION = com.geoly.app.jooq.tables.UserOption.USER_OPTION;
 
     /**
+     * The table <code>geoly.USER_PARTY_QUEST</code>.
+     */
+    public final UserPartyQuest USER_PARTY_QUEST = com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST;
+
+    /**
      * The table <code>geoly.USER_QUEST</code>.
      */
     public final UserQuest USER_QUEST = com.geoly.app.jooq.tables.UserQuest.USER_QUEST;
@@ -232,6 +238,7 @@ public class Geoly extends SchemaImpl {
             User.USER,
             UserBadge.USER_BADGE,
             UserOption.USER_OPTION,
+            UserPartyQuest.USER_PARTY_QUEST,
             UserQuest.USER_QUEST,
             UserReport.USER_REPORT,
             UserRole.USER_ROLE);

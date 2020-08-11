@@ -3,6 +3,7 @@ package com.geoly.app.models;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "party_quest")
@@ -27,6 +28,9 @@ public class PartyQuest {
     @Column(name = "active", columnDefinition = "TINYINT")
     @NotNull
     private boolean active;
+
+    @OneToMany(targetEntity = UserPartyQuest.class, fetch = FetchType.LAZY, mappedBy = "partyQuest", cascade = CascadeType.ALL)
+    private Set<UserPartyQuest> userPartyQuest;
 
     public PartyQuest() {
     }
@@ -61,5 +65,13 @@ public class PartyQuest {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Set<UserPartyQuest> getUserPartyQuest() {
+        return userPartyQuest;
+    }
+
+    public void setUserPartyQuest(Set<UserPartyQuest> userPartyQuest) {
+        this.userPartyQuest = userPartyQuest;
     }
 }
