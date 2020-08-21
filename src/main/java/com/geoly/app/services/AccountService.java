@@ -1,6 +1,5 @@
 package com.geoly.app.services;
 
-import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.LanguageRepository;
 import com.geoly.app.repositories.RoleRepository;
@@ -9,11 +8,6 @@ import com.geoly.app.repositories.UserRepository;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.model.CityResponse;
-import com.socketLabs.injectionApi.SendResponse;
-import com.socketLabs.injectionApi.SocketLabsClient;
-import com.socketLabs.injectionApi.message.BulkMessage;
-import com.socketLabs.injectionApi.message.BulkRecipient;
-import com.socketLabs.injectionApi.message.EmailAddress;
 import io.sentry.Sentry;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -25,7 +19,6 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.net.InetAddress;
