@@ -31,8 +31,10 @@ import java.util.EnumSet;
         securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+
     public SecurityConfiguration(ServletContext servletContext){
         servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
+
     }
 
     @Override
@@ -60,7 +62,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
