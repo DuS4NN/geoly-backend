@@ -4,6 +4,7 @@ import com.geoly.app.config.AuthenticationHandler.CustomAuthenticationFailureHan
 import com.geoly.app.config.AuthenticationHandler.CustomAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,7 @@ import java.util.EnumSet;
 
 @Configuration
 @EnableWebSecurity
+@EnableAsync
 @EnableGlobalAuthentication
 @EnableGlobalMethodSecurity(
         jsr250Enabled = true,
@@ -31,10 +33,8 @@ import java.util.EnumSet;
         securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-
     public SecurityConfiguration(ServletContext servletContext){
         servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
-
     }
 
     @Override

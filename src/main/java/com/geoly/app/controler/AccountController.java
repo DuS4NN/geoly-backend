@@ -1,6 +1,8 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.Coordinates;
 import com.geoly.app.models.User;
 import com.geoly.app.services.AccountService;
@@ -27,15 +29,15 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public List register(@Validated @RequestBody User user, @RequestParam(name = "languageId") int languageId, HttpServletRequest request){
+    public Response register(@Validated @RequestBody User user, @RequestParam(name = "languageId") int languageId, HttpServletRequest request){
         ValidatorResponse validatorResponse = validator.registerValidator(user, languageId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             Coordinates coordinates = accountService.findAddressFromIp(request.getRemoteAddr());
             return accountService.register(user, languageId, coordinates);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
