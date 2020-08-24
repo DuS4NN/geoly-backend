@@ -137,6 +137,9 @@ public class AccountService {
         Optional<User> user = userRepository.findByEmail(email);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
+        Optional<Token> tokenOld = tokenRepository.findByUserAndAction(user.get(), TokenType.PASSWORD_RESET);
+        if(tokenOld.isPresent()) entityManager.remove(tokenOld.get());
+
         if(!user.get().isVerified()) return new Response(StatusMessage.ACCOUNT_NOT_VERIFIED, HttpStatus.METHOD_NOT_ALLOWED, null);
         if(!user.get().isActive()) return new Response(StatusMessage.ACCOUNT_NOT_ACTIVE, HttpStatus.METHOD_NOT_ALLOWED, null);
 
@@ -153,9 +156,17 @@ public class AccountService {
         return new Response(StatusMessage.EMAIL_SENT, HttpStatus.ACCEPTED, null);
     }
 
-    public List resetPassword(String tokenValue, String password){
+    @Transactional(rollbackOn = Exception.class)
+    public Response resetPassword(String tokenValue, String password){
+        System.out.println(tokenValue);
         Optional<Token> token = tokenRepository.findByTokenAndAction(tokenValue, TokenType.PASSWORD_RESET);
-        if(!token.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_TOKEN, HttpStatus.NOT_FOUND));
+        if(!token.isPresent()) return new Response(StatusMessage.INVALID_TOKEN, HttpStatus.NOT_FOUND, null);
+
+        if(System.currentTimeMillis() - token.get().getCreatedAt().getTime() > 604800000){
+            System.out.println(tokenValue);
+            entityManager.remove(token.get());
+            return new Response(StatusMessage.INVALID_TOKEN, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
 
         User user = token.get().getUser();
         user.setPassword(argon2PasswordEncoder.encode(password));
@@ -163,6 +174,6 @@ public class AccountService {
         entityManager.remove(token.get());
         entityManager.merge(user);
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.PASSWORD_RESET, HttpStatus.OK));
+        return new Response(StatusMessage.PASSWORD_RESET, HttpStatus.ACCEPTED, null);
     }
 }

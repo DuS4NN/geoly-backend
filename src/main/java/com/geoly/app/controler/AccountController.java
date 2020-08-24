@@ -60,11 +60,14 @@ public class AccountController {
     }
 
     @GetMapping("/resetpassword")
-    public List resetPassword(@RequestParam("token") String token, @RequestParam("password") String password){
+    public Response resetPassword(@RequestParam("token") String token, @RequestParam("password") String password){
+        ValidatorResponse validatorResponse = validator.checkOnlyPassword(password);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
         try{
             return accountService.resetPassword(token, password);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 }

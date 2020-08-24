@@ -37,6 +37,11 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
+    public ValidatorResponse checkOnlyPassword(String password){
+        if (!validatorMethods.passwordIsValid(password)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_PASSWORD);
+        return new ValidatorResponse(true);
+    }
+
     public ValidatorResponse getAllQuestByParametersValidator(List<Integer> difficulty, List<Integer> review){
         if (difficulty != null) {
             if (!validatorMethods.difficultyIsValid(difficulty))
