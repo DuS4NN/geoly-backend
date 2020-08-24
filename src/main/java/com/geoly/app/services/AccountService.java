@@ -53,10 +53,10 @@ public class AccountService {
         if(!language.isPresent()) return new Response(StatusMessage.LANGUAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<User> userNickName = userRepository.findByNickName(user.getNickName());
-        if(userNickName.isPresent()) return new Response(StatusMessage.NICKNAME_ALREADY_EXISTS, HttpStatus.NOT_ACCEPTABLE, null);
+        if(userNickName.isPresent()) return new Response(StatusMessage.NICKNAME_ALREADY_EXISTS, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         Optional<User> userEmail = userRepository.findByEmail(user.getEmail());
-        if(userEmail.isPresent()) return new Response(StatusMessage.EMAIL_ALREADY_EXISTS, HttpStatus.NOT_ACCEPTABLE, null);
+        if(userEmail.isPresent()) return new Response(StatusMessage.EMAIL_ALREADY_EXISTS, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         Optional<Role> role = roleRepository.findByName(RoleList.USER);
         if(!role.isPresent()) return new Response(StatusMessage.ROLE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
@@ -133,12 +133,12 @@ public class AccountService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List sendResetPasswordEmail(String email){
+    public Response sendResetPasswordEmail(String email){
         Optional<User> user = userRepository.findByEmail(email);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        if(!user.get().isVerified()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_NOT_VERIFIED, HttpStatus.METHOD_NOT_ALLOWED));
-        if(!user.get().isActive()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_NOT_ACTIVE, HttpStatus.METHOD_NOT_ALLOWED));
+        if(!user.get().isVerified()) return new Response(StatusMessage.ACCOUNT_NOT_VERIFIED, HttpStatus.METHOD_NOT_ALLOWED, null);
+        if(!user.get().isActive()) return new Response(StatusMessage.ACCOUNT_NOT_ACTIVE, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         Token token = new Token();
         token.setAction(TokenType.PASSWORD_RESET);
@@ -150,7 +150,7 @@ public class AccountService {
         String emailText = "Reset your password \n localhost:8080/resetpassword?token="+tokenValue;
         api.sendEmail(emailText, user.get().getEmail(), "Password reset");
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.EMAIL_SENT, HttpStatus.OK));
+        return new Response(StatusMessage.EMAIL_SENT, HttpStatus.ACCEPTED, null);
     }
 
     public List resetPassword(String tokenValue, String password){

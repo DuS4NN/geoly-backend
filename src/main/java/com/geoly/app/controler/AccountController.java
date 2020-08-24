@@ -8,13 +8,10 @@ import com.geoly.app.models.User;
 import com.geoly.app.services.AccountService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -51,14 +48,14 @@ public class AccountController {
     }
 
     @GetMapping("/reset")
-    public List sendResetPasswordEmail(@RequestParam("email") String email){
+    public Response sendResetPasswordEmail(@RequestParam("email") String email){
         ValidatorResponse validatorResponse = validator.checkOnlyEmail(email);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             return accountService.sendResetPasswordEmail(email);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
