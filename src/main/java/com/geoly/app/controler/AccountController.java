@@ -1,7 +1,6 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.config.API;
-import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.Coordinates;
 import com.geoly.app.models.User;
@@ -12,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @RestController
 public class AccountController {
@@ -39,11 +37,11 @@ public class AccountController {
     }
 
     @GetMapping("/verify")
-    public List verifyAccount(@RequestParam(name = "token") String token){
+    public Response verifyAccount(@RequestParam(name = "token") String token){
         try{
             return accountService.verifyAccount(token);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 

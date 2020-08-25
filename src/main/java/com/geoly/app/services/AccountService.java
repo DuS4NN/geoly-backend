@@ -14,9 +14,6 @@ import io.sentry.Sentry;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -90,7 +87,7 @@ public class AccountService {
         token.setToken(tokenValue);
         entityManager.persist(token);
 
-        String emailText = "Verify your account \n localhost:8080/verify?token="+tokenValue;
+        String emailText = "Verify your account \n localhost:3000/verify/"+tokenValue;
         api.sendEmail(emailText, user.getEmail(), "Email verification");
 
         return new Response(StatusMessage.USER_CREATED, HttpStatus.ACCEPTED, null);
@@ -119,9 +116,9 @@ public class AccountService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List verifyAccount(String tokenValue){
+    public Response verifyAccount(String tokenValue){
         Optional<Token> token = tokenRepository.findByTokenAndAction(tokenValue, TokenType.CONFIRM_EMAIL);
-        if(!token.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_TOKEN, HttpStatus.NOT_FOUND));
+        if(!token.isPresent()) return new Response(StatusMessage.INVALID_TOKEN, HttpStatus.NOT_FOUND, null);
 
         User user = token.get().getUser();
         user.setVerified(true);
@@ -129,7 +126,7 @@ public class AccountService {
         entityManager.remove(token.get());
         entityManager.merge(user);
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACCOUNT_ACTIVATED, HttpStatus.OK));
+        return new Response(StatusMessage.ACCOUNT_ACTIVATED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -150,7 +147,7 @@ public class AccountService {
         token.setToken(tokenValue);
         entityManager.persist(token);
 
-        String emailText = "Reset your password \n localhost:8080/resetpassword?token="+tokenValue;
+        String emailText = "Reset your password \n localhost:3000/forgot/"+tokenValue;
         api.sendEmail(emailText, user.get().getEmail(), "Password reset");
 
         return new Response(StatusMessage.EMAIL_SENT, HttpStatus.ACCEPTED, null);
