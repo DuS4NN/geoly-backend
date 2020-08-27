@@ -1,5 +1,6 @@
 package com.geoly.app.services;
 
+import com.geoly.app.config.API;
 import com.geoly.app.models.Language;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -68,18 +69,18 @@ public class SettingsService {
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
 
-        File dir = new File("src/main/resources/static/image/user_profile_image/"+userId);
+        File dir = new File(API.userImageUrl+userId);
         if(!dir.exists()){
             dir.mkdirs();
         }else{
-        File oldImage = new File("src/main/resources/static/image/user_profile_image/"+userId+"/"+userId+".jpg");
+        File oldImage = new File(API.userImageUrl+userId+"/"+userId+".jpg");
         oldImage.delete();
         }
 
         Source source = Tinify.fromBuffer(file.getBytes());
-        source.toFile("src/main/resources/static/image/user_profile_image/"+userId+"/"+userId+".jpg");
+        source.toFile(API.userImageUrl+userId+"/"+userId+".jpg");
 
-        user.get().setProfileImageUrl("src/main/resources/static/image/user_profile_image/"+userId+".jpg");
+        user.get().setProfileImageUrl(API.userImageUrl+userId+"/"+userId+".jpg");
         entityManager.merge(user.get());
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.PROFILE_IMAGE_SET, HttpStatus.OK));
@@ -89,7 +90,7 @@ public class SettingsService {
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
-        user.get().setProfileImageUrl("src/main/resources/static/image/default_profile_picture.png");
+        user.get().setProfileImageUrl(API.userImageUrl+"default_profile_picture.svg");
         entityManager.merge(user.get());
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.PROFILE_IMAGE_DELETED, HttpStatus.OK));

@@ -18,6 +18,8 @@ import java.util.List;
 public class API {
 
     private JavaMailSender mailSender;
+    public static String questImageUrl = "static/images/quest/";
+    public static String userImageUrl = "static/images/user/";
 
     public API(JavaMailSender mailSender) {
         this.mailSender = mailSender;

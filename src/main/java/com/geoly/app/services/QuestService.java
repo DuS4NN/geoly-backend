@@ -1,5 +1,6 @@
 package com.geoly.app.services;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.EditQuest;
 import com.geoly.app.jooq.tables.Quest;
@@ -58,7 +59,7 @@ public class QuestService {
 
         imageRepository.deleteAllByQuest(quest.get());
 
-        File dir = new File("src/main/resources/static/image/quest_image/"+questId);
+        File dir = new File(API.questImageUrl+questId);
         if(!dir.exists()){
             dir.mkdirs();
         }
@@ -71,11 +72,11 @@ public class QuestService {
 
         for(MultipartFile file : files){
             Source source = Tinify.fromBuffer(file.getBytes());
-            source.toFile("src/main/resources/static/image/quest_image/"+questId+"/"+count+".jpg");
+            source.toFile(API.questImageUrl+questId+"/"+count+".jpg");
 
             Image image = new Image();
             image.setQuest(quest.get());
-            image.setImageUrl("src/main/resources/static/image/quest_image/"+questId+"/"+count+".jpg");
+            image.setImageUrl(API.questImageUrl+questId+"/"+count+".jpg");
             entityManager.persist(image);
 
             count++;

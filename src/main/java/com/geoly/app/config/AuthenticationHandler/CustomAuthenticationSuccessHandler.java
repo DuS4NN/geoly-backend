@@ -34,6 +34,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if(!userOption.isPresent()) return;
 
         data.put("nickName", customUserDetails.getUser().getNickName());
+        data.put("profileImage", customUserDetails.getUser().getProfileImageUrl());
         data.put("mapTheme", userOption.get().getMapTheme());
         data.put("darkMode", userOption.get().isDarkMode());
         data.put("languageId", userOption.get().getLanguage().getId());

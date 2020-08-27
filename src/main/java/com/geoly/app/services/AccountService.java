@@ -63,7 +63,7 @@ public class AccountService {
         newUser.setNickName(user.getNickName());
         newUser.setEmail(user.getEmail());
         newUser.setAbout("");
-        newUser.setProfileImageUrl("src/main/resources/static/image/default_profile_picture.png");
+        newUser.setProfileImageUrl(API.userImageUrl+"default_profile_picture.jpg");
         newUser.setActive(true);
         newUser.setVerified(false);
         Set<Role> roles =  new HashSet<>();
