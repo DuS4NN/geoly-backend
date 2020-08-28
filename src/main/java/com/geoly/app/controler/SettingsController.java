@@ -1,6 +1,8 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.UserOption;
 import com.geoly.app.services.SettingsService;
@@ -67,8 +69,19 @@ public class SettingsController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("settings/darkmode")
+    public Response toggleDarkMode(@RequestParam(name="toggle") boolean toggle, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return settingsService.toggleDarkMode(toggle, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/settings/changepassword")
-    public List changePassword(String newPassword, String oldPassword, Authentication authentication){
+    public List changePassword(@RequestParam(name="newPassword") String newPassword, @RequestParam(name="oldPassword") String oldPassword, Authentication authentication){
         ValidatorResponse validatorResponse = validator.changePasswordValidator(newPassword);
         if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 

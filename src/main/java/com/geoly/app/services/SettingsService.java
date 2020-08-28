@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.API;
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.Language;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -38,6 +39,20 @@ public class SettingsService {
         this.userRepository = userRepository;
         this.userOptionRepository = userOptionRepository;
         this.languageRepository = languageRepository;
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response toggleDarkMode(boolean toggle, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<UserOption> userOption = userOptionRepository.findByUser(user.get());
+        if(!userOption.isPresent()) return new Response(StatusMessage.USER_OPTION_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        userOption.get().setDarkMode(toggle);
+        entityManager.merge(userOption.get());
+
+        return new Response(StatusMessage.DARK_MODE_CHANGED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
