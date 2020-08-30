@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Point;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.models.Badge;
@@ -14,15 +15,12 @@ import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +41,7 @@ public class RankService {
         this.userRepository = userRepository;
     }
 
-    public List getTopPlayers(){
+    public Response getTopPlayers(){
         Select<?> query =
             create.select(sum(Point.POINT.AMOUNT), User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL)
             .from(Point.POINT)
@@ -58,11 +56,11 @@ public class RankService {
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.TOP_PLAYERS_NOT_FOUND, HttpStatus.NO_CONTENT));
-        return result;
+        if(result.isEmpty()) return new Response(StatusMessage.TOP_PLAYERS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-    public List getPlayer(int userId){
+    public Response getPlayer(int userId){
         Table<?> rank =
             create.select(Point.POINT.USER_ID.as("userId"))
             .from(Point.POINT)
@@ -90,12 +88,16 @@ public class RankService {
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        Object[] obj = (Object[]) result.get(0);
-        if(Integer.parseInt(String.valueOf(obj[0])) <= 2){
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_ALREADY_IN_TOP, HttpStatus.CONFLICT));
+        if(result.isEmpty()){
+            return new Response(StatusMessage.USER_NOT_IN_TOP, HttpStatus.NO_CONTENT, null);
         }
 
-        return result;
+        Object[] obj = (Object[]) result.get(0);
+        if(Integer.parseInt(String.valueOf(obj[0])) <= 2){
+            return new Response(StatusMessage.USER_ALREADY_IN_TOP, HttpStatus.NOT_ACCEPTABLE, null);
+        }
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     @Transactional(rollbackOn = Exception.class)

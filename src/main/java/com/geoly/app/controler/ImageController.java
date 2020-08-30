@@ -17,11 +17,15 @@ public class ImageController {
 
     @GetMapping(value = "/image", produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody
-    byte[] getImage(@RequestParam(name = "url") String url) throws IOException {
-        File imgPath = new File(url);
-        BufferedImage bufferedImage = ImageIO.read(imgPath);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "jpg", bos);
-        return bos.toByteArray();
+    byte[] getImage(@RequestParam(name = "url") String url){
+        try{
+            File imgPath = new File(url);
+            BufferedImage bufferedImage = ImageIO.read(imgPath);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "jpg", bos);
+            return bos.toByteArray();
+        }catch (Exception e){
+            return new byte[0];
+        }
     }
 }
