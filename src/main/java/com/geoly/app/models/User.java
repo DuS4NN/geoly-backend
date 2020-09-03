@@ -54,7 +54,7 @@ public class User implements Serializable {
     @CreationTimestamp
     private Date createdAt;
 
-    @Column(name = "address", columnDefinition = "VARCHAR(30)")
+    @Column(name = "address", columnDefinition = "VARCHAR(100)")
     private String address;
 
     @ManyToMany

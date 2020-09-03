@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserPartyQuest extends TableImpl<UserPartyQuestRecord> {
 
-    private static final long serialVersionUID = -2072304582;
+    private static final long serialVersionUID = -679382178;
 
     /**
      * The reference instance of <code>geoly.USER_PARTY_QUEST</code>
@@ -137,7 +137,7 @@ public class UserPartyQuest extends TableImpl<UserPartyQuestRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK2SU24YK08TSVBUNLJQ37QS3H3_INDEX_5, Indexes.FKHV562R9D4GYY92EQSJGXTP3AN_INDEX_5, Indexes.FKQVJ70L8UEE5IOUNI0L5473MIJ_INDEX_5, Indexes.PRIMARY_KEY_55);
+        return Arrays.<Index>asList(Indexes.FK2SU24YK08TSVBUNLJQ37QS3H3_INDEX_5, Indexes.FKQVJ70L8UEE5IOUNI0L5473MIJ_INDEX_5, Indexes.FKS833EIU43JFFF0Q9OP2BCSSSA_INDEX_5, Indexes.PRIMARY_KEY_55);
     }
 
     /**
@@ -161,14 +161,14 @@ public class UserPartyQuest extends TableImpl<UserPartyQuestRecord> {
      */
     @Override
     public List<ForeignKey<UserPartyQuestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserPartyQuestRecord, ?>>asList(Keys.FKHV562R9D4GYY92EQSJGXTP3AN, Keys.FK2SU24YK08TSVBUNLJQ37QS3H3, Keys.FKQVJ70L8UEE5IOUNI0L5473MIJ);
+        return Arrays.<ForeignKey<UserPartyQuestRecord, ?>>asList(Keys.FKS833EIU43JFFF0Q9OP2BCSSSA, Keys.FK2SU24YK08TSVBUNLJQ37QS3H3, Keys.FKQVJ70L8UEE5IOUNI0L5473MIJ);
     }
 
-    public Stage fkhv562r9d4gyy92eqsjgxtp3an() {
-        return new Stage(this, Keys.FKHV562R9D4GYY92EQSJGXTP3AN);
+    public PartyQuest partyQuest() {
+        return new PartyQuest(this, Keys.FKS833EIU43JFFF0Q9OP2BCSSSA);
     }
 
-    public Stage fk2su24yk08tsvbunljq37qs3h3() {
+    public Stage stage() {
         return new Stage(this, Keys.FK2SU24YK08TSVBUNLJQ37QS3H3);
     }
 

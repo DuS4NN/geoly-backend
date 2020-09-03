@@ -1,6 +1,7 @@
 package com.geoly.app.validators;
 
 import com.geoly.app.dao.EditQuest;
+import com.geoly.app.dao.questSearch;
 import com.geoly.app.models.QuestReview;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -42,15 +43,13 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
-    public ValidatorResponse getAllQuestByParametersValidator(List<Integer> difficulty, List<Integer> review){
-        if (difficulty != null) {
-            if (!validatorMethods.difficultyIsValid(difficulty))
-                return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
-        }
-        if (review != null) {
-            if (!validatorMethods.reviewIsValid(review))
-                return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_REVIEW);
-        }
+    public ValidatorResponse getAllQuestByParametersInRadius(questSearch questSearch){
+        if(questSearch.getCategoryId() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_CATEGORY);
+        if(questSearch.getDifficulty() == null || !validatorMethods.difficultyArrayIsValid(questSearch.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
+        if(questSearch.getReview() == null || !validatorMethods.reviewArrayIsValid(questSearch.getReview())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_REVIEW);
+        if(questSearch.getCoordinatesNw() == null || !validatorMethods.coordinatesArrayIsValid(questSearch.getCoordinatesNw())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_COORDINATES);
+        if(questSearch.getCoordinatesSe() == null || !validatorMethods.coordinatesArrayIsValid(questSearch.getCoordinatesSe())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_COORDINATES);
+
         return new ValidatorResponse(true);
     }
 

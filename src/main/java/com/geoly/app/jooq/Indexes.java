@@ -99,8 +99,8 @@ public class Indexes {
     public static final Index FKR6EERMF5AQ2NUA7HSSPMFFG02_INDEX_D = Indexes0.FKR6EERMF5AQ2NUA7HSSPMFFG02_INDEX_D;
     public static final Index PRIMARY_KEY_D = Indexes0.PRIMARY_KEY_D;
     public static final Index FK2SU24YK08TSVBUNLJQ37QS3H3_INDEX_5 = Indexes0.FK2SU24YK08TSVBUNLJQ37QS3H3_INDEX_5;
-    public static final Index FKHV562R9D4GYY92EQSJGXTP3AN_INDEX_5 = Indexes0.FKHV562R9D4GYY92EQSJGXTP3AN_INDEX_5;
     public static final Index FKQVJ70L8UEE5IOUNI0L5473MIJ_INDEX_5 = Indexes0.FKQVJ70L8UEE5IOUNI0L5473MIJ_INDEX_5;
+    public static final Index FKS833EIU43JFFF0Q9OP2BCSSSA_INDEX_5 = Indexes0.FKS833EIU43JFFF0Q9OP2BCSSSA_INDEX_5;
     public static final Index PRIMARY_KEY_55 = Indexes0.PRIMARY_KEY_55;
     public static final Index FK8JDYAKV4ATARQD05U7AXUBMYK_INDEX_C = Indexes0.FK8JDYAKV4ATARQD05U7AXUBMYK_INDEX_C;
     public static final Index FKKMK9IF2IG0F3GQ6TTISKHIO7C_INDEX_C = Indexes0.FKKMK9IF2IG0F3GQ6TTISKHIO7C_INDEX_C;
@@ -164,8 +164,8 @@ public class Indexes {
         public static Index FKR6EERMF5AQ2NUA7HSSPMFFG02_INDEX_D = Internal.createIndex("FKR6EERMF5AQ2NUA7HSSPMFFG02_INDEX_D", UserOption.USER_OPTION, new OrderField[] { UserOption.USER_OPTION.LANGUAGE_ID }, false);
         public static Index PRIMARY_KEY_D = Internal.createIndex("PRIMARY_KEY_D", UserOption.USER_OPTION, new OrderField[] { UserOption.USER_OPTION.ID }, true);
         public static Index FK2SU24YK08TSVBUNLJQ37QS3H3_INDEX_5 = Internal.createIndex("FK2SU24YK08TSVBUNLJQ37QS3H3_INDEX_5", UserPartyQuest.USER_PARTY_QUEST, new OrderField[] { UserPartyQuest.USER_PARTY_QUEST.STAGE_ID }, false);
-        public static Index FKHV562R9D4GYY92EQSJGXTP3AN_INDEX_5 = Internal.createIndex("FKHV562R9D4GYY92EQSJGXTP3AN_INDEX_5", UserPartyQuest.USER_PARTY_QUEST, new OrderField[] { UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID }, false);
         public static Index FKQVJ70L8UEE5IOUNI0L5473MIJ_INDEX_5 = Internal.createIndex("FKQVJ70L8UEE5IOUNI0L5473MIJ_INDEX_5", UserPartyQuest.USER_PARTY_QUEST, new OrderField[] { UserPartyQuest.USER_PARTY_QUEST.USER_ID }, false);
+        public static Index FKS833EIU43JFFF0Q9OP2BCSSSA_INDEX_5 = Internal.createIndex("FKS833EIU43JFFF0Q9OP2BCSSSA_INDEX_5", UserPartyQuest.USER_PARTY_QUEST, new OrderField[] { UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID }, false);
         public static Index PRIMARY_KEY_55 = Internal.createIndex("PRIMARY_KEY_55", UserPartyQuest.USER_PARTY_QUEST, new OrderField[] { UserPartyQuest.USER_PARTY_QUEST.ID }, true);
         public static Index FK8JDYAKV4ATARQD05U7AXUBMYK_INDEX_C = Internal.createIndex("FK8JDYAKV4ATARQD05U7AXUBMYK_INDEX_C", UserQuest.USER_QUEST, new OrderField[] { UserQuest.USER_QUEST.USER_ID }, false);
         public static Index FKKMK9IF2IG0F3GQ6TTISKHIO7C_INDEX_C = Internal.createIndex("FKKMK9IF2IG0F3GQ6TTISKHIO7C_INDEX_C", UserQuest.USER_QUEST, new OrderField[] { UserQuest.USER_QUEST.STAGE_ID }, false);

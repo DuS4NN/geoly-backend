@@ -1,6 +1,7 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.questSearch;
 import com.geoly.app.models.Category;
 import com.geoly.app.services.MapService;
 import com.geoly.app.validators.Validator;
@@ -34,13 +35,13 @@ public class MapController {
         }
     }
 
-    @GetMapping(path = "/")
-    public List getAllQuestByParameters(@RequestParam(required = false, name = "categoryId") List<Integer> categoryId, @RequestParam(required = false, name = "difficulty") List<Integer> difficulty, @RequestParam(required = false, name = "review") List<Integer> review, @RequestParam(required = false, name = "unreviewed") boolean unreviewed){
-        ValidatorResponse validatorResponse = validator.getAllQuestByParametersValidator(difficulty, review);
+    @PostMapping(path = "/questByParam")
+    public List getAllQuestByParametersInRadius(@RequestBody questSearch questSearch){
+        ValidatorResponse validatorResponse = validator.getAllQuestByParametersInRadius(questSearch);
         if (!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
         try{
-            return mapService.getAllQuestsByParameters(categoryId, difficulty, review, unreviewed);
+            return mapService.getAllQuestByParametersInRadius(questSearch);
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

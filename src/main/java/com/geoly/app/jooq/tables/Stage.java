@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = 1584076188;
+    private static final long serialVersionUID = -1340876610;
 
     /**
      * The reference instance of <code>geoly.STAGE</code>
@@ -68,12 +68,12 @@ public class Stage extends TableImpl<StageRecord> {
     /**
      * The column <code>geoly.STAGE.LATITUDE</code>.
      */
-    public final TableField<StageRecord, String> LATITUDE = createField("LATITUDE", org.jooq.impl.SQLDataType.VARCHAR(10), this, "");
+    public final TableField<StageRecord, Double> LATITUDE = createField("LATITUDE", org.jooq.impl.SQLDataType.DOUBLE, this, "");
 
     /**
      * The column <code>geoly.STAGE.LONGITUDE</code>.
      */
-    public final TableField<StageRecord, String> LONGITUDE = createField("LONGITUDE", org.jooq.impl.SQLDataType.VARCHAR(10), this, "");
+    public final TableField<StageRecord, Double> LONGITUDE = createField("LONGITUDE", org.jooq.impl.SQLDataType.DOUBLE, this, "");
 
     /**
      * The column <code>geoly.STAGE.QR_CODE_URL</code>.

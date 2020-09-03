@@ -13,14 +13,6 @@ public class ValidatorMethods {
         return id > 0;
     }
 
-    boolean difficultyIsValid(List<Integer> difficulty){
-        return (difficulty.size() == 2 && difficulty.get(0) <= difficulty.get(1));
-    }
-
-    boolean reviewIsValid(List<Integer> review){
-        return (review.size() == 2 && review.get(0) <= review.get(1));
-    }
-
     boolean reviewTextFormatIsValid(String reviewText){
         return (reviewText != null && reviewText.length() > 0);
     }
@@ -85,5 +77,17 @@ public class ValidatorMethods {
 
     boolean partyNameLengthIsValid(String name){
         return name.length() > 1 && name.length()<16;
+    }
+
+    boolean difficultyArrayIsValid(int[] difficultyArray){
+        return difficultyArray.length == 2 && difficultyArray[0] > 0 && difficultyArray[0] < 6 && difficultyArray[1] > 0 && difficultyArray[1] < 6;
+    }
+
+    boolean reviewArrayIsValid(int[] reviewArray){
+        return reviewArray.length == 2 && reviewArray[0] > 0 && reviewArray[0] < 6 && reviewArray[1] > 0 && reviewArray[1] < 6;
+    }
+
+    boolean coordinatesArrayIsValid(float[] coordinatesArray){
+        return coordinatesArray.length == 2;
     }
 }

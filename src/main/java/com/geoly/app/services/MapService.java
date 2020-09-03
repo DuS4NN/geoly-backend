@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.questSearch;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
@@ -17,8 +18,8 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 
@@ -119,31 +120,37 @@ public class MapService {
         return response;
     }
 
-    public List getAllQuestsByParameters(List<Integer> categoryId, List<Integer> difficulty, List<Integer> review, boolean unreviewed){
-        Condition where = DSL.trueCondition();
+    public List getAllQuestByParametersInRadius(questSearch questSearch){
 
-        if(categoryId != null && !categoryId.isEmpty()){
-            where = where.and(Category.CATEGORY.ID.in(categoryId));
+        System.out.println("NW:");
+        System.out.println(questSearch.getCoordinatesNw()[0]);
+        System.out.println(questSearch.getCoordinatesNw()[1]);
+        System.out.println("SE:");
+        System.out.println(questSearch.getCoordinatesSe()[0]);
+        System.out.println(questSearch.getCoordinatesSe()[1]);
+
+        Condition where = DSL.trueCondition();
+        if(questSearch.getCategoryId().length > 0){
+            List<Integer> list = Arrays.stream(questSearch.getCategoryId()).boxed().collect(Collectors.toList());
+            where = where.and(Category.CATEGORY.ID.in(list));
         }
-        if(difficulty != null && !difficulty.isEmpty() && difficulty.size() == 2){
-            where = where.and(Quest.QUEST.DIFFICULTY.between(DSL.coerce(difficulty.get(0), Byte.class)).and(DSL.coerce(difficulty.get(1), Byte.class)));
-        }
+
+        where = where.and(Quest.QUEST.DIFFICULTY.between(DSL.coerce(questSearch.getDifficulty()[0], Byte.class)).and(DSL.coerce(questSearch.getDifficulty()[1], Byte.class)));
 
         Condition having = DSL.trueCondition();
+        having = having.and(avg(QuestReview.QUEST_REVIEW.REVIEW).between(DSL.coerce(questSearch.getReview()[0], BigDecimal.class)).and(DSL.coerce(questSearch.getReview()[1], BigDecimal.class)));
 
-        if(review != null && !review.isEmpty() && review.size() == 2){
-            having = having.and(avg(QuestReview.QUEST_REVIEW.REVIEW).between(DSL.coerce(review.get(0), BigDecimal.class)).and(DSL.coerce(review.get(1), BigDecimal.class)));
-        }
-        if(unreviewed){
+        if(questSearch.isUnreviewed()){
            having = having.or(avg(QuestReview.QUEST_REVIEW.REVIEW).isNull());
         }
 
         Table<?> coordinates =
-                create.select(min(Stage.STAGE.ID), Stage.STAGE.LONGITUDE.as("longitude"), Stage.STAGE.LATITUDE.as("latitude"), Stage.STAGE.QUEST_ID)
-                .from(Stage.STAGE)
-                .groupBy(Stage.STAGE.QUEST_ID)
-                .asTable("stage");
-
+            create.select(min(Stage.STAGE.ID), Stage.STAGE.LONGITUDE.as("longitude"), Stage.STAGE.LATITUDE.as("latitude"), Stage.STAGE.QUEST_ID)
+            .from(Stage.STAGE)
+            .groupBy(Stage.STAGE.QUEST_ID)
+            .having(Stage.STAGE.LONGITUDE.between(DSL.coerce(questSearch.getCoordinatesNw()[0], Double.class)).and(DSL.coerce(questSearch.getCoordinatesNw()[1], Double.class)))
+            .and(Stage.STAGE.LATITUDE.between(DSL.coerce(questSearch.getCoordinatesSe()[0], Double.class)).and(DSL.coerce(questSearch.getCoordinatesSe()[1], Double.class)))
+            .asTable("stage");
 
         Select<?> query =
             create.select(Quest.QUEST.ID.as("quest_id"), Category.CATEGORY.IMAGE_URL, coordinates.field("latitude"), coordinates.field("longitude"))
@@ -154,7 +161,7 @@ public class MapService {
                     .on(User.USER.ID.eq(Quest.QUEST.USER_ID))
                 .leftJoin(QuestReview.QUEST_REVIEW)
                     .on(QuestReview.QUEST_REVIEW.QUEST_ID.eq(Quest.QUEST.ID))
-                .leftJoin(coordinates)
+                .rightJoin(coordinates)
                     .on(Stage.STAGE.QUEST_ID.eq(Quest.QUEST.ID))
                 .where(Quest.QUEST.ACTIVE.isTrue())
                 .and(Quest.QUEST.PRIVATE_QUEST.isFalse())

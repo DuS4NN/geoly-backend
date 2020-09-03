@@ -25,11 +25,11 @@ public class Stage {
     @NotNull
     private StageType type;
 
-    @Column(name = "latitude", columnDefinition = "VARCHAR(10)")
-    private String latitude;
+    @Column(name = "latitude", columnDefinition = "DOUBLE")
+    private Double latitude;
 
-    @Column(name = "longitude", columnDefinition = "VARCHAR(10)")
-    private String longitude;
+    @Column(name = "longitude", columnDefinition = "DOUBLE")
+    private Double longitude;
 
     @Column(name = "question", columnDefinition = "VARCHAR(200)")
     private String question;
@@ -73,19 +73,19 @@ public class Stage {
         this.type = type;
     }
 
-    public String getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 

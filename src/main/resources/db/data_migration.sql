@@ -2,9 +2,9 @@ INSERT INTO `badge` (`id`, `name`, `image_url`)
 VALUES
 	('1', 'FIRST_IN_SEASON','/static/image/badge/first_in_season.png'),
 	('2', 'SECOND_IN_SEASON','/static/image/badge/second_in_season.png'),
-    ('3', 'THIRD_IN_SEASON','/static/image/badge/third_in_season.png'),
-    ('4', 'TOP_10_IN_SEASON','/static/image/badge/top_50_in_season.png'),
-    ('5', 'TOP_50_IN_SEASON','/static/image/badge/top_50_in_season.png');
+  ('3', 'THIRD_IN_SEASON','/static/image/badge/third_in_season.png'),
+  ('4', 'TOP_10_IN_SEASON','/static/image/badge/top_50_in_season.png'),
+  ('5', 'TOP_50_IN_SEASON','/static/image/badge/top_50_in_season.png');
     
 INSERT INTO `language` (`id`, `image_url`, `name`)
 VALUES
