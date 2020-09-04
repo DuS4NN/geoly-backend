@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.dao.questSearch;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.StatusMessage;
@@ -120,15 +121,7 @@ public class MapService {
         return response;
     }
 
-    public List getAllQuestByParametersInRadius(questSearch questSearch){
-
-        System.out.println("NW:");
-        System.out.println(questSearch.getCoordinatesNw()[0]);
-        System.out.println(questSearch.getCoordinatesNw()[1]);
-        System.out.println("SE:");
-        System.out.println(questSearch.getCoordinatesSe()[0]);
-        System.out.println(questSearch.getCoordinatesSe()[1]);
-
+    public Response getAllQuestByParametersInRadius(questSearch questSearch){
         Condition where = DSL.trueCondition();
         if(questSearch.getCategoryId().length > 0){
             List<Integer> list = Arrays.stream(questSearch.getCategoryId()).boxed().collect(Collectors.toList());
@@ -175,8 +168,8 @@ public class MapService {
         GeolyAPI.setBindParameterValues(q, query);
 
         List response = q.getResultList();
-        if(response.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUESTS_WITH_PARAMETERS_NOT_FOUND, HttpStatus.NOT_FOUND));
-        return response;
+        if(response.isEmpty()) return new Response(StatusMessage.QUESTS_WITH_PARAMETERS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, response);
     }
 
     public List<com.geoly.app.models.Category> getAllCategories(){

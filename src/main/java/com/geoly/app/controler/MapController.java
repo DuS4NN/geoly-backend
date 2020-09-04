@@ -1,6 +1,8 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.dao.questSearch;
 import com.geoly.app.models.Category;
 import com.geoly.app.services.MapService;
@@ -36,14 +38,14 @@ public class MapController {
     }
 
     @PostMapping(path = "/questByParam")
-    public List getAllQuestByParametersInRadius(@RequestBody questSearch questSearch){
+    public Response getAllQuestByParametersInRadius(@RequestBody questSearch questSearch){
         ValidatorResponse validatorResponse = validator.getAllQuestByParametersInRadius(questSearch);
-        if (!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if (!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             return mapService.getAllQuestByParametersInRadius(questSearch);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
