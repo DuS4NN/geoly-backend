@@ -45,6 +45,7 @@ public class Validator {
 
     public ValidatorResponse getAllQuestByParametersInRadius(questSearch questSearch){
         if(questSearch.getCategoryId() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_CATEGORY);
+        if(questSearch.getStageType() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TYPE);
         if(questSearch.getDifficulty() == null || !validatorMethods.difficultyArrayIsValid(questSearch.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
         if(questSearch.getReview() == null || !validatorMethods.reviewArrayIsValid(questSearch.getReview())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_REVIEW);
         if(questSearch.getCoordinatesNw() == null || !validatorMethods.coordinatesArrayIsValid(questSearch.getCoordinatesNw())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_COORDINATES);

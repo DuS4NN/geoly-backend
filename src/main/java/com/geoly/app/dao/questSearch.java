@@ -3,6 +3,7 @@ package com.geoly.app.dao;
 public class questSearch {
 
     private int[] categoryId;
+    private String[] stageType;
     private int[] difficulty;
     private int[] review;
     private boolean unreviewed;
@@ -12,8 +13,9 @@ public class questSearch {
     public questSearch() {
     }
 
-    public questSearch(int[] categoryId, int[] difficulty, int[] review, boolean unreviewed, float[] coordinatesNw, float[] coordinatesSe) {
+    public questSearch(int[] categoryId, String[] stageType, int[] difficulty, int[] review, boolean unreviewed, float[] coordinatesNw, float[] coordinatesSe) {
         this.categoryId = categoryId;
+        this.stageType = stageType;
         this.difficulty = difficulty;
         this.review = review;
         this.unreviewed = unreviewed;
@@ -67,5 +69,13 @@ public class questSearch {
 
     public void setCoordinatesSe(float[] coordinatesSe) {
         this.coordinatesSe = coordinatesSe;
+    }
+
+    public String[] getStageType() {
+        return stageType;
+    }
+
+    public void setStageType(String[] stageType) {
+        this.stageType = stageType;
     }
 }

@@ -5,12 +5,14 @@ import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.dao.questSearch;
 import com.geoly.app.models.Category;
+import com.geoly.app.models.StageType;
 import com.geoly.app.services.MapService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,5 +54,11 @@ public class MapController {
     @GetMapping(path = "/categories")
     public List<Category> getAllCategories(){
         return mapService.getAllCategories();
+    }
+
+
+    @GetMapping(path = "/stagetypes")
+    public List<StageType> getAllStageTypes() {
+        return Arrays.asList(StageType.values());
     }
 }

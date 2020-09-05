@@ -4,6 +4,7 @@ import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.dao.questSearch;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.StageType;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.CategoryRepository;
@@ -122,10 +123,35 @@ public class MapService {
     }
 
     public Response getAllQuestByParametersInRadius(questSearch questSearch){
+
+        List<String> stageType = new ArrayList<>(Arrays.asList(questSearch.getStageType()));
+
         Condition where = DSL.trueCondition();
         if(questSearch.getCategoryId().length > 0){
             List<Integer> list = Arrays.stream(questSearch.getCategoryId()).boxed().collect(Collectors.toList());
             where = where.and(Category.CATEGORY.ID.in(list));
+        }
+
+        if(stageType.size()>0){
+            if(!stageType.contains(StageType.GO_TO_PLACE.name())){
+                stageType.add(StageType.GO_TO_PLACE.name());
+            }
+            System.out.println(stageType.toString());
+
+            where = where.and(
+                (create.select(count().as("count"))
+                    .from(Stage.STAGE)
+                    .where(Stage.STAGE.QUEST_ID.eq(Quest.QUEST.ID))
+                    .and(Stage.STAGE.TYPE.in(stageType)))
+                    .having(field("count").eq(stageType.size()))
+                    .asField()
+                .eq(
+                create.select(count())
+                    .from(Stage.STAGE)
+                    .where(Stage.STAGE.QUEST_ID.eq(Quest.QUEST.ID))
+                    .asField()
+                )
+            );
         }
 
         where = where.and(Quest.QUEST.DIFFICULTY.between(DSL.coerce(questSearch.getDifficulty()[0], Byte.class)).and(DSL.coerce(questSearch.getDifficulty()[1], Byte.class)));
