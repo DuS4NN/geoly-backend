@@ -27,15 +27,15 @@ public class MapController {
             this.validator = validator;
     }
 
-    @GetMapping(path = "/{id}")
-    public List getQuestDetailsById(@PathVariable(name = "id") Integer id){
+    @GetMapping(path = "/questDetail")
+    public Response getQuestDetailsById(@RequestParam(name = "id") int id){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             return mapService.getQuestDetailsById(id);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 

@@ -39,7 +39,7 @@ public class MapService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List getQuestDetailsById(int id){
+    public Response getQuestDetailsById(int id){
         Table<?> avgReview =
                 create.select(avg(QuestReview.QUEST_REVIEW.REVIEW).as("avg"), QuestReview.QUEST_REVIEW.ID.as("id"))
                     .from(QuestReview.QUEST_REVIEW)
@@ -118,8 +118,8 @@ public class MapService {
         GeolyAPI.setBindParameterValues(q, query);
 
         List response = q.getResultList();
-        if(response.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
-        return response;
+        if(response.isEmpty()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, response);
     }
 
     public Response getAllQuestByParametersInRadius(questSearch questSearch){
