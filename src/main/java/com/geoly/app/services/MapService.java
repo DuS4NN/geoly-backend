@@ -90,7 +90,7 @@ public class MapService {
                         .asTable("count_canceled");
 
         Select<?> query =
-                create.select(Quest.QUEST.ID, Quest.QUEST.DESCRIPTION, Quest.QUEST.CREATED_AT, Quest.QUEST.DIFFICULTY, Category.CATEGORY.NAME, Category.CATEGORY.IMAGE_URL, User.USER.NICK_NAME, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"))
+                create.select(Quest.QUEST.ID, Quest.QUEST.NAME.as("questName"), Quest.QUEST.DESCRIPTION, Quest.QUEST.CREATED_AT, Quest.QUEST.DIFFICULTY, Category.CATEGORY.NAME, Category.CATEGORY.IMAGE_URL, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"))
                     .from(countFinished, countOnStage, countCanceled, Quest.QUEST)
                     .leftJoin(Category.CATEGORY)
                         .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
@@ -165,7 +165,7 @@ public class MapService {
             create.select(Quest.QUEST.ID.as("quest_id"), Category.CATEGORY.IMAGE_URL, coordinates.field("latitude"), coordinates.field("longitude"))
                 .from(Quest.QUEST)
                 .leftJoin(Category.CATEGORY)
-                    .on(Category.CATEGORY.ID.eq(Quest.QUEST.ID))
+                    .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
                 .leftJoin(User.USER)
                     .on(User.USER.ID.eq(Quest.QUEST.USER_ID))
                 .leftJoin(QuestReview.QUEST_REVIEW)

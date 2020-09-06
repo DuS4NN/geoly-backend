@@ -13,9 +13,9 @@ VALUES
     
 INSERT INTO `user` (`id`, `nick_name`, `email`, `password`, `profile_image_url`, `about`, `active`, `verified`, `created_at`, `address`)
 VALUES
-	('1', '___DuS4NN', 'dusan@gmail.com', '$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/image/default_profile_picture.png', 'Vol�m sa Du�an :)', '1', '1', '2020-06-10 11:32:48', '51.952659, 7.632473'),
-	('2', 'Marek123', 'marek@gmail.com','$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/image/default_profile_picture.png', 'Vol�m sa Marek :)', '1', '1', '2020-05-23 22:15:40', '48.141666319004486,17.15601670703128'),
-    ('3', 'Petiir', 'petiir@gmail.com','$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/image/default_profile_picture.png', 'Vol�m sa Peto :)', '1', '1', '2020-04-18 18:23:12', '51.952659, 7.632473');
+	('1', '___DuS4NN', 'dusan@gmail.com', '$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/images/user/default_profile_picture.png', 'Vol�m sa Du�an :)', '1', '1', '2020-06-10 11:32:48', '51.952659, 7.632473'),
+	('2', 'Marek123', 'marek@gmail.com','$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/images/user/default_profile_picture.png', 'Vol�m sa Marek :)', '1', '1', '2020-05-23 22:15:40', '48.141666319004486,17.15601670703128'),
+    ('3', 'Petiir', 'petiir@gmail.com','$argon2id$v=19$m=4096,t=3,p=1$UCWqPEcfHpM0qrFioeg7Aw$oM93ZfNUGcxVv0/30bhdxm036wEA6yEUo1srcg4UWVQ', 'static/images/user/default_profile_picture.png', 'Vol�m sa Peto :)', '1', '1', '2020-04-18 18:23:12', '51.952659, 7.632473');
     
 INSERT INTO `user_badge` (`id`, `user_id`, `badge_id`, `created_at`)
 VALUES
