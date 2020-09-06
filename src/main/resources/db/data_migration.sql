@@ -55,11 +55,11 @@ VALUES
     ('4', 'ARCHITECTURE', '/static/image/category/architecture.png'),
     ('5', 'NATURE', '/static/image/category/nature.png');
     
-INSERT INTO `Quest` (`id`, `user_id`, `category_id`, `difficulty`, `description`, `created_at`, `active`, `private_quest`, `daily`)
+INSERT INTO `Quest` (`id`, `user_id`, `category_id`, `difficulty`, `description`, `created_at`, `active`, `private_quest`, `daily`, `name`)
 VALUES
-    ('1', '1', '1', '1', 'Popisok', '2020-05-11 20:48:20', '1', '0', '0'),
-    ('2', '2', '2', '3', '', '2020-05-11 20:48:20', '1', '0', '0'),
-    ('3', '1', '3', '5', 'Nejaky popis', '2020-05-11 20:48:20', '1', '1', '0');
+    ('1', '1', '1', '1', 'Popisok', '2020-05-11 20:48:20', '1', '0', '0', 'Jakubov Palác'),
+    ('2', '2', '2', '3', '', '2020-05-11 20:48:20', '1', '0', '0', 'Test'),
+    ('3', '1', '3', '5', 'Nejaky popis', '2020-05-11 20:48:20', '1', '1', '0', 'Košické jazero');
     
 INSERT INTO `quest_review` (`id`, `user_id`, `quest_id`, `review_text`, `review`, `created_at`)
 VALUES

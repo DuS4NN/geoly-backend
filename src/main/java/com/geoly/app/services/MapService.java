@@ -89,23 +89,13 @@ public class MapService {
                         .and(u1.STATUS.eq(UserQuestStatus.CANCELED.name()))
                         .asTable("count_canceled");
 
-        Table<?> coordinates =
-                create.select(Stage.STAGE.LATITUDE.as("lat"), Stage.STAGE.LONGITUDE.as("lon"), Stage.STAGE.ID.as("id"))
-                        .from(Stage.STAGE)
-                        .where(Stage.STAGE.QUEST_ID.eq(id))
-                        .orderBy(Stage.STAGE.ID)
-                        .limit(1)
-                        .asTable("coordinates");
-
         Select<?> query =
-                create.select(Quest.QUEST.ID, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Category.CATEGORY.NAME, Category.CATEGORY.IMAGE_URL, User.USER.NICK_NAME, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"), coordinates.field("lat"), coordinates.field("lon"))
+                create.select(Quest.QUEST.ID, Quest.QUEST.DESCRIPTION, Quest.QUEST.CREATED_AT, Quest.QUEST.DIFFICULTY, Category.CATEGORY.NAME, Category.CATEGORY.IMAGE_URL, User.USER.NICK_NAME, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"))
                     .from(countFinished, countOnStage, countCanceled, Quest.QUEST)
                     .leftJoin(Category.CATEGORY)
                         .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
                     .leftJoin(User.USER)
                         .on(User.USER.ID.eq(Quest.QUEST.USER_ID))
-                    .leftJoin(coordinates)
-                        .on(coordinates.field("id").isNotNull())
                     .leftJoin(avgReview)
                         .on(avgReview.field("id").isNotNull())
                     .where(Quest.QUEST.ID.eq(id))

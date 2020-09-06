@@ -34,6 +34,9 @@ public class Quest {
     @Column(name = "description", nullable = false, columnDefinition = "VARCHAR(500)")
     private String description;
 
+    @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(50)")
+    private String name;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
     private Date createdAt;
@@ -154,6 +157,14 @@ public class Quest {
 
     public void setImage(Set<Image> image) {
         this.image = image;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Set<PartyQuest> getPartyQuest() {
