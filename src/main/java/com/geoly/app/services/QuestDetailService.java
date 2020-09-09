@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.StatusMessage;
@@ -21,9 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.jooq.impl.DSL.avg;
-import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.max;
+import static org.jooq.impl.DSL.*;
 
 @Service
 public class QuestDetailService {
@@ -48,7 +47,12 @@ public class QuestDetailService {
         this.userQuestRepository = userQuestRepository;
     }
 
-    public List getReviewsOfQuest(int id){
+    public Response getReviewsOfQuest(int id, int userId){
+
+        if(userId != 0){
+
+        }
+
         Select<?> query =
             create.select(QuestReview.QUEST_REVIEW.ID, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.REVIEW, QuestReview.QUEST_REVIEW.CREATED_AT, User.USER.NICK_NAME)
             .from(QuestReview.QUEST_REVIEW)
@@ -59,10 +63,13 @@ public class QuestDetailService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
-        return q.getResultList();
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.NO_REVIEW, HttpStatus.NO_CONTENT, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-    public List getStagesOfQuest(int id){
+    public Response getStagesOfQuest(int id){
         Select<?> query =
             create.select()
             .from(Stage.STAGE)
@@ -70,10 +77,13 @@ public class QuestDetailService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
-        return q.getResultList();
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-    public List getDetailsOfQuest(int id){
+    public Response getDetailsOfQuest(int id){
         Table<?> avgReview =
                 create.select(avg(QuestReview.QUEST_REVIEW.REVIEW).as("avg"), QuestReview.QUEST_REVIEW.ID.as("id"))
                         .from(QuestReview.QUEST_REVIEW)
@@ -123,7 +133,7 @@ public class QuestDetailService {
                         .asTable("count_canceled");
 
         Select<?> query =
-            create.select(Quest.QUEST.ID, Quest.QUEST.DIFFICULTY, Quest.QUEST.DESCRIPTION, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, User.USER.NICK_NAME, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"))
+            create.select(Quest.QUEST.ID, Quest.QUEST.NAME.as("questName"), Quest.QUEST.DIFFICULTY, Quest.QUEST.DESCRIPTION, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"), Quest.QUEST.CREATED_AT)
             .from(countFinished, countOnStage, countCanceled, Quest.QUEST)
             .leftJoin(Category.CATEGORY)
                 .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
@@ -139,10 +149,13 @@ public class QuestDetailService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
-        return q.getResultList();
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-    public List getImagesOfQuest(int id){
+    public Response getImagesOfQuest(int id){
         Select<?> query =
             create.select(Image.IMAGE.IMAGE_URL)
             .from(Image.IMAGE)
@@ -150,7 +163,10 @@ public class QuestDetailService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
-        return q.getResultList();
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.NO_IMAGES, HttpStatus.NO_CONTENT, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     @Transactional(rollbackOn = Exception.class)

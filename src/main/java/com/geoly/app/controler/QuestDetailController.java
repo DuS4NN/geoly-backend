@@ -1,21 +1,20 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.QuestReview;
-import com.geoly.app.models.StatusMessage;
 import com.geoly.app.services.QuestDetailService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,25 +29,55 @@ public class QuestDetailController {
         this.validator = validator;
     }
 
-    @GetMapping(path = "quest/{id}")
-    public List getDetailsOfQuest(@PathVariable(name = "id") int id){
+    @GetMapping(path = "quest/images")
+    public Response getQuestImages(@RequestParam(name = "id") int id){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
-            List<List> questDetails = new ArrayList<>();
-
-            questDetails.add(questDetailService.getDetailsOfQuest(id));
-
-            if(questDetails.get(0).isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
-
-            questDetails.add(questDetailService.getReviewsOfQuest(id));
-            questDetails.add(questDetailService.getStagesOfQuest(id));
-            questDetails.add(questDetailService.getImagesOfQuest(id));
-
-            return questDetails;
+            return questDetailService.getImagesOfQuest(id);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
+        }
+    }
+
+    @GetMapping(path = "quest/review")
+    public Response getQuestReviews(@RequestParam(name = "id") int id, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            if(authentication != null){
+                CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                return questDetailService.getReviewsOfQuest(id, customUserDetails.getUser().getId());
+            }
+            return questDetailService.getReviewsOfQuest(id, 0);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @GetMapping(path = "quest/stage")
+    public Response getQuestStages(@RequestParam(name = "id") int id){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            return questDetailService.getStagesOfQuest(id);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @GetMapping(path = "quest/detail")
+    public Response getQuestDetails(@RequestParam(name = "id") int id){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            return questDetailService.getDetailsOfQuest(id);
+        }catch (Exception e){
+            return API.catchException(e);
         }
     }
 
