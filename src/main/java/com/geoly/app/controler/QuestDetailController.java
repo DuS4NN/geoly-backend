@@ -87,6 +87,37 @@ public class QuestDetailController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("quest/review")
+    public Response removeReview(@RequestParam(name = "reviewId") int reviewId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.removeReviewValidator(reviewId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questDetailService.removeReview(customUserDetails.getUser().getId(), reviewId);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("quest/review")
+    public Response updateReview(@Validated @RequestBody QuestReview questReview, @RequestParam(name = "questId") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.updateReviewValidator(questReview);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questDetailService.updateReview(customUserDetails.getUser().getId(), questReview, questId);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+
+
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("quest/{id}/review")
     public List createReview(@PathVariable(name = "id") int id, @Validated @RequestBody QuestReview questReview, Authentication authentication){
         ValidatorResponse validatorResponse = validator.createReviewValidator(id, questReview);
@@ -95,34 +126,6 @@ public class QuestDetailController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.createReview(customUserDetails.getUser().getId(), id, questReview);
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("quest/{id}/review")
-    public List removeReview(@PathVariable(name = "id") int id, @RequestParam(name = "reviewId") int reviewId, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.removeReviewValidator(id, reviewId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questDetailService.removeReview(customUserDetails.getUser().getId(), id, reviewId);
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PutMapping("quest/{id}/review")
-    public List updateReview(@PathVariable(name = "id") int id, @Validated @RequestBody QuestReview questReview, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.updateReviewValidator(id, questReview);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questDetailService.updateReview(customUserDetails.getUser().getId(), id, questReview);
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

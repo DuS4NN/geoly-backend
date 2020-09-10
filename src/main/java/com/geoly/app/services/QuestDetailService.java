@@ -64,19 +64,20 @@ public class QuestDetailService {
         Object result = q.getSingleResult();
 
         return Integer.parseInt(String.valueOf(result));
-
-
     }
 
     public Response getReviewsOfQuest(int id, int userId, int page){
         Select<?> query =
             create.select(when(QuestReview.QUEST_REVIEW.USER_ID.eq(userId), 1).otherwise(0),
-                        QuestReview.QUEST_REVIEW.ID, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.REVIEW, QuestReview.QUEST_REVIEW.CREATED_AT, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL)
+                        QuestReview.QUEST_REVIEW.ID, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.REVIEW,
+                    when(QuestReview.QUEST_REVIEW.CREATED_AT.isNull(), QuestReview.QUEST_REVIEW.UPDATE_AT).otherwise(QuestReview.QUEST_REVIEW.CREATED_AT),
+                    User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL)
             .from(QuestReview.QUEST_REVIEW)
             .leftJoin(User.USER)
                 .on(User.USER.ID.eq(QuestReview.QUEST_REVIEW.USER_ID))
             .where(User.USER.ACTIVE.isTrue())
             .and(QuestReview.QUEST_REVIEW.QUEST_ID.eq(id))
+            .orderBy(when(QuestReview.QUEST_REVIEW.CREATED_AT.isNull(), QuestReview.QUEST_REVIEW.UPDATE_AT).otherwise(QuestReview.QUEST_REVIEW.CREATED_AT).desc())
             .limit(REVIEW_ON_PAGE)
             .offset((page-1)*REVIEW_ON_PAGE);
 
@@ -230,33 +231,31 @@ public class QuestDetailService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List removeReview(int userId ,int questId, int reviewId){
-        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+    public Response removeReview(int userId, int reviewId){
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
-        Optional<com.geoly.app.models.QuestReview> questReview = questReviewRepository.findByIdAndUserAndQuest(reviewId, user.get(), quest.get());
-        if(!questReview.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+        Optional<com.geoly.app.models.QuestReview> questReview = questReviewRepository.findByIdAndUser(reviewId, user.get());
+        if(!questReview.isPresent()) return new Response(StatusMessage.REVIEW_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         entityManager.remove(questReview.get());
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_DELETED, HttpStatus.OK));
+        return new Response(StatusMessage.REVIEW_DELETED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List updateReview(int userId, int questId, com.geoly.app.models.QuestReview questReview){
+    public Response updateReview(int userId, com.geoly.app.models.QuestReview questReview, int questId){
         Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
-        Optional<com.geoly.app.models.QuestReview> review = questReviewRepository.findByIdAndUserAndQuest(questReview.getId(), user.get(), quest.get());
-        if(!review.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        Optional<com.geoly.app.models.QuestReview> review = questReviewRepository.findByIdAndUser(questReview.getId(), user.get());
+        if(!review.isPresent()) return new Response(StatusMessage.REVIEW_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         questReview.setUser(user.get());
         questReview.setQuest(quest.get());
 
         entityManager.merge(questReview);
-        return Collections.singletonList(questReview);
+        return new Response(StatusMessage.REVIEW_EDITED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
