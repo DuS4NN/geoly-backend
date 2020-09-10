@@ -31,7 +31,7 @@ public class QuestReview {
     @NotNull
     private Quest quest;
 
-    @Column(name = "review_text", columnDefinition = "VARCHAR(1000)")
+    @Column(name = "review_text", columnDefinition = "VARCHAR(500)")
     @NotNull
     private String reviewText;
 

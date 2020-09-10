@@ -18,7 +18,7 @@ public class ValidatorMethods {
     }
 
     boolean reviewTextLengthIsValid(String reviewText){
-        return reviewText.length() < 1001;
+        return reviewText.length() < 501;
     }
 
     boolean reviewFormatIsValid(int review){
