@@ -42,19 +42,24 @@ public class QuestDetailController {
     }
 
     @GetMapping(path = "quest/review")
-    public Response getQuestReviews(@RequestParam(name = "id") int id, Authentication authentication){
+    public Response getQuestReviews(@RequestParam(name = "id") int id, @RequestParam(name = "page") int page, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
         if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             if(authentication != null){
                 CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-                return questDetailService.getReviewsOfQuest(id, customUserDetails.getUser().getId());
+                return questDetailService.getReviewsOfQuest(id, customUserDetails.getUser().getId(), page);
             }
-            return questDetailService.getReviewsOfQuest(id, 0);
+            return questDetailService.getReviewsOfQuest(id, 0, page);
         }catch (Exception e){
             return API.catchException(e);
         }
+    }
+
+    @GetMapping(path = "quest/reviewcount")
+    public int getReviewCount(@RequestParam(name = "id") int id){
+        return questDetailService.getReviewCount(id);
     }
 
     @GetMapping(path = "quest/stage")

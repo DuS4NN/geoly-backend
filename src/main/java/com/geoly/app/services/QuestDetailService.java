@@ -7,6 +7,7 @@ import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.*;
+import com.sun.org.apache.regexp.internal.RE;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
@@ -36,6 +37,8 @@ public class QuestDetailService {
     private QuestReportRepository questReportRepository;
     private UserQuestRepository userQuestRepository;
 
+    private int REVIEW_ON_PAGE = 5;
+
     public QuestDetailService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository, UserQuestRepository userQuestRepository){
         this.entityManager = entityManager;
         this.create = create;
@@ -47,19 +50,35 @@ public class QuestDetailService {
         this.userQuestRepository = userQuestRepository;
     }
 
-    public Response getReviewsOfQuest(int id, int userId){
-
-        if(userId != 0){
-
-        }
-
+    public int getReviewCount(int id){
         Select<?> query =
-            create.select(QuestReview.QUEST_REVIEW.ID, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.REVIEW, QuestReview.QUEST_REVIEW.CREATED_AT, User.USER.NICK_NAME)
+                create.select(count())
+                .from(QuestReview.QUEST_REVIEW)
+                .leftJoin(User.USER)
+                    .on(User.USER.ID.eq(QuestReview.QUEST_REVIEW.USER_ID))
+                .where(User.USER.ACTIVE.isTrue())
+                .and(QuestReview.QUEST_REVIEW.QUEST_ID.eq(id));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object result = q.getSingleResult();
+
+        return Integer.parseInt(String.valueOf(result));
+
+
+    }
+
+    public Response getReviewsOfQuest(int id, int userId, int page){
+        Select<?> query =
+            create.select(when(QuestReview.QUEST_REVIEW.USER_ID.eq(userId), 1).otherwise(0),
+                        QuestReview.QUEST_REVIEW.ID, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.REVIEW, QuestReview.QUEST_REVIEW.CREATED_AT, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL)
             .from(QuestReview.QUEST_REVIEW)
             .leftJoin(User.USER)
                 .on(User.USER.ID.eq(QuestReview.QUEST_REVIEW.USER_ID))
             .where(User.USER.ACTIVE.isTrue())
-            .and(QuestReview.QUEST_REVIEW.QUEST_ID.eq(id));
+            .and(QuestReview.QUEST_REVIEW.QUEST_ID.eq(id))
+            .limit(REVIEW_ON_PAGE)
+            .offset((page-1)*REVIEW_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
