@@ -123,9 +123,6 @@ public class QuestDetailController {
         }
     }
 
-
-
-
     @PreAuthorize("isAuthenticated()")
     @PostMapping("quest/review")
     public Response createReview(@RequestParam(name = "id") int id, @Validated @RequestBody QuestReview questReview, Authentication authentication){
@@ -141,16 +138,16 @@ public class QuestDetailController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("quest/{id}/signin")
-    public List signUpOnQuest(@PathVariable(name = "id") int id, Authentication authentication){
+    @PostMapping("quest/signin")
+    public Response signUpOnQuest(@RequestParam(name = "id") int id, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.signUpOnQuest(customUserDetails.getUser().getId(), id);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 

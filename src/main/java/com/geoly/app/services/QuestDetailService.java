@@ -51,6 +51,52 @@ public class QuestDetailService {
         this.userQuestRepository = userQuestRepository;
     }
 
+    private StatusMessage checkIfUserCanStartQuest(int questId, int userId, int questOwnerId){
+
+        if(userId == questOwnerId){
+            return StatusMessage.USER_CAN_NOT_PLAY_OWN_QUEST;
+        }
+
+        Select<?> activeQuest =
+                create.select(count())
+                    .from(UserQuest.USER_QUEST)
+                    .where(UserQuest.USER_QUEST.USER_ID.eq(userId))
+                    .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()));
+
+        Query q = entityManager.createNativeQuery(activeQuest.getSQL());
+        GeolyAPI.setBindParameterValues(q, activeQuest);
+        Object result = q.getSingleResult();
+
+        if(Integer.parseInt(String.valueOf(result))>0){
+            return StatusMessage.USER_HAS_ACTIVE_QUEST;
+        }
+
+        Table<?> stages =
+                create.select(Stage.STAGE.ID.as("stage_id"))
+                        .from(Stage.STAGE)
+                        .where(Stage.STAGE.QUEST_ID.eq(questId))
+                        .asTable("stage");
+
+        Select<?> alreadyStarted =
+                create.select(when(UserQuest.USER_QUEST.STATUS.isNull(), "0").otherwise(UserQuest.USER_QUEST.STATUS))
+                    .from(UserQuest.USER_QUEST, stages)
+                    .where(UserQuest.USER_QUEST.USER_ID.eq(userId))
+                    .and(UserQuest.USER_QUEST.STAGE_ID.in(stages.field("stage_id")))
+                    .orderBy(UserQuest.USER_QUEST.ID.desc())
+                    .limit(1);
+
+        Query q2 = entityManager.createNativeQuery(alreadyStarted.getSQL());
+        GeolyAPI.setBindParameterValues(q2, alreadyStarted);
+        List result2 = q2.getResultList();
+
+        if(result2 != null && !result2.isEmpty() && String.valueOf(result2.get(0)).equals(UserQuestStatus.FINISHED.name() )){
+            System.out.println(String.valueOf(result2));
+            return StatusMessage.USER_ALREADY_FINISHED_QUEST;
+        }
+
+        return StatusMessage.OK;
+    }
+
     private StatusMessage checkIfUserCanAddReview(int questId, int userId){
         Table<?> ifReviewExist =
                 create.select(count().as("count_exist"))
@@ -289,35 +335,21 @@ public class QuestDetailService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List signUpOnQuest(int userId, int questId){
-        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDaily(questId, false);
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+    public Response signUpOnQuest(int userId, int questId){
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDailyAndPrivateQuest(questId, false, false);
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         Optional<List<com.geoly.app.models.Stage>> stage = stageRepository.findAllByQuest(quest.get());
-        if(!stage.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.STAGE_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
-        Table<?> stages =
-            create.select(Stage.STAGE.ID.as("stage_id"))
-            .from(Stage.STAGE)
-            .where(Stage.STAGE.QUEST_ID.eq(questId))
-            .asTable("stage");
+        StatusMessage statusMessage = checkIfUserCanStartQuest(questId, userId, quest.get().getUser().getId());
 
-        Select<?> query =
-            create.select()
-            .from(UserQuest.USER_QUEST, stages)
-            .where(UserQuest.USER_QUEST.USER_ID.eq(userId))
-            .and(UserQuest.USER_QUEST.STAGE_ID.in(stages.field("stage_id")))
-            .and(UserQuest.USER_QUEST.STATUS.notEqual(UserQuestStatus.CANCELED.name()))
-            .orderBy(UserQuest.USER_QUEST.ID.desc())
-            .limit(1);
-
-        Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
-
-        if(!q.getResultList().isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_HAS_ACTIVE_QUEST, HttpStatus.METHOD_NOT_ALLOWED));
+        if(statusMessage != StatusMessage.OK){
+            return new Response(statusMessage, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
 
         com.geoly.app.models.UserQuest userQuest = new com.geoly.app.models.UserQuest();
         userQuest.setStatus(UserQuestStatus.ON_STAGE);
@@ -325,7 +357,7 @@ public class QuestDetailService {
         userQuest.setStage(stage.get().get(0));
         entityManager.persist(userQuest);
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_SIGNED_UP_ON_QUEST, HttpStatus.CREATED));
+        return new Response(StatusMessage.USER_SIGNED_UP_ON_QUEST, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)

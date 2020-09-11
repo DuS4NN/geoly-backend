@@ -14,5 +14,7 @@ public interface QuestRepository extends JpaRepository<Quest, Integer> {
 
     Optional<Quest> findByIdAndDaily(int id, boolean daily);
 
+    Optional<Quest> findByIdAndDailyAndPrivateQuest(int id, boolean daily, boolean privateQuest);
+
     Optional<Quest> findByIdAndUser(int id, User user);
 }
