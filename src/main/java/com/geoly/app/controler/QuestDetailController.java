@@ -152,6 +152,25 @@ public class QuestDetailController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @PostMapping("quest/report")
+    public Response reportQuest(@RequestParam(name = "id") int id, Authentication authentication, @RequestParam(name = "reason") QuestReportReason reason){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questDetailService.reportQuest(customUserDetails.getUser().getId(), id, reason);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @GetMapping(path = "quest/reportreason")
+    public QuestReportReason[] getQuestReportReasons(){
+        return QuestReportReason.values();
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("quest/{id}/signout")
     public List signOutOfQuest(@PathVariable(name = "id") int id, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
@@ -160,20 +179,6 @@ public class QuestDetailController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.signOutOfQuest(customUserDetails.getUser().getId(), id);
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("quest/{id}/report")
-    public List reportQuest(@PathVariable(name = "id") int id, Authentication authentication, @RequestParam(name = "reason") QuestReportReason reason){
-        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questDetailService.reportQuest(customUserDetails.getUser().getId(), id, reason);
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

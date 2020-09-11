@@ -387,14 +387,14 @@ public class QuestDetailService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List reportQuest(int userId, int questId, QuestReportReason questReportReason){
+    public Response reportQuest(int userId, int questId, QuestReportReason questReportReason){
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDaily(questId, false);
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         Optional<com.geoly.app.models.QuestReport> report = questReportRepository.findAllByQuestAndUser(quest.get(), user.get());
-        if(report.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_REPORT_CREATED, HttpStatus.CREATED));
+        if(report.isPresent()) return new Response(StatusMessage.QUEST_REPORT_CREATED, HttpStatus.ACCEPTED, null);
 
         com.geoly.app.models.QuestReport questReport = new com.geoly.app.models.QuestReport();
         questReport.setReason(questReportReason);
@@ -402,6 +402,6 @@ public class QuestDetailService {
         questReport.setUser(user.get());
         entityManager.persist(questReport);
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_REPORT_CREATED, HttpStatus.CREATED));
+        return new Response(StatusMessage.QUEST_REPORT_CREATED, HttpStatus.ACCEPTED, null);
     }
 }
