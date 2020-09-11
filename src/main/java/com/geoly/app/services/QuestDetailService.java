@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -50,20 +51,64 @@ public class QuestDetailService {
         this.userQuestRepository = userQuestRepository;
     }
 
-    public int getReviewCount(int id){
+    private StatusMessage checkIfUserCanAddReview(int questId, int userId){
+        Table<?> ifReviewExist =
+                create.select(count().as("count_exist"))
+                        .from(QuestReview.QUEST_REVIEW)
+                        .where(QuestReview.QUEST_REVIEW.QUEST_ID.eq(questId))
+                        .and(QuestReview.QUEST_REVIEW.USER_ID.eq(userId))
+                        .asTable("exist_review");
+
+        Table<?> ifUserStartedQuest =
+                create.select(count().as("count_quest"))
+                        .from(UserQuest.USER_QUEST)
+                        .where(UserQuest.USER_QUEST.STAGE_ID.in(
+                                create.select(Stage.STAGE.ID)
+                                        .from(Stage.STAGE)
+                                        .where(Stage.STAGE.QUEST_ID.eq(questId))))
+                        .and(UserQuest.USER_QUEST.USER_ID.eq(userId))
+                        .asTable("user_quest");
+
+        Select<?> query =
+                create.select(ifReviewExist.field("count_exist"), ifUserStartedQuest.field("count_quest"))
+                        .from(ifReviewExist, ifUserStartedQuest);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object[] result = (Object[]) q.getSingleResult();
+
+        if(Integer.parseInt(String.valueOf(result[0])) > 0) return StatusMessage.REVIEW_ALREADY_EXIST;
+        if(Integer.parseInt(String.valueOf(result[1])) < 0) return StatusMessage.USER_DOESNT_PLAY_QUEST;
+
+        return StatusMessage.OK;
+    }
+
+    public Response getReviewCountAndWritable(int questId, int userId){
         Select<?> query =
                 create.select(count())
                 .from(QuestReview.QUEST_REVIEW)
                 .leftJoin(User.USER)
                     .on(User.USER.ID.eq(QuestReview.QUEST_REVIEW.USER_ID))
                 .where(User.USER.ACTIVE.isTrue())
-                .and(QuestReview.QUEST_REVIEW.QUEST_ID.eq(id));
+                .and(QuestReview.QUEST_REVIEW.QUEST_ID.eq(questId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
         Object result = q.getSingleResult();
 
-        return Integer.parseInt(String.valueOf(result));
+        StatusMessage response = checkIfUserCanAddReview(questId, userId);
+
+        ArrayList<Integer> data = new ArrayList<>();
+        data.add(Integer.parseInt(String.valueOf(result)));
+
+        if(response == StatusMessage.OK){
+            data.add(1);
+        }else{
+            data.add(0);
+        }
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, data);
+
     }
 
     public Response getReviewsOfQuest(int id, int userId, int page){
@@ -190,44 +235,29 @@ public class QuestDetailService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List createReview(int userId, int questId, com.geoly.app.models.QuestReview questReview){
+    public Response createReview(int userId, int questId, com.geoly.app.models.QuestReview questReview){
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDaily(questId, false);
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
-        Table<?> ifReviewExist =
-                create.select(count().as("count_exist"))
-                        .from(QuestReview.QUEST_REVIEW)
-                        .where(QuestReview.QUEST_REVIEW.QUEST_ID.eq(questId))
-                        .and(QuestReview.QUEST_REVIEW.USER_ID.eq(userId))
-                        .asTable("exist_review");
+        StatusMessage response = checkIfUserCanAddReview(questId, userId);
 
-        Table<?> ifUserStartedQuest =
-                create.select(count().as("count_quest"))
-                        .from(UserQuest.USER_QUEST)
-                        .where(UserQuest.USER_QUEST.STAGE_ID.in(
-                                create.select(Stage.STAGE.ID)
-                                        .from(Stage.STAGE)
-                                        .where(Stage.STAGE.QUEST_ID.eq(questId))))
-                        .and(UserQuest.USER_QUEST.USER_ID.eq(userId))
-                        .asTable("user_quest");
-
-        Select<?> query =
-                create.select(ifReviewExist.field("count_exist"), ifUserStartedQuest.field("count_quest"))
-                        .from(ifReviewExist, ifUserStartedQuest);
-
-        Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
-        Object[] result = (Object[]) q.getSingleResult();
-
-        if(Integer.parseInt(String.valueOf(result[0])) > 0) return Collections.singletonList(new ResponseEntity<>(StatusMessage.REVIEW_ALREADY_EXIST, HttpStatus.METHOD_NOT_ALLOWED));
-        if(Integer.parseInt(String.valueOf(result[1])) < 0) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_PLAY_QUEST, HttpStatus.METHOD_NOT_ALLOWED));
+        if(response != StatusMessage.OK){
+            return new Response(response, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
 
         questReview.setQuest(quest.get());
         questReview.setUser(user.get());
         entityManager.persist(questReview);
-        return Collections.singletonList(questReview);
+
+        ArrayList data = new ArrayList();
+        data.add(userId);
+        data.add(questReview.getId());
+        data.add(user.get().getNickName());
+        data.add(user.get().getProfileImageUrl());
+
+        return new Response(StatusMessage.REVIEW_ADDED, HttpStatus.OK, data);
     }
 
     @Transactional(rollbackOn = Exception.class)

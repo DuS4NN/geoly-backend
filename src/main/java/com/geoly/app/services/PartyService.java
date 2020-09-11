@@ -378,7 +378,7 @@ public class PartyService {
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_PLAY_QUEST, HttpStatus.NO_CONTENT));
+        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_DOESNT_PLAY_QUEST, HttpStatus.NO_CONTENT));
         return result;
     }
 }

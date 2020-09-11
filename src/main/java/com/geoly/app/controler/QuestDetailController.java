@@ -57,9 +57,18 @@ public class QuestDetailController {
         }
     }
 
-    @GetMapping(path = "quest/reviewcount")
-    public int getReviewCount(@RequestParam(name = "id") int id){
-        return questDetailService.getReviewCount(id);
+    @GetMapping(path = "quest/reviewinfo")
+    public Response getReviewCountAndWritable(@RequestParam(name = "id") int id, Authentication authentication){
+        try{
+            if(authentication != null){
+                CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                return questDetailService.getReviewCountAndWritable(id, customUserDetails.getUser().getId());
+            }else{
+                return questDetailService.getReviewCountAndWritable(id,0);
+            }
+        }catch (Exception e){
+            return API.catchException(e);
+        }
     }
 
     @GetMapping(path = "quest/stage")
@@ -118,16 +127,16 @@ public class QuestDetailController {
 
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("quest/{id}/review")
-    public List createReview(@PathVariable(name = "id") int id, @Validated @RequestBody QuestReview questReview, Authentication authentication){
+    @PostMapping("quest/review")
+    public Response createReview(@RequestParam(name = "id") int id, @Validated @RequestBody QuestReview questReview, Authentication authentication){
         ValidatorResponse validatorResponse = validator.createReviewValidator(id, questReview);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questDetailService.createReview(customUserDetails.getUser().getId(), id, questReview);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
