@@ -51,6 +51,17 @@ public class QuestController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/allplayedquests")
+    public Response getAllPlayedQuests(Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.getAllPlayedQuests(customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/signindaily")
