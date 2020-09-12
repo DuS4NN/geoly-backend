@@ -1,7 +1,9 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.EditQuest;
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.services.QuestService;
 import com.geoly.app.validators.Validator;
@@ -26,6 +28,29 @@ public class QuestController {
         this.questService = questService;
         this.validator = validator;
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/activequest")
+    public Response getActiveQuest(Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.getActiveQuest(customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/allcreatedquests")
+    public Response getAllCreatedQuests(Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.getAllCreatedQuests(customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/signindaily")
@@ -105,28 +130,6 @@ public class QuestController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.getQuestForEdit(questId, customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/allcreatedquests")
-    public List getAllCreatedQuests(Authentication authentication){
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.getAllCreatedQuests(customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/allactivequests")
-    public List getAllActiveQuests(Authentication authentication){
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.getAllActiveQuests(customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

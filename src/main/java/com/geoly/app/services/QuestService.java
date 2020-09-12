@@ -3,6 +3,7 @@ package com.geoly.app.services;
 import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.EditQuest;
+import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.models.*;
@@ -48,6 +49,51 @@ public class QuestService {
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
     }
+
+    public Response getActiveQuest(int userId){
+        Select<?> query =
+            create.select(Stage.STAGE.QUEST_ID.as("quest_id"), Quest.QUEST.NAME.as("quest_name"), com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL)
+                .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
+                    .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+                .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
+                .and(Quest.QUEST.DAILY.isFalse())
+                .and(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()))
+                .orderBy(Stage.STAGE.QUEST_ID, Stage.STAGE.ID);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.ACTIVE_QUESTS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    public Response getAllCreatedQuests(int userId){
+        Select<?> query =
+                create.select(Quest.QUEST.ID, Quest.QUEST.CREATED_AT, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Quest.QUEST.PRIVATE_QUEST, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL, Quest.QUEST.NAME.as("questName"))
+                        .from(Quest.QUEST)
+                        .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
+                            .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+                        .where(Quest.QUEST.USER_ID.eq(userId))
+                        .and(Quest.QUEST.ACTIVE.isTrue())
+                        .and(Quest.QUEST.DAILY.isFalse());
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.CREATED_QUESTS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+
 
     @Transactional(rollbackOn = Exception.class)
     public List editQuestImage(List<MultipartFile> files, int userId, int questId) throws Exception{
@@ -171,26 +217,9 @@ public class QuestService {
         return finalResult;
     }
 
-    public List getAllCreatedQuests(int userId){
-        Select<?> query =
-            create.select(Quest.QUEST.ID, Quest.QUEST.ACTIVE, Quest.QUEST.CREATED_AT, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Quest.QUEST.PRIVATE_QUEST, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL)
-            .from(Quest.QUEST)
-            .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
-                .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
-            .where(Quest.QUEST.USER_ID.eq(userId))
-            .and(Quest.QUEST.ACTIVE.isTrue())
-            .and(Quest.QUEST.DAILY.isFalse());
 
-        Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
-        List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.CREATED_QUESTS_NOT_FOUND, HttpStatus.NOT_FOUND));
-
-        return result;
-    }
-
-    public List getAllActiveQuests(int userId){
+    public Response getAllActiveQuests(int userId){
         Select<?> query =
             create.select(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stage_id"), Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE, Stage.STAGE.QUESTION, Stage.STAGE.TYPE, Stage.STAGE.QUEST_ID.as("quest_id"), Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL)
             .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
@@ -202,14 +231,13 @@ public class QuestService {
                 .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
             .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
             .and(Quest.QUEST.DAILY.isFalse())
-            .and(Quest.QUEST.ACTIVE.isTrue())
             .orderBy(Stage.STAGE.QUEST_ID, Stage.STAGE.ID);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.ACTIVE_QUESTS_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(result.isEmpty()) return new Response(StatusMessage.ACTIVE_QUESTS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
 
         List<List<Object[]>> finalResult = new ArrayList<>();
         List<Object[]> oneQuest = new ArrayList<>();
@@ -232,7 +260,7 @@ public class QuestService {
                 }
             }
         }
-        return finalResult;
+        return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
 
     @Transactional(rollbackOn = Exception.class)
