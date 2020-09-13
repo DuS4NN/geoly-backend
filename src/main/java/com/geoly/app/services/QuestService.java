@@ -94,7 +94,6 @@ public class QuestService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-
     @Transactional(rollbackOn = Exception.class)
     public List editQuestImage(List<MultipartFile> files, int userId, int questId) throws Exception{
         Optional<User> user = userRepository.findById(userId);
@@ -254,11 +253,10 @@ public class QuestService {
                 finalResult.add(oneQuest.stream().collect(Collectors.toList()));
                 oneQuest.clear();
                 oneQuest.add(array);
-                if(i == result.size()-1){
-                    finalResult.add(oneQuest);
-                }
             }
         }
+        finalResult.add(oneQuest);
+        
         return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
 
