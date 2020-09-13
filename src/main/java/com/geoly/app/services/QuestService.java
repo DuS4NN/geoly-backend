@@ -151,27 +151,27 @@ public class QuestService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List doActionWithQuest(int questId, int userId, String action){
+    public Response doActionWithQuest(int questId, int userId, String action){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         switch (action){
             case "DISABLE":
                 quest.get().setActive(false);
                 entityManager.merge(quest.get());
-                return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_DISABLED, HttpStatus.OK));
+                return new Response(StatusMessage.QUEST_DISABLED, HttpStatus.ACCEPTED, null);
             case "ACTIVATE":
                 quest.get().setActive(true);
                 entityManager.merge(quest.get());
-                return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_ACTIVATED, HttpStatus.OK));
+                return new Response(StatusMessage.QUEST_ACTIVATED, HttpStatus.ACCEPTED, null);
             case "DELETE":
                 entityManager.remove(quest.get());
-                return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_DELETED, HttpStatus.OK));
+                return new Response(StatusMessage.QUEST_DELETED, HttpStatus.ACCEPTED, null);
         }
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVALID_ACTION, HttpStatus.BAD_REQUEST));
+        return new Response(StatusMessage.INVALID_ACTION, HttpStatus.BAD_REQUEST, null);
     }
 
     public List getQuestForEdit(int questId, int userId){

@@ -63,6 +63,17 @@ public class QuestController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/quest/disable")
+    public Response disableQuest(@RequestParam(name = "id") int questId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "DISABLE");
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/signindaily")
     public List signInDailyQuest(Authentication authentication){
         try{
@@ -103,36 +114,26 @@ public class QuestController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/quest/{id}/delete")
-    public List deleteQuest(@PathVariable(name = "id") int questId, Authentication authentication){
+    public Response deleteQuest(@PathVariable(name = "id") int questId, Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "DELETE");
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/quest/{id}/activate")
-    public List activateQuest(@PathVariable(name = "id") int questId, Authentication authentication){
+    public Response activateQuest(@PathVariable(name = "id") int questId, Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "ACTIVATE");
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/quest/{id}/disable")
-    public List disableQuest(@PathVariable(name = "id") int questId, Authentication authentication){
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "DISABLE");
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/quest/{id}/editor")
