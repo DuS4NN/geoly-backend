@@ -361,7 +361,7 @@ public class QuestDetailService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List signOutOfQuest(int userId, int questId){
+    public Response signOutOfQuest(int userId, int questId){
         Select<?> query =
             create.select(UserQuest.USER_QUEST.ID)
             .from(UserQuest.USER_QUEST)
@@ -378,12 +378,12 @@ public class QuestDetailService {
         Object stageId = q.getSingleResult();
 
         Optional<com.geoly.app.models.UserQuest> userQuest = userQuestRepository.findById(Integer.parseInt(String.valueOf(stageId)));
-        if(!userQuest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!userQuest.isPresent()) return new Response(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         userQuest.get().setStatus(UserQuestStatus.CANCELED);
         entityManager.merge(userQuest.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.SIGNED_OUT_OF_QUEST, HttpStatus.OK));
+        return new Response(StatusMessage.SIGNED_OUT_OF_QUEST, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)

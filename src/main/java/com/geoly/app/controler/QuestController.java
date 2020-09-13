@@ -62,7 +62,6 @@ public class QuestController {
         }
     }
 
-
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/signindaily")
     public List signInDailyQuest(Authentication authentication){

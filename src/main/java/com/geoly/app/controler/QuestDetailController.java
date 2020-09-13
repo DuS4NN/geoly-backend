@@ -171,16 +171,16 @@ public class QuestDetailController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("quest/{id}/signout")
-    public List signOutOfQuest(@PathVariable(name = "id") int id, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.checkOnlyId(id);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+    @GetMapping("quest/signout")
+    public Response signOutOfQuest(@RequestParam(name = "questId") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(questId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questDetailService.signOutOfQuest(customUserDetails.getUser().getId(), id);
+            return questDetailService.signOutOfQuest(customUserDetails.getUser().getId(), questId);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 }

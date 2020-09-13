@@ -229,7 +229,7 @@ public class QuestService {
                 .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
             .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
             .and(Quest.QUEST.DAILY.isFalse())
-            .orderBy(Stage.STAGE.QUEST_ID, Stage.STAGE.ID.desc());
+            .orderBy(Stage.STAGE.QUEST_ID, Stage.STAGE.ID.desc(), DSL.when(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.CREATED_AT.isNull(), com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT).otherwise(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT).desc());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
@@ -256,7 +256,7 @@ public class QuestService {
             }
         }
         finalResult.add(oneQuest);
-        
+
         return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
 
