@@ -78,15 +78,18 @@ public class QuestService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-    public Response getAllCreatedQuests(int userId){
+    public Response getAllCreatedQuests(int userId, int page){
         Select<?> query =
                 create.select(Quest.QUEST.ID, Quest.QUEST.CREATED_AT, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Quest.QUEST.PRIVATE_QUEST, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL, Quest.QUEST.NAME.as("questName"))
-                        .from(Quest.QUEST)
-                        .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
-                            .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
-                        .where(Quest.QUEST.USER_ID.eq(userId))
-                        .and(Quest.QUEST.ACTIVE.isTrue())
-                        .and(Quest.QUEST.DAILY.isFalse());
+                    .from(Quest.QUEST)
+                    .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
+                        .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+                    .where(Quest.QUEST.USER_ID.eq(userId))
+                    .and(Quest.QUEST.ACTIVE.isTrue())
+                    .and(Quest.QUEST.DAILY.isFalse())
+                    .orderBy(Quest.QUEST.CREATED_AT.desc())
+                    .limit(QUESTS_ON_PAGE)
+                    .offset((page-1)*QUESTS_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
@@ -95,6 +98,21 @@ public class QuestService {
         if(result.isEmpty()) return new Response(StatusMessage.CREATED_QUESTS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    public int getCountCreatedQuests(int userId){
+        Select<?> query =
+                create.select(DSL.count())
+                        .from(Quest.QUEST)
+                        .where(Quest.QUEST.USER_ID.eq(userId))
+                        .and(Quest.QUEST.ACTIVE.isTrue())
+                        .and(Quest.QUEST.DAILY.isFalse());
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object result = q.getSingleResult();
+
+        return Integer.parseInt(String.valueOf(result));
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -247,7 +265,7 @@ public class QuestService {
                 .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
                     .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
                 .where(Quest.QUEST.ID.in(questOnPage.field("questOnPage_ID")))
-                .orderBy(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.ID.desc(), com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT.desc());
+                .orderBy(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.ID.desc());
 
 
         Query q = entityManager.createNativeQuery(query.getSQL());
@@ -255,6 +273,8 @@ public class QuestService {
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.PLAYED_QUESTS_EMPTY, HttpStatus.NO_CONTENT, null);
+
+        Collections.reverse(result);
 
         List<List<Object[]>> finalResult = new ArrayList<>();
         List<Object[]> oneQuest = new ArrayList<>();
@@ -265,14 +285,14 @@ public class QuestService {
         for(int i=0; i<result.size(); i++){
             Object[] array = (Object[]) result.get(i);
 
-            if(Integer.parseInt(String.valueOf(array[3])) == lastId ){
-                oneQuest.add(array);
-            }else{
+            if(Integer.parseInt(String.valueOf(array[3])) != lastId){
                 lastId = Integer.parseInt(String.valueOf(array[3]));
+                Collections.reverse(oneQuest);
                 finalResult.add(oneQuest.stream().collect(Collectors.toList()));
                 oneQuest.clear();
-                oneQuest.add(array);
             }
+            oneQuest.add(array);
+
         }
         finalResult.add(oneQuest);
 

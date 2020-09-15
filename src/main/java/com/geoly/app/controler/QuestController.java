@@ -43,10 +43,10 @@ public class QuestController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/allcreatedquests")
-    public Response getAllCreatedQuests(Authentication authentication){
+    public Response getAllCreatedQuests(@RequestParam(name = "page") int page, Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.getAllCreatedQuests(customUserDetails.getUser().getId());
+            return questService.getAllCreatedQuests(customUserDetails.getUser().getId(), page);
         }catch (Exception e){
             return API.catchException(e);
         }
@@ -61,6 +61,13 @@ public class QuestController {
         }catch (Exception e){
             return API.catchException(e);
         }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/countcreatedquests")
+    public int getCountCreatedQuests(Authentication authentication){
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return questService.getCountCreatedQuests(customUserDetails.getUser().getId());
     }
 
     @PreAuthorize("isAuthenticated()")
