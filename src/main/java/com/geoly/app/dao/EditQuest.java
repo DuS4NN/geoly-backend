@@ -4,10 +4,19 @@ public class EditQuest {
 
     private int categoryId;
     private String description;
+    private String name;
     private boolean privateQuest;
     private int difficulty;
 
     public EditQuest() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getCategoryId() {

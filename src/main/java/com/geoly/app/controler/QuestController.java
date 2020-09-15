@@ -8,6 +8,7 @@ import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.services.QuestService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -74,39 +75,50 @@ public class QuestController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @PostMapping("/quest/editdetail")
+    public Response editQuestDetails(@RequestBody @Validated EditQuest questDetails, @RequestParam (name = "id") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.editQuest(questDetails, questId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.editQuestDetails(questDetails, questId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/quest/getimages")
+    public Response getQuestImagesForEdit(@RequestParam(name = "id") int questId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.getQuestImagesForEdit(questId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/quest/editimage")
+    public Response editQuestImages(@RequestParam List<MultipartFile> files, @RequestParam(name = "id") int questId, @RequestParam(name = "deleted") int[] deleted, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.imagesValidator(files, questId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.editQuestImage(files, customUserDetails.getUser().getId(), questId, deleted);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/signindaily")
     public List signInDailyQuest(Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.signInDailyQuest(customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/quest/{id}/image")
-    public List editQuestImages(@RequestParam List<MultipartFile> files, @PathVariable(name = "id") int questId, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.imagesValidator(files, questId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.editQuestImage(files, customUserDetails.getUser().getId(), questId);
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/quest/{id}/edit")
-    public List editQuestDetails(@RequestBody @Validated EditQuest questDetails, @PathVariable(name = "id") int questId, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.editQuest(questDetails, questId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.editQuestDetails(questDetails, questId, customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }
@@ -131,18 +143,6 @@ public class QuestController {
             return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "ACTIVATE");
         }catch (Exception e){
             return API.catchException(e);
-        }
-    }
-
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/quest/{id}/editor")
-    public List getQuestForEdit(@PathVariable(name = "id") int questId, Authentication authentication){
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.getQuestForEdit(questId, customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
         }
     }
 

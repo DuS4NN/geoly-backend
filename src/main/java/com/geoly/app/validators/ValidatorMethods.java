@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class ValidatorMethods {
 
     boolean idIsValid(int id) {
+        System.out.println(id);
         return id > 0;
     }
 

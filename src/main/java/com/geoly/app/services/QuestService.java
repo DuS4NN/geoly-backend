@@ -95,59 +95,66 @@ public class QuestService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List editQuestImage(List<MultipartFile> files, int userId, int questId) throws Exception{
+    public Response editQuestImage(List<MultipartFile> files, int userId, int questId, int[] deleted) throws Exception{
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        imageRepository.deleteAllByQuest(quest.get());
+
+        for(int deletedImageId : deleted){
+           Optional<Image> image = imageRepository.findByIdAndQuest(deletedImageId, quest.get());
+           if(image.isPresent()){
+               File dir = new File(image.get().getImageUrl());
+               if(dir.exists()){
+                   dir.delete();
+               }
+
+               entityManager.remove(image.get());
+           }
+        }
 
         File dir = new File(API.questImageUrl+questId);
         if(!dir.exists()){
             dir.mkdirs();
         }
-        else{
-            dir.delete();
-            dir.mkdirs();
-        }
-
-        int count = 1;
 
         for(MultipartFile file : files){
+
+            long imageName = System.currentTimeMillis();
+
             Source source = Tinify.fromBuffer(file.getBytes());
-            source.toFile(API.questImageUrl+questId+"/"+count+".jpg");
+            source.toFile(API.questImageUrl+questId+"/"+imageName+".jpg");
 
             Image image = new Image();
             image.setQuest(quest.get());
-            image.setImageUrl(API.questImageUrl+questId+"/"+count+".jpg");
+            image.setImageUrl(API.questImageUrl+questId+"/"+imageName+".jpg");
             entityManager.persist(image);
-
-            count++;
         }
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.IMAGES_SAVED, HttpStatus.OK));
+        return new Response(StatusMessage.IMAGES_SAVED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List editQuestDetails(EditQuest questDetails, int questId, int userId){
+    public Response editQuestDetails(EditQuest questDetails, int questId, int userId){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<Category> category = categoryRepository.findById(questDetails.getCategoryId());
-        if(!category.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!category.isPresent()) return new Response(StatusMessage.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         quest.get().setPrivateQuest(questDetails.isPrivateQuest());
         quest.get().setCategory(category.get());
+        quest.get().setName(questDetails.getName());
         quest.get().setDescription(questDetails.getDescription());
         quest.get().setDifficulty(questDetails.getDifficulty());
         entityManager.merge(quest.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_EDITED, HttpStatus.OK));
+        return new Response(StatusMessage.QUEST_EDITED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -174,46 +181,22 @@ public class QuestService {
         return new Response(StatusMessage.INVALID_ACTION, HttpStatus.BAD_REQUEST, null);
     }
 
-    public List getQuestForEdit(int questId, int userId){
-        Select<?> quest =
-            create.select(Quest.QUEST.PRIVATE_QUEST, Quest.QUEST.DIFFICULTY, Quest.QUEST.DESCRIPTION, Quest.QUEST.CREATED_AT, Quest.QUEST.ACTIVE, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL)
-            .from(Quest.QUEST)
-            .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
-                .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
-            .where(Quest.QUEST.ID.eq(questId))
+    public Response getQuestImagesForEdit(int questId, int userId){
+        Select<?> query =
+            create.select(com.geoly.app.jooq.tables.Image.IMAGE.IMAGE_URL, com.geoly.app.jooq.tables.Image.IMAGE.ID)
+            .from(com.geoly.app.jooq.tables.Image.IMAGE)
+            .leftJoin(Quest.QUEST)
+                .on(Quest.QUEST.ID.eq(com.geoly.app.jooq.tables.Image.IMAGE.QUEST_ID))
+            .where(com.geoly.app.jooq.tables.Image.IMAGE.QUEST_ID.eq(questId))
             .and(Quest.QUEST.USER_ID.eq(userId));
 
-        Query q1 = entityManager.createNativeQuery(quest.getSQL());
-        GeolyAPI.setBindParameterValues(q1, quest);
-        List resultQuest = q1.getResultList();
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
 
-        if(resultQuest.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(result.isEmpty()) return new Response(StatusMessage.NO_IMAGES, HttpStatus.NO_CONTENT, null);
 
-
-        Select<?> stage =
-            create.select(Stage.STAGE.TYPE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.LONGITUDE, Stage.STAGE.LATITUDE, Stage.STAGE.ANSWER)
-            .from(Stage.STAGE)
-            .where(Stage.STAGE.QUEST_ID.eq(questId));
-
-        Query q2 = entityManager.createNativeQuery(stage.getSQL());
-        GeolyAPI.setBindParameterValues(q2, stage);
-        List resultStage = q2.getResultList();
-
-        Select<?> image =
-            create.select(com.geoly.app.jooq.tables.Image.IMAGE.IMAGE_URL)
-            .from(com.geoly.app.jooq.tables.Image.IMAGE)
-            .where(com.geoly.app.jooq.tables.Image.IMAGE.QUEST_ID.eq(questId));
-
-        Query q3 = entityManager.createNativeQuery(image.getSQL());
-        GeolyAPI.setBindParameterValues(q3, image);
-        List resultImage = q3.getResultList();
-
-        List<List> finalResult = new ArrayList<>();
-        finalResult.add(resultQuest);
-        finalResult.add(resultStage);
-        finalResult.add(resultImage);
-
-        return finalResult;
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     public Response getAllPlayedQuests(int userId){
@@ -259,6 +242,8 @@ public class QuestService {
 
         return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
+
+
 
     @Transactional(rollbackOn = Exception.class)
     public List signInDailyQuest(int userId){
