@@ -13,6 +13,7 @@ import com.tinify.Tinify;
 import io.sentry.Sentry;
 import org.jooq.DSLContext;
 import org.jooq.Select;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,8 @@ public class QuestService {
     private UserQuestRepository userQuestRepository;
     private CategoryRepository categoryRepository;
     private ImageRepository imageRepository;
+
+    private int QUESTS_ON_PAGE = 5;
 
     public QuestService(EntityManager entityManager, DSLContext create, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
         this.entityManager = entityManager;
@@ -199,20 +202,53 @@ public class QuestService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-    public Response getAllPlayedQuests(int userId){
+    public int getCountPlayedQuests(int userId){
         Select<?> query =
-            create.select(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stage_id"), Stage.STAGE.TYPE, Stage.STAGE.QUEST_ID.as("quest_id"), Quest.QUEST.NAME.as("quest_name"), com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL,
-                    DSL.when(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.CREATED_AT.isNull(), com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT).otherwise(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT))
-            .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
-            .leftJoin(Stage.STAGE)
-                .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
-            .leftJoin(Quest.QUEST)
-                .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
-            .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
-                .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
-            .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
-            .and(Quest.QUEST.DAILY.isFalse())
-            .orderBy(Stage.STAGE.QUEST_ID, Stage.STAGE.ID.desc(), DSL.when(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.CREATED_AT.isNull(), com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT).otherwise(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT).desc());
+            create.select(DSL.countDistinct(Stage.STAGE.QUEST_ID))
+                .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
+                .and(Quest.QUEST.DAILY.isFalse());
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object result = q.getSingleResult();
+
+        return Integer.parseInt(String.valueOf(result));
+    }
+
+    public Response getAllPlayedQuests(int userId, int page){
+
+        Table<?> questOnPage =
+            create.select(Stage.STAGE.QUEST_ID.as("questOnPage_ID"))
+                .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
+                .and(Quest.QUEST.DAILY.isFalse())
+                .groupBy(Stage.STAGE.QUEST_ID)
+                .orderBy(DSL.max(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.ID).desc())
+                .limit(QUESTS_ON_PAGE)
+                .offset((page-1)*QUESTS_ON_PAGE)
+                .asTable("questsOnPage");
+
+        Select<?> query =
+            create.select(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stage_id"), Stage.STAGE.TYPE, Stage.STAGE.QUEST_ID.as("quest_id"), Quest.QUEST.NAME.as("quest_name"), com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL, com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT)
+                .from(questOnPage, com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
+                    .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+                .where(Quest.QUEST.ID.in(questOnPage.field("questOnPage_ID")))
+                .orderBy(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.ID.desc(), com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT.desc());
+
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
@@ -242,8 +278,6 @@ public class QuestService {
 
         return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
-
-
 
     @Transactional(rollbackOn = Exception.class)
     public List signInDailyQuest(int userId){

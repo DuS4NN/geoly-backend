@@ -54,13 +54,20 @@ public class QuestController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/allplayedquests")
-    public Response getAllPlayedQuests(Authentication authentication){
+    public Response getAllPlayedQuests(@RequestParam(name = "page") int page, Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.getAllPlayedQuests(customUserDetails.getUser().getId());
+            return questService.getAllPlayedQuests(customUserDetails.getUser().getId(), page);
         }catch (Exception e){
             return API.catchException(e);
         }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/countplayedquests")
+    public int getCountPlayedQuests(Authentication authentication){
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return questService.getCountPlayedQuests(customUserDetails.getUser().getId());
     }
 
     @PreAuthorize("isAuthenticated()")
