@@ -194,7 +194,7 @@ public class QuestDetailService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-    public Response getDetailsOfQuest(int id){
+    public Response getDetailsOfQuest(int id, int userId){
         Table<?> avgReview =
                 create.select(avg(QuestReview.QUEST_REVIEW.REVIEW).as("avg"), QuestReview.QUEST_REVIEW.ID.as("id"))
                         .from(QuestReview.QUEST_REVIEW)
@@ -244,7 +244,8 @@ public class QuestDetailService {
                         .asTable("count_canceled");
 
         Select<?> query =
-            create.select(Quest.QUEST.ID, Quest.QUEST.NAME.as("questName"), Quest.QUEST.DIFFICULTY, Quest.QUEST.DESCRIPTION, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"), Quest.QUEST.CREATED_AT)
+            create.select(Quest.QUEST.ID, Quest.QUEST.NAME.as("questName"), Quest.QUEST.DIFFICULTY, Quest.QUEST.DESCRIPTION, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"), Quest.QUEST.CREATED_AT, Quest.QUEST.PRIVATE_QUEST,
+                            when(Quest.QUEST.USER_ID.eq(userId), 1).otherwise(0))
             .from(countFinished, countOnStage, countCanceled, Quest.QUEST)
             .leftJoin(Category.CATEGORY)
                 .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
@@ -254,7 +255,6 @@ public class QuestDetailService {
                     .on(avgReview.field("id").isNotNull())
             .where(User.USER.ACTIVE.isTrue())
             .and(Quest.QUEST.ACTIVE.isTrue())
-            .and(Quest.QUEST.PRIVATE_QUEST.isFalse())
             .and(Quest.QUEST.DAILY.isFalse())
             .and(Quest.QUEST.ID.eq(id));
 

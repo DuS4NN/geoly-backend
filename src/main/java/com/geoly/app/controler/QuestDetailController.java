@@ -84,12 +84,16 @@ public class QuestDetailController {
     }
 
     @GetMapping(path = "quest/detail")
-    public Response getQuestDetails(@RequestParam(name = "id") int id){
+    public Response getQuestDetails(@RequestParam(name = "id") int id, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(id);
         if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
-            return questDetailService.getDetailsOfQuest(id);
+            if(authentication!=null){
+                CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                return questDetailService.getDetailsOfQuest(id, customUserDetails.getUser().getId());
+            }
+            return questDetailService.getDetailsOfQuest(id, 0);
         }catch (Exception e){
             return API.catchException(e);
         }
