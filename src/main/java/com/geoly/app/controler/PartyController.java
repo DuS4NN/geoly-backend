@@ -1,6 +1,8 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.services.PartyService;
@@ -27,7 +29,44 @@ public class PartyController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/group")
+    @GetMapping("/createdgroups")
+    public Response getCreatedParties(Authentication authentication, @RequestParam(name = "page") int page){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.getCreatedParties(customUserDetails.getUser().getId(), page);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/countcreatedgroups")
+    public int getCountOfCreatedParties(Authentication authentication){
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return partyService.getCountOfCreatedParties(customUserDetails.getUser().getId());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/group/delete")
+    public Response deleteParty(@RequestParam(name = "id") int partyId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.deleteParty(partyId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+
+
+
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/groups")
     public List getAllParties(Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -46,20 +85,6 @@ public class PartyController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.leaveParty(partyId, customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/group/{id}/delete")
-    public List deleteParty(@PathVariable(name = "id") int partyId, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return partyService.deleteParty(partyId, customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

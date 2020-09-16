@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.PartyInvateStatus;
 import com.geoly.app.models.StatusMessage;
@@ -19,6 +20,8 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.*;
 
+import static org.jooq.impl.DSL.count;
+
 @Service
 public class PartyService {
 
@@ -33,6 +36,8 @@ public class PartyService {
     private StageRepository stageRepository;
     private UserPartyQuestRepository userPartyQuestRepository;
 
+    private int PARTY_ON_PAGE = 5;
+
     public PartyService(EntityManager entityManager, DSLContext create, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository, PartyInviteRepository partyInviteRepository, QuestRepository questRepository, PartyQuestRepository partyQuestRepository, StageRepository stageRepository, UserPartyQuestRepository userPartyQuestRepository) {
         this.entityManager = entityManager;
         this.create = create;
@@ -45,6 +50,55 @@ public class PartyService {
         this.stageRepository = stageRepository;
         this.userPartyQuestRepository = userPartyQuestRepository;
     }
+
+    public Response getCreatedParties(int userId, int page){
+        Select<?> query =
+            create.select(Party.PARTY.ID, Party.PARTY.NAME, Party.PARTY.CREATED_AT)
+                .from(Party.PARTY)
+                .where(Party.PARTY.USER_ID.eq(userId))
+                .orderBy(Party.PARTY.CREATED_AT.desc())
+                .limit(PARTY_ON_PAGE)
+                .offset((page-1)*PARTY_ON_PAGE);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.NO_PARTY, HttpStatus.NO_CONTENT, null);
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    public int getCountOfCreatedParties(int userId){
+        Select<?> query =
+                create.select(count())
+                        .from(Party.PARTY)
+                        .where(Party.PARTY.USER_ID.eq(userId));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object result = q.getSingleResult();
+
+        return Integer.parseInt(String.valueOf(result));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response deleteParty(int partyId, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        int i = partyRepository.deleteByIdAndUser(partyId, user.get());
+        if(i == 0){
+            return new Response(StatusMessage.GROUP_DOES_NOT_EXIST_OR_USER_IS_NOT_OWNER, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
+
+        return new Response(StatusMessage.GROUP_DELETED, HttpStatus.ACCEPTED, null);
+    }
+
+
+
+
+
 
     public List getAllParties(int userId){
         Optional<User> user = userRepository.findById(userId);
@@ -79,19 +133,6 @@ public class PartyService {
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
 
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_LEAVED, HttpStatus.OK));
-    }
-
-    @Transactional(rollbackOn = Exception.class)
-    public List deleteParty(int partyId, int userId){
-        Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
-
-        int i = partyRepository.deleteByIdAndUser(partyId, user.get());
-        if(i == 0){
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_DOES_NOT_EXIST_OR_USER_IS_NOT_OWNER, HttpStatus.OK));
-        }
-
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_DELETED, HttpStatus.OK));
     }
 
     @Transactional(rollbackOn = Exception.class)
