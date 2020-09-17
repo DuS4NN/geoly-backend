@@ -3,6 +3,7 @@ package com.geoly.app.models;
 public enum StatusMessage {
     NO_IMAGES,
     NO_REVIEW,
+    GROUP_EDITED,
     OK,
     REVIEW_EDITED,
     CAN_NOT_KICK_OWNER,
