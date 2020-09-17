@@ -144,6 +144,19 @@ public class PartyController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/group/invite")
+    public Response inviteUser(@RequestParam(name = "partyId") int partyId, @RequestParam(name = "nickName") String nickName, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return  partyService.inviteUser(partyId, nickName, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 
 
 
@@ -181,20 +194,6 @@ public class PartyController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.getPartyDetails(partyId, customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/group/{id}/invite/{nickName}")
-    public List inviteUser(@PathVariable(name = "id") int partyId, @PathVariable(name = "nickName") String nickName, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.inviteUserValidator(partyId, nickName);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return  partyService.inviteUser(partyId, nickName, customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }

@@ -191,6 +191,51 @@ public class PartyService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public Response kickUserFromParty(int partyId, int userId, int creatorId){
+        Optional<User> creator = userRepository.findById(creatorId);
+        if(!creator.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
+        if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
+
+        return new Response(StatusMessage.USER_KICKED, HttpStatus.ACCEPTED, null);
+    }
+
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response inviteUser(int partyId, String nickName, int userId){
+        Optional<User> creator = userRepository.findById(userId);
+        if(!creator.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        Optional<User> user = userRepository.findByNickName(nickName);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
+        if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
+        if(partyUser.isPresent()) return new Response(StatusMessage.USER_IS_ALREADY_IN_GROUP, HttpStatus.METHOD_NOT_ALLOWED, null);
+
+        Optional<com.geoly.app.models.PartyInvite> partyInviteOptional = partyInviteRepository.findByUserAndPartyAndStatus(user.get(), party.get(), PartyInvateStatus.PENDING);
+        if(partyInviteOptional.isPresent()) return new Response(StatusMessage.USER_INVITED, HttpStatus.ACCEPTED, null);
+
+        com.geoly.app.models.PartyInvite partyInvite = new com.geoly.app.models.PartyInvite();
+        partyInvite.setParty(party.get());
+        partyInvite.setUser(user.get());
+        partyInvite.setStatus(PartyInvateStatus.PENDING);
+        entityManager.persist(partyInvite);
+
+        return new Response(StatusMessage.USER_INVITED, HttpStatus.ACCEPTED, null);
+    }
+
+
 
     public List getAllParties(int userId){
         Optional<User> user = userRepository.findById(userId);
@@ -276,49 +321,6 @@ public class PartyService {
         finalResult.add(resultQuest);
 
         return finalResult;
-    }
-
-    @Transactional(rollbackOn = Exception.class)
-    public Response kickUserFromParty(int partyId, int userId, int creatorId){
-        Optional<User> creator = userRepository.findById(creatorId);
-        if(!creator.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
-
-        Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
-
-
-        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
-        if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
-
-        partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
-
-        return new Response(StatusMessage.USER_KICKED, HttpStatus.ACCEPTED, null);
-    }
-
-    @Transactional(rollbackOn = Exception.class)
-    public List inviteUser(int partyId, String nickName, int userId){
-        Optional<User> creator = userRepository.findById(userId);
-        if(!creator.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
-
-        Optional<User> user = userRepository.findByNickName(nickName);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
-
-        Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
-        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
-
-        Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
-        if(partyUser.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_IS_ALREADY_IN_GROUP, HttpStatus.METHOD_NOT_ALLOWED));
-
-        Optional<com.geoly.app.models.PartyInvite> partyInviteOptional = partyInviteRepository.findByUserAndPartyAndStatus(user.get(), party.get(), PartyInvateStatus.PENDING);
-        if(partyInviteOptional.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_INVITED, HttpStatus.OK));
-
-        com.geoly.app.models.PartyInvite partyInvite = new com.geoly.app.models.PartyInvite();
-        partyInvite.setParty(party.get());
-        partyInvite.setUser(user.get());
-        partyInvite.setStatus(PartyInvateStatus.PENDING);
-        entityManager.persist(partyInvite);
-
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_INVITED, HttpStatus.OK));
     }
 
     @Transactional(rollbackOn = Exception.class)
