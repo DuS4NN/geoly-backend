@@ -23,6 +23,15 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @GetMapping("/finduser")
+    public Response findUser(@RequestParam(name = "nick") String nick){
+        try{
+            return accountService.findUser(nick);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
     @PostMapping("/register")
     public Response register(@Validated @RequestBody User user, @RequestParam(name = "languageId") int languageId, HttpServletRequest request){
         ValidatorResponse validatorResponse = validator.registerValidator(user, languageId);

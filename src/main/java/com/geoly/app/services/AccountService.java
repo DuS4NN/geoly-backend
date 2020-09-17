@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.API;
+import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.LanguageRepository;
@@ -13,11 +14,15 @@ import com.maxmind.geoip2.model.CityResponse;
 import io.sentry.Sentry;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jooq.DSLContext;
+import org.jooq.Select;
+import org.jooq.impl.DSL;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.net.InetAddress;
@@ -27,6 +32,7 @@ import java.util.*;
 public class AccountService {
 
     private EntityManager entityManager;
+    private DSLContext create;
     private API api;
     private Argon2PasswordEncoder argon2PasswordEncoder;
     private LanguageRepository languageRepository;
@@ -34,14 +40,34 @@ public class AccountService {
     private RoleRepository roleRepository;
     private TokenRepository tokenRepository;
 
-    public AccountService(API api,EntityManager entityManager, Argon2PasswordEncoder argon2PasswordEncoder, LanguageRepository languageRepository, UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository) {
+    public AccountService(API api, DSLContext create, EntityManager entityManager, Argon2PasswordEncoder argon2PasswordEncoder, LanguageRepository languageRepository, UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository) {
         this.entityManager = entityManager;
+        this.create = create;
         this.api = api;
         this.argon2PasswordEncoder = argon2PasswordEncoder;
         this.languageRepository = languageRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tokenRepository = tokenRepository;
+    }
+
+    public Response findUser(String name){
+        Select<?> query =
+            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME)
+            .from(com.geoly.app.jooq.tables.User.USER)
+            .where(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue())
+            .and(com.geoly.app.jooq.tables.User.USER.NICK_NAME.like("%"+name+"%"))
+            .orderBy(
+                DSL.when(com.geoly.app.jooq.tables.User.USER.NICK_NAME.like("%"+name), 1),
+                DSL.when(com.geoly.app.jooq.tables.User.USER.NICK_NAME.like("%"+name+"%"), 2).otherwise(3)
+            )
+            .limit(5);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     @Transactional(rollbackOn = Exception.class)
