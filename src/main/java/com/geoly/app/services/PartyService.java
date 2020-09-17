@@ -22,6 +22,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.when;
 
 @Service
 public class PartyService {
@@ -171,6 +172,25 @@ public class PartyService {
         return new Response(StatusMessage.GROUP_EDITED, HttpStatus.ACCEPTED, null);
     }
 
+    public Response getUsersInGroup(int partyId, int userId){
+        Select<?> query =
+            create.select(com.geoly.app.jooq.tables.User.USER.ID, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.NICK_NAME,
+                    when(com.geoly.app.jooq.tables.User.USER.ID.eq(userId), 1).otherwise(0))
+            .from(PartyUser.PARTY_USER)
+            .leftJoin(Party.PARTY)
+                .on(Party.PARTY.ID.eq(PartyUser.PARTY_USER.PARTY_ID))
+            .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                .on(com.geoly.app.jooq.tables.User.USER.ID.eq(PartyUser.PARTY_USER.USER_ID))
+            .where(Party.PARTY.USER_ID.eq(userId))
+            .and(Party.PARTY.ID.eq(partyId));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
 
     public List getAllParties(int userId){
         Optional<User> user = userRepository.findById(userId);
@@ -259,20 +279,20 @@ public class PartyService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List kickUserFromParty(int partyId, int userId, int creatorId){
+    public Response kickUserFromParty(int partyId, int userId, int creatorId){
         Optional<User> creator = userRepository.findById(creatorId);
-        if(!creator.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!creator.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
 
         Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
-        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_KICKED, HttpStatus.OK));
+        return new Response(StatusMessage.USER_KICKED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)

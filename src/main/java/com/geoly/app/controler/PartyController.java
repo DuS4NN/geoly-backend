@@ -115,6 +115,35 @@ public class PartyController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/group/users")
+    public Response getUsersInGroup(@RequestParam(name = "id") int partyId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.getUsersInGroup(partyId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/group/kick")
+    public Response kickUserFromParty(@RequestParam(name = "partyId") int partyId, @RequestParam(name = "userId") int userId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            if(customUserDetails.getUser().getId() == userId) return new Response(StatusMessage.CAN_NOT_KICK_OWNER, HttpStatus.METHOD_NOT_ALLOWED, null);
+            return partyService.kickUserFromParty(partyId, userId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
 
 
 
@@ -152,21 +181,6 @@ public class PartyController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.getPartyDetails(partyId, customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/group/{partyId}/kick/{userId}")
-    public List kickUserFromParty(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "userId") int userId, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
-
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            if(customUserDetails.getUser().getId() == userId) return Collections.singletonList(new ResponseEntity<>(StatusMessage.CAN_NOT_KICK_OWNER, HttpStatus.OK));
-            return partyService.kickUserFromParty(partyId, userId, customUserDetails.getUser().getId());
         }catch (Exception e){
             return GeolyAPI.catchException(e);
         }
