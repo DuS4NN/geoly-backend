@@ -84,6 +84,22 @@ public class PartyService {
         return Integer.parseInt(String.valueOf(result));
     }
 
+    public int getCountOfEnteredParties(int userId){
+        Select<?> query =
+                create.select(count())
+                        .from(PartyUser.PARTY_USER)
+                        .leftJoin(Party.PARTY)
+                            .on(Party.PARTY.ID.eq(PartyUser.PARTY_USER.PARTY_ID))
+                        .where(PartyUser.PARTY_USER.USER_ID.eq(userId))
+                        .and(PartyUser.PARTY_USER.USER_ID.notEqual(Party.PARTY.USER_ID));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        Object result = q.getSingleResult();
+
+        return Integer.parseInt(String.valueOf(result));
+    }
+
     @Transactional(rollbackOn = Exception.class)
     public Response deleteParty(int partyId, int userId){
         Optional<User> user = userRepository.findById(userId);
@@ -277,43 +293,46 @@ public class PartyService {
         return new Response(StatusMessage.QUEST_ADDED_TO_GROUP, HttpStatus.ACCEPTED, null);
     }
 
-
-
-
-
-    public List getAllParties(int userId){
+    public Response getEnteredParties(int userId, int page){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Select<?> query =
             create.select(Party.PARTY.ID, Party.PARTY.NAME, Party.PARTY.USER_ID.as("creator"), PartyUser.PARTY_USER.CREATED_AT)
             .from(Party.PARTY)
             .leftJoin(PartyUser.PARTY_USER)
                 .on(PartyUser.PARTY_USER.PARTY_ID.eq(Party.PARTY.ID))
-            .where(PartyUser.PARTY_USER.USER_ID.eq(userId));
+            .where(PartyUser.PARTY_USER.USER_ID.eq(userId))
+            .and(Party.PARTY.USER_ID.notEqual(userId))
+            .orderBy(PartyUser.PARTY_USER.CREATED_AT.desc())
+            .limit(PARTY_ON_PAGE)
+            .offset((page-1)*PARTY_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_IS_NOT_IN_GROUP, HttpStatus.NO_CONTENT));
+        if(result.isEmpty()) return new Response(StatusMessage.USER_IS_NOT_IN_GROUP, HttpStatus.NO_CONTENT, null);
 
-        return result;
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
+
+
+
     @Transactional(rollbackOn = Exception.class)
-    public List leaveParty(int partyId, int userId){
+    public Response leaveParty(int partyId, int userId){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<com.geoly.app.models.Party> party = partyRepository.findById(partyId);
-        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        if(party.get().getUser().getId() == userId)  return Collections.singletonList(new ResponseEntity<>(StatusMessage.CAN_NOT_LEAVE_OWN_GROUP, HttpStatus.METHOD_NOT_ALLOWED));
+        if(party.get().getUser().getId() == userId)  return new Response(StatusMessage.CAN_NOT_LEAVE_OWN_GROUP, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_LEAVED, HttpStatus.OK));
+        return new Response(StatusMessage.GROUP_LEAVED, HttpStatus.ACCEPTED, null);
     }
 
     public List getPartyDetails(int partyId, int userId){

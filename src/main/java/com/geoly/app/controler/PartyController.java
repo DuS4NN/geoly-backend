@@ -40,6 +40,13 @@ public class PartyController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/countenteredgroups")
+    public int getCountOfEnteredGroups(Authentication authentication){
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        return partyService.getCountOfEnteredParties(customUserDetails.getUser().getId());
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/countcreatedgroups")
     public int getCountOfCreatedParties(Authentication authentication){
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -183,33 +190,33 @@ public class PartyController {
         }
     }
 
-
-
-
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/groups")
-    public List getAllParties(Authentication authentication){
+    @GetMapping("/enteredgroups")
+    public Response getEnteredParties(Authentication authentication, @RequestParam(name = "page") int page){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return partyService.getAllParties(customUserDetails.getUser().getId());
+            return partyService.getEnteredParties(customUserDetails.getUser().getId(), page);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
     @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/group/{id}/leave")
-    public List leaveParty(@PathVariable(name = "id") int partyId, Authentication authentication){
+    @GetMapping("/group/leave")
+    public Response leaveParty(@RequestParam(name = "id") int partyId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.leaveParty(partyId, customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
+
+
+
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/group/{id}")
