@@ -215,22 +215,35 @@ public class PartyController {
         }
     }
 
-
-
-
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/group/{id}")
-    public List getPartyDetails(@PathVariable(name = "id") int partyId, Authentication authentication){
+    @GetMapping("/group")
+    public Response getPartyDetails(@RequestParam(name = "id") int partyId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.getPartyDetails(partyId, customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/group/questdetails")
+    public Response getPartyQuestDetails(@RequestParam(name = "partyId") int partyId, @RequestParam(name = "questId") int questId, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return partyService.getPartyQuestDetails(partyId, questId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/group/{partyId}/quest/{questId}/signin")
@@ -260,17 +273,5 @@ public class PartyController {
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/group/{partyId}/quest/{questId}/details")
-    public List getPartyQuestDetails(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "questId") int questId, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
 
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return partyService.getPartyQuestDetails(partyId, questId, customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
 }

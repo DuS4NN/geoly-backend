@@ -241,6 +241,10 @@ public class PartyService {
         Optional<com.geoly.app.models.PartyInvite> partyInviteOptional = partyInviteRepository.findByUserAndPartyAndStatus(user.get(), party.get(), PartyInvateStatus.PENDING);
         if(partyInviteOptional.isPresent()) return new Response(StatusMessage.USER_INVITED, HttpStatus.ACCEPTED, null);
 
+        if(partyUserRepository.countAllByParty(party.get()) == 10){
+            return new Response(StatusMessage.GROUP_IS_FULL, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
+
         com.geoly.app.models.PartyInvite partyInvite = new com.geoly.app.models.PartyInvite();
         partyInvite.setParty(party.get());
         partyInvite.setUser(user.get());
@@ -317,9 +321,6 @@ public class PartyService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-
-
-
     @Transactional(rollbackOn = Exception.class)
     public Response leaveParty(int partyId, int userId){
         Optional<User> user = userRepository.findById(userId);
@@ -335,9 +336,9 @@ public class PartyService {
         return new Response(StatusMessage.GROUP_LEAVED, HttpStatus.ACCEPTED, null);
     }
 
-    public List getPartyDetails(int partyId, int userId){
+    public Response getPartyDetails(int partyId, int userId){
         Select<?> queryDetail =
-            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME, Party.PARTY.USER_ID, Party.PARTY.NAME, Party.PARTY.CREATED_AT)
+            create.select(Party.PARTY.NAME, Party.PARTY.CREATED_AT, com.geoly.app.jooq.tables.User.USER.NICK_NAME)
             .from(PartyUser.PARTY_USER)
             .leftJoin(Party.PARTY)
                 .on(Party.PARTY.ID.eq(PartyUser.PARTY_USER.PARTY_ID))
@@ -350,21 +351,22 @@ public class PartyService {
         GeolyAPI.setBindParameterValues(q1, queryDetail);
         List resultDetail = q1.getResultList();
 
-        if(resultDetail.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(resultDetail.isEmpty()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Select<?> queryUser =
-            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ID, PartyUser.PARTY_USER.CREATED_AT)
+            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, PartyUser.PARTY_USER.CREATED_AT)
             .from(PartyUser.PARTY_USER)
             .leftJoin(com.geoly.app.jooq.tables.User.USER)
                 .on(com.geoly.app.jooq.tables.User.USER.ID.eq(PartyUser.PARTY_USER.USER_ID))
-            .where(PartyUser.PARTY_USER.PARTY_ID.eq(partyId));
+            .where(PartyUser.PARTY_USER.PARTY_ID.eq(partyId))
+            .orderBy(PartyUser.PARTY_USER.CREATED_AT);
 
         Query q2 = entityManager.createNativeQuery(queryUser.getSQL());
         GeolyAPI.setBindParameterValues(q2, queryUser);
         List resultUser = q2.getResultList();
 
         Select<?> queryQuest =
-            create.select(PartyQuest.PARTY_QUEST.ACTIVE, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME)
+            create.select(Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, Quest.QUEST.NAME.as("questName"), Quest.QUEST.ID)
             .from(PartyQuest.PARTY_QUEST)
             .leftJoin(Quest.QUEST)
                 .on(Quest.QUEST.ID.eq(PartyQuest.PARTY_QUEST.QUEST_ID))
@@ -383,8 +385,43 @@ public class PartyService {
         finalResult.add(resultUser);
         finalResult.add(resultQuest);
 
-        return finalResult;
+        return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
+
+    public Response getPartyQuestDetails(int partyId, int questId, int userId){
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findById(partyId);
+        if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
+        if(!partyUser.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        Select<?> query =
+            create.select(Stage.STAGE.TYPE, UserPartyQuest.USER_PARTY_QUEST.STATUS, UserPartyQuest.USER_PARTY_QUEST.CREATED_AT, UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT, com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL)
+                .from(UserPartyQuest.USER_PARTY_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(UserPartyQuest.USER_PARTY_QUEST.STAGE_ID))
+                .leftJoin(PartyQuest.PARTY_QUEST)
+                    .on(PartyQuest.PARTY_QUEST.ID.eq(UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID))
+                .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                    .on(com.geoly.app.jooq.tables.User.USER.ID.eq(UserPartyQuest.USER_PARTY_QUEST.USER_ID))
+                .where(Stage.STAGE.QUEST_ID.eq(questId))
+                .and(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
+                .and(PartyQuest.PARTY_QUEST.QUEST_ID.eq(questId))
+                .orderBy(UserPartyQuest.USER_PARTY_QUEST.USER_ID, UserPartyQuest.USER_PARTY_QUEST.STAGE_ID);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+
+
+
 
     @Transactional(rollbackOn = Exception.class)
     public List signInPartyQuest(int partyId, int questId, int userId){
@@ -479,35 +516,4 @@ public class PartyService {
         return Collections.singletonList(new ResponseEntity<>(StatusMessage.SIGNED_OUT_OF_QUEST, HttpStatus.OK));
     }
 
-    public List getPartyQuestDetails(int partyId, int questId, int userId){
-        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
-
-        Optional<com.geoly.app.models.Party> party = partyRepository.findById(partyId);
-        if(!party.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.BAD_REQUEST));
-
-        Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
-        if(!partyUser.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.GROUP_NOT_FOUND, HttpStatus.BAD_REQUEST));
-
-        Select<?> query =
-            create.select(Stage.STAGE.TYPE, UserPartyQuest.USER_PARTY_QUEST.STATUS, UserPartyQuest.USER_PARTY_QUEST.CREATED_AT, UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT, com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL)
-            .from(UserPartyQuest.USER_PARTY_QUEST)
-            .leftJoin(Stage.STAGE)
-                .on(Stage.STAGE.ID.eq(UserPartyQuest.USER_PARTY_QUEST.STAGE_ID))
-            .leftJoin(PartyQuest.PARTY_QUEST)
-                .on(PartyQuest.PARTY_QUEST.ID.eq(UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID))
-            .leftJoin(com.geoly.app.jooq.tables.User.USER)
-                .on(com.geoly.app.jooq.tables.User.USER.ID.eq(UserPartyQuest.USER_PARTY_QUEST.USER_ID))
-            .where(Stage.STAGE.QUEST_ID.eq(questId))
-            .and(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
-            .and(PartyQuest.PARTY_QUEST.QUEST_ID.eq(questId))
-            .orderBy(UserPartyQuest.USER_PARTY_QUEST.USER_ID, UserPartyQuest.USER_PARTY_QUEST.STAGE_ID);
-
-        Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
-        List result = q.getResultList();
-
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_DOESNT_PLAY_QUEST, HttpStatus.NO_CONTENT));
-        return result;
-    }
 }

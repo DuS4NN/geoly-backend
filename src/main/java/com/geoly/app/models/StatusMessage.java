@@ -4,6 +4,7 @@ public enum StatusMessage {
     NO_IMAGES,
     NO_REVIEW,
     GROUP_EDITED,
+    GROUP_IS_FULL,
     OK,
     REVIEW_EDITED,
     CAN_NOT_KICK_OWNER,

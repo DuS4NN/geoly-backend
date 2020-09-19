@@ -14,4 +14,6 @@ public interface PartyUserRepository extends JpaRepository<PartyUser, Integer> {
     void deleteByPartyAndUser(Party party, User user);
 
     Optional<PartyUser> findByUserAndParty(User user, Party party);
+
+    int countAllByParty(Party party);
 }
