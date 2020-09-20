@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.mail.Part;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
@@ -398,25 +397,38 @@ public class PartyService {
         Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
         if(!partyUser.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
+
+        Select<?> stageDetails =
+                create.select(Stage.STAGE.ID, Stage.STAGE.TYPE, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE)
+                        .from(Stage.STAGE)
+                        .where(Stage.STAGE.QUEST_ID.eq(questId));
+
+        Query q1 = entityManager.createNativeQuery(stageDetails.getSQL());
+        GeolyAPI.setBindParameterValues(q1, stageDetails);
+        List stageDetailsResult = q1.getResultList();
+
         Select<?> query =
-            create.select(Stage.STAGE.TYPE, UserPartyQuest.USER_PARTY_QUEST.STATUS, UserPartyQuest.USER_PARTY_QUEST.CREATED_AT, UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT, com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL)
-                .from(UserPartyQuest.USER_PARTY_QUEST)
-                .leftJoin(Stage.STAGE)
-                    .on(Stage.STAGE.ID.eq(UserPartyQuest.USER_PARTY_QUEST.STAGE_ID))
+            create.select(UserPartyQuest.USER_PARTY_QUEST.ID, UserPartyQuest.USER_PARTY_QUEST.STATUS, UserPartyQuest.USER_PARTY_QUEST.STAGE_ID, com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL,
+                    when( UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT.isNull(),  UserPartyQuest.USER_PARTY_QUEST.CREATED_AT).otherwise( UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT))
+                .from( UserPartyQuest.USER_PARTY_QUEST)
                 .leftJoin(PartyQuest.PARTY_QUEST)
                     .on(PartyQuest.PARTY_QUEST.ID.eq(UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID))
                 .leftJoin(com.geoly.app.jooq.tables.User.USER)
                     .on(com.geoly.app.jooq.tables.User.USER.ID.eq(UserPartyQuest.USER_PARTY_QUEST.USER_ID))
-                .where(Stage.STAGE.QUEST_ID.eq(questId))
-                .and(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
+                .where(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
                 .and(PartyQuest.PARTY_QUEST.QUEST_ID.eq(questId))
-                .orderBy(UserPartyQuest.USER_PARTY_QUEST.USER_ID, UserPartyQuest.USER_PARTY_QUEST.STAGE_ID);
+                .orderBy(UserPartyQuest.USER_PARTY_QUEST.STAGE_ID, when( UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT.isNull(),  UserPartyQuest.USER_PARTY_QUEST.CREATED_AT).otherwise( UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT).desc());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+
+        List<List> finalResult = new ArrayList<>();
+        finalResult.add(stageDetailsResult);
+        finalResult.add(result);
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
 
 
