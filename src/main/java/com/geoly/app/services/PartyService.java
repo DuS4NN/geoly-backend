@@ -401,13 +401,23 @@ public class PartyService {
 
 
         Select<?> stageDetails =
-                create.select(Stage.STAGE.ID, Stage.STAGE.TYPE, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE)
-                        .from(Stage.STAGE)
-                        .where(Stage.STAGE.QUEST_ID.eq(questId));
+            create.select(Stage.STAGE.ID, Stage.STAGE.TYPE, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE)
+                .from(Stage.STAGE)
+                .where(Stage.STAGE.QUEST_ID.eq(questId));
 
         Query q1 = entityManager.createNativeQuery(stageDetails.getSQL());
         GeolyAPI.setBindParameterValues(q1, stageDetails);
         List stageDetailsResult = q1.getResultList();
+
+
+        Select<?> images =
+            create.select(Image.IMAGE.IMAGE_URL)
+                .from(Image.IMAGE)
+                .where(Image.IMAGE.QUEST_ID.eq(questId));
+
+        Query q4 = entityManager.createNativeQuery(images.getSQL());
+        GeolyAPI.setBindParameterValues(q4, images);
+        List imagesResult = q4.getResultList();
 
         Select<?> isActive =
             create.select(count())
@@ -444,13 +454,10 @@ public class PartyService {
         finalResult.add(stageDetailsResult);
         finalResult.add(result);
         finalResult.add(isActiveResult);
+        finalResult.add(imagesResult);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, finalResult);
     }
-
-
-
-
 
     @Transactional(rollbackOn = Exception.class)
     public Response signInPartyQuest(int partyId, int questId, int userId){
