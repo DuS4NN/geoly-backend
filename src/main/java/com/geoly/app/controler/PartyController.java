@@ -243,35 +243,31 @@ public class PartyController {
         }
     }
 
-
-
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/group/{partyId}/quest/{questId}/signin")
-    public List signInPartyQuest(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "questId") int questId, Authentication authentication){
+    @GetMapping("/group/signin")
+    public Response signInPartyQuest(@RequestParam(name = "partyId") int partyId, @RequestParam(name = "questId") int questId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.signInPartyQuest(partyId, questId, customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
     @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/group/{partyId}/quest/{questId}/signout")
-    public List signOutPartyQuest(@PathVariable(name = "partyId") int partyId, @PathVariable(name = "questId") int questId, Authentication authentication){
+    @GetMapping("/group/signout")
+    public Response signOutPartyQuest(@RequestParam(name = "partyId") int partyId, @RequestParam(name = "questId") int questId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(partyId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return partyService.signOutPartyQuest(partyId, questId, customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
-
-
 }
