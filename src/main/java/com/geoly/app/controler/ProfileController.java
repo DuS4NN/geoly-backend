@@ -1,6 +1,8 @@
 package com.geoly.app.controler;
 
+import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserReportReason;
@@ -28,24 +30,24 @@ public class ProfileController {
         this.validator = validator;
     }
 
-    @GetMapping(path = "/profile/{nickName}")
-    public List getProfile(@PathVariable(name = "nickName") String nickName){
+    @GetMapping(path = "/profile")
+    public Response getProfile(@RequestParam(name = "nickName") String nickName){
         ValidatorResponse validatorResponse = validator.getProfileValidator(nickName);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             List<List> profile = new ArrayList<>();
 
             profile.add(profileService.getUserDetail(nickName));
-            if(profile.get(0).isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+            if(profile.get(0).isEmpty()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
             profile.add(profileService.getUserBadges(nickName));
             profile.add(profileService.getUserQuests(nickName));
             profile.add(profileService.getUserPlayedQuests(nickName));
 
-            return profile;
+            return new Response(StatusMessage.OK, HttpStatus.OK, profile);
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
