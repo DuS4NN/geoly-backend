@@ -12,7 +12,6 @@ import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
