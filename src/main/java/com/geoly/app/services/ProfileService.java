@@ -9,6 +9,7 @@ import com.geoly.app.repositories.UserReportRepository;
 import com.geoly.app.repositories.UserRepository;
 import org.jooq.DSLContext;
 import org.jooq.Select;
+import org.jooq.Table;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,30 @@ public class ProfileService {
     }
 
     public List getUserDetail(String nickName){
+
+        Table<?> bestSeason =
+            create.select(sum(Point.POINT.AMOUNT).as("bestpoints"))
+                .from(Point.POINT)
+                .leftJoin(User.USER)
+                    .on(User.USER.ID.eq(Point.POINT.USER_ID))
+                .where(User.USER.NICK_NAME.eq(nickName))
+                .groupBy(concat(month(Point.POINT.CREATED_AT), year(Point.POINT.CREATED_AT), Point.POINT.USER_ID))
+                .asTable("bestSeason");
+
+        Table<?> thisSeason =
+            create.select(sum(Point.POINT.AMOUNT).as("points"))
+                    .from(Point.POINT)
+                    .leftJoin(User.USER)
+                        .on(User.USER.ID.eq(Point.POINT.USER_ID))
+                    .where(User.USER.NICK_NAME.eq(nickName))
+                    .and(year(Point.POINT.CREATED_AT).eq(year(currentDate())))
+                    .and((month(Point.POINT.CREATED_AT).eq(month(currentDate()))))
+                    .groupBy(Point.POINT.USER_ID)
+                    .asTable("thisSeason");
+
         Select<?> query =
-            create.select(UserOption.USER_OPTION.PRIVATE_PROFILE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ABOUT, User.USER.CREATED_AT)
-            .from(User.USER)
+            create.select(User.USER.ID, UserOption.USER_OPTION.PRIVATE_PROFILE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ABOUT, User.USER.CREATED_AT, max(bestSeason.field("bestpoints")), thisSeason.field("points"))
+            .from(bestSeason, thisSeason, User.USER)
             .leftJoin(UserOption.USER_OPTION)
                 .on(UserOption.USER_OPTION.USER_ID.eq(User.USER.ID))
             .where(User.USER.NICK_NAME.eq(nickName))
@@ -111,8 +133,7 @@ public class ProfileService {
             .and(UserQuest.USER_QUEST.STAGE_ID.in(
                 create.select(max(Stage.STAGE.ID))
                 .from(Stage.STAGE)
-                .groupBy(Stage.STAGE.QUEST_ID)))
-            .groupBy(Quest.QUEST.ID);
+                .groupBy(Stage.STAGE.QUEST_ID)));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
