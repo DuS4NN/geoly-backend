@@ -81,7 +81,8 @@ public class ProfileService {
                 .on(Badge.BADGE.ID.eq(UserBadge.USER_BADGE.BADGE_ID))
             .leftJoin(User.USER)
                 .on(User.USER.ID.eq(UserBadge.USER_BADGE.USER_ID))
-            .where(User.USER.NICK_NAME.eq(nickName));
+            .where(User.USER.NICK_NAME.eq(nickName))
+            .orderBy(UserBadge.USER_BADGE.CREATED_AT.desc());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
