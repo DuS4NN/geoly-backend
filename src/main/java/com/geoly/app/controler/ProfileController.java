@@ -44,6 +44,7 @@ public class ProfileController {
             profile.add(profileService.getUserBadges(nickName));
             profile.add(profileService.getUserQuests(nickName));
             profile.add(profileService.getUserPlayedQuests(nickName));
+            profile.add(profileService.getUserActivity(nickName));
 
             return new Response(StatusMessage.OK, HttpStatus.OK, profile);
         }catch (Exception e){

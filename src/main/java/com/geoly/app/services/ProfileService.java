@@ -111,7 +111,27 @@ public class ProfileService {
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.CREATED_QUESTS_EMPTY, HttpStatus.NO_CONTENT));
+        return result;
+    }
+
+    public List getUserActivity(String nickName){
+        Select<?> query =
+            create.select(UserQuest.USER_QUEST.UPDATED_AT, count())
+                .from(UserQuest.USER_QUEST)
+                .leftJoin(User.USER)
+                    .on(User.USER.ID.eq(UserQuest.USER_QUEST.USER_ID))
+                .where(User.USER.NICK_NAME.eq(nickName))
+                    .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
+                    .and(UserQuest.USER_QUEST.STAGE_ID.in(
+                        create.select(max(Stage.STAGE.ID))
+                                .from(Stage.STAGE)
+                                .groupBy(Stage.STAGE.QUEST_ID)))
+                .groupBy(date(UserQuest.USER_QUEST.UPDATED_AT));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
         return result;
     }
 
@@ -131,6 +151,7 @@ public class ProfileService {
                 .on(QuestReview.QUEST_REVIEW.QUEST_ID.eq(Quest.QUEST.ID))
             .where(User.USER.NICK_NAME.eq(nickName))
             .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
+            .and(Quest.QUEST.DAILY.isFalse())
             .and(UserQuest.USER_QUEST.STAGE_ID.in(
                 create.select(max(Stage.STAGE.ID))
                 .from(Stage.STAGE)
@@ -140,7 +161,6 @@ public class ProfileService {
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.PLAYED_QUESTS_EMPTY, HttpStatus.NO_CONTENT));
         return result;
     }
 
