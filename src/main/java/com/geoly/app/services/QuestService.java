@@ -256,7 +256,7 @@ public class QuestService {
                 .asTable("questsOnPage");
 
         Select<?> query =
-            create.select(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stage_id"), Stage.STAGE.TYPE, Stage.STAGE.QUEST_ID.as("quest_id"), Quest.QUEST.NAME.as("quest_name"), com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL, com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT)
+            create.select(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stage_id"), Stage.STAGE.TYPE, Stage.STAGE.QUEST_ID.as("quest_id"), Quest.QUEST.NAME.as("quest_name"), com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL, com.geoly.app.jooq.tables.UserQuest.USER_QUEST.UPDATED_AT, com.geoly.app.jooq.tables.Category.CATEGORY.NAME.as("category_name"))
                 .from(questOnPage, com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
                 .leftJoin(Stage.STAGE)
                     .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
