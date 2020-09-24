@@ -38,7 +38,7 @@ public class ProfileService {
         this.userReportRepository = userReportRepository;
     }
 
-    public List getUserDetail(String nickName){
+    public List getUserDetail(String nickName, int userId){
 
         Table<?> bestSeason =
             create.select(sum(Point.POINT.AMOUNT).as("bestpoints"))
@@ -61,7 +61,8 @@ public class ProfileService {
                     .asTable("thisSeason");
 
         Select<?> query =
-            create.select(User.USER.ID, UserOption.USER_OPTION.PRIVATE_PROFILE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ABOUT, User.USER.CREATED_AT, max(bestSeason.field("bestpoints")), thisSeason.field("points"))
+            create.select(User.USER.ID, UserOption.USER_OPTION.PRIVATE_PROFILE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ABOUT, User.USER.CREATED_AT, max(bestSeason.field("bestpoints")), thisSeason.field("points"),
+                    when(User.USER.ID.eq(userId), 1).otherwise(0))
             .from(bestSeason, thisSeason, User.USER)
             .leftJoin(UserOption.USER_OPTION)
                 .on(UserOption.USER_OPTION.USER_ID.eq(User.USER.ID))

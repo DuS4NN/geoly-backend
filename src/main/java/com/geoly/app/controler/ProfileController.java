@@ -31,14 +31,20 @@ public class ProfileController {
     }
 
     @GetMapping(path = "/profile")
-    public Response getProfile(@RequestParam(name = "nickName") String nickName){
+    public Response getProfile(@RequestParam(name = "nickName") String nickName, Authentication authentication){
         ValidatorResponse validatorResponse = validator.getProfileValidator(nickName);
         if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             List<List> profile = new ArrayList<>();
 
-            profile.add(profileService.getUserDetail(nickName));
+            if(authentication != null){
+                CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                profile.add(profileService.getUserDetail(nickName, customUserDetails.getUser().getId()));
+            }else{
+
+                profile.add(profileService.getUserDetail(nickName,0));
+            }
             if(profile.get(0).isEmpty()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
             profile.add(profileService.getUserBadges(nickName));
