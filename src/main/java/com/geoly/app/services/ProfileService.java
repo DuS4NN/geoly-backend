@@ -149,6 +149,7 @@ public class ProfileService {
             .and(Quest.QUEST.ACTIVE.isTrue())
             .and(Quest.QUEST.PRIVATE_QUEST.isFalse())
             .and(Quest.QUEST.DAILY.isFalse())
+            .orderBy(Quest.QUEST.CREATED_AT.desc())
             .limit(QUESTS_ON_PAGE)
             .offset((page-1)*QUESTS_ON_PAGE);
 
@@ -199,6 +200,7 @@ public class ProfileService {
                 create.select(max(Stage.STAGE.ID))
                 .from(Stage.STAGE)
                 .groupBy(Stage.STAGE.QUEST_ID)))
+            .orderBy(UserQuest.USER_QUEST.UPDATED_AT.desc())
             .limit(QUESTS_ON_PAGE)
             .offset((page-1)*QUESTS_ON_PAGE);
 
