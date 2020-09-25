@@ -30,6 +30,24 @@ public class ProfileController {
         this.validator = validator;
     }
 
+    @GetMapping(path = "/profile/finished")
+    public Response getFinished(@RequestParam(name = "nickName") String nickName, @RequestParam(name = "page") int page){
+        try{
+            return new Response(StatusMessage.OK, HttpStatus.OK, profileService.getUserPlayedQuests(nickName, page));
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @GetMapping(path = "/profile/created")
+    public Response getCreated(@RequestParam(name = "nickName") String nickName, @RequestParam(name = "page") int page){
+        try{
+            return new Response(StatusMessage.OK, HttpStatus.OK, profileService.getUserQuests(nickName, page));
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
     @GetMapping(path = "/profile")
     public Response getProfile(@RequestParam(name = "nickName") String nickName, Authentication authentication){
         ValidatorResponse validatorResponse = validator.getProfileValidator(nickName);
@@ -48,9 +66,12 @@ public class ProfileController {
             if(profile.get(0).isEmpty()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
             profile.add(profileService.getUserBadges(nickName));
-            profile.add(profileService.getUserQuests(nickName));
-            profile.add(profileService.getUserPlayedQuests(nickName));
+            profile.add(profileService.getUserQuests(nickName, 1));
+            profile.add(profileService.getUserPlayedQuests(nickName, 1));
             profile.add(profileService.getUserActivity(nickName));
+            profile.add(profileService.getFinishedCount(nickName));
+            profile.add(profileService.getCreatedCount(nickName));
+
 
             return new Response(StatusMessage.OK, HttpStatus.OK, profile);
         }catch (Exception e){

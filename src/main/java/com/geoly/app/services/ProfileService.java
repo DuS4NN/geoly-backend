@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
@@ -17,9 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.jooq.impl.DSL.*;
 
@@ -31,11 +30,56 @@ public class ProfileService {
     private UserRepository userRepository;
     private UserReportRepository userReportRepository;
 
+    private int QUESTS_ON_PAGE = 5;
+
     public ProfileService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserReportRepository userReportRepository){
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
         this.userReportRepository = userReportRepository;
+    }
+
+    public List getCreatedCount(String nickName){
+        Select<?> query =
+            create.select(count())
+                .from(Quest.QUEST)
+                .leftJoin(User.USER)
+                .on(User.USER.ID.eq(Quest.QUEST.USER_ID))
+                .where(User.USER.NICK_NAME.eq(nickName))
+                .and(Quest.QUEST.DAILY.isFalse())
+                .and(Quest.QUEST.ACTIVE.isTrue())
+                .and(Quest.QUEST.PRIVATE_QUEST.isFalse());
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        return result;
+    }
+
+    public List getFinishedCount(String nickName){
+        Select<?> query =
+                create.select(count())
+                        .from(UserQuest.USER_QUEST)
+                        .leftJoin(User.USER)
+                        .on(User.USER.ID.eq(UserQuest.USER_QUEST.USER_ID))
+                        .leftJoin(Stage.STAGE)
+                            .on(Stage.STAGE.ID.eq(UserQuest.USER_QUEST.STAGE_ID))
+                        .leftJoin(Quest.QUEST)
+                        .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                        .where(User.USER.NICK_NAME.eq(nickName))
+                        .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
+                        .and(Quest.QUEST.DAILY.isFalse())
+                        .and(UserQuest.USER_QUEST.STAGE_ID.in(
+                                create.select(max(Stage.STAGE.ID))
+                                        .from(Stage.STAGE)
+                                        .groupBy(Stage.STAGE.QUEST_ID)));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        return result;
     }
 
     public List getUserDetail(String nickName, int userId){
@@ -93,20 +137,20 @@ public class ProfileService {
         return result;
     }
 
-    public List getUserQuests(String nickName){
+    public List getUserQuests(String nickName, int page){
         Select<?> query =
-            create.select(Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, Quest.QUEST.DIFFICULTY, Quest.QUEST.ID, avg(QuestReview.QUEST_REVIEW.REVIEW))
+            create.select(Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, Quest.QUEST.DIFFICULTY, Quest.QUEST.ID, User.USER.NICK_NAME.as("userName"), User.USER.PROFILE_IMAGE_URL, Quest.QUEST.CREATED_AT, Quest.QUEST.NAME.as("questName"))
             .from(Quest.QUEST)
             .leftJoin(Category.CATEGORY)
                 .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
             .leftJoin(User.USER)
                 .on(User.USER.ID.eq(Quest.QUEST.USER_ID))
-            .leftJoin(QuestReview.QUEST_REVIEW)
-                .on(QuestReview.QUEST_REVIEW.QUEST_ID.eq(Quest.QUEST.ID))
             .where(User.USER.NICK_NAME.eq(nickName))
             .and(Quest.QUEST.ACTIVE.isTrue())
             .and(Quest.QUEST.PRIVATE_QUEST.isFalse())
-            .groupBy(Quest.QUEST.ID);
+            .and(Quest.QUEST.DAILY.isFalse())
+            .limit(QUESTS_ON_PAGE)
+            .offset((page-1)*QUESTS_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
@@ -136,9 +180,9 @@ public class ProfileService {
         return result;
     }
 
-    public List getUserPlayedQuests(String nickName){
+    public List getUserPlayedQuests(String nickName, int page){
         Select<?> query =
-            create.select(Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, Quest.QUEST.DIFFICULTY, Quest.QUEST.ID, avg(QuestReview.QUEST_REVIEW.REVIEW))
+            create.select(Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, Quest.QUEST.DIFFICULTY, Quest.QUEST.ID, User.USER.NICK_NAME.as("userName"), User.USER.PROFILE_IMAGE_URL, UserQuest.USER_QUEST.UPDATED_AT, Quest.QUEST.NAME.as("questName"))
             .from(UserQuest.USER_QUEST)
             .leftJoin(User.USER)
                 .on(User.USER.ID.eq(UserQuest.USER_QUEST.USER_ID))
@@ -148,15 +192,15 @@ public class ProfileService {
                 .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
             .leftJoin(Category.CATEGORY)
                 .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
-            .leftJoin(QuestReview.QUEST_REVIEW)
-                .on(QuestReview.QUEST_REVIEW.QUEST_ID.eq(Quest.QUEST.ID))
             .where(User.USER.NICK_NAME.eq(nickName))
             .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
             .and(Quest.QUEST.DAILY.isFalse())
             .and(UserQuest.USER_QUEST.STAGE_ID.in(
                 create.select(max(Stage.STAGE.ID))
                 .from(Stage.STAGE)
-                .groupBy(Stage.STAGE.QUEST_ID)));
+                .groupBy(Stage.STAGE.QUEST_ID)))
+            .limit(QUESTS_ON_PAGE)
+            .offset((page-1)*QUESTS_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
