@@ -48,6 +48,11 @@ public class ProfileController {
         }
     }
 
+    @GetMapping(path = "profile/reportreason")
+    public UserReportReason[] getQuestReportReasons(){
+        return UserReportReason.values();
+    }
+
     @GetMapping(path = "/profile")
     public Response getProfile(@RequestParam(name = "nickName") String nickName, Authentication authentication){
         ValidatorResponse validatorResponse = validator.getProfileValidator(nickName);
@@ -80,15 +85,13 @@ public class ProfileController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping(path = "/profile/{nickName}/report")
-    public List reportUser(@PathVariable(name = "nickName") String nickName, @RequestParam(name = "reason") UserReportReason userReportReason, Authentication authentication){
-        ValidatorResponse validatorResponse = validator.getProfileValidator(nickName);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+    @GetMapping(path = "/profile/report")
+    public Response reportUser(@RequestParam(name = "id") int id, @RequestParam(name = "reason") UserReportReason userReportReason, Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return profileService.reportUser(nickName, userReportReason, customUserDetails.getUser().getId());
+            return profileService.reportUser(id, userReportReason, customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 }

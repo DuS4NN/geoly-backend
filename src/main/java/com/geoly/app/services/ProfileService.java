@@ -212,14 +212,14 @@ public class ProfileService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List reportUser(String nickName, UserReportReason reason, int userId){
-        Optional<com.geoly.app.models.User> reported = userRepository.findByNickName(nickName);
-        if(!reported.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+    public Response reportUser(int  id, UserReportReason reason, int userId){
+        Optional<com.geoly.app.models.User> reported = userRepository.findById(id);
+        if(!reported.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
         Optional<com.geoly.app.models.User> complainant = userRepository.findById(userId);
-        if(!complainant.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!complainant.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         Optional<com.geoly.app.models.UserReport> report = userReportRepository.findAllByUserComplainantAndUserReported(complainant.get(), reported.get());
-        if(report.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_REPORT_CREATED, HttpStatus.CREATED));
+        if(report.isPresent()) return new Response(StatusMessage.USER_REPORT_CREATED, HttpStatus.ACCEPTED, null);
 
         com.geoly.app.models.UserReport userReport = new com.geoly.app.models.UserReport();
         userReport.setReason(reason);
@@ -227,6 +227,6 @@ public class ProfileService {
         userReport.setUserReported(reported.get());
         entityManager.merge(userReport);
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_REPORT_CREATED, HttpStatus.CREATED));
+        return new Response(StatusMessage.USER_REPORT_CREATED, HttpStatus.ACCEPTED, null);
     }
 }
