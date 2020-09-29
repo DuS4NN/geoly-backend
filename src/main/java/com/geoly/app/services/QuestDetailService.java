@@ -245,7 +245,7 @@ public class QuestDetailService {
 
         Select<?> query =
             create.select(Quest.QUEST.ID, Quest.QUEST.NAME.as("questName"), Quest.QUEST.DIFFICULTY, Quest.QUEST.DESCRIPTION, Category.CATEGORY.IMAGE_URL, Category.CATEGORY.NAME, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, avgReview.field("avg"), countFinished.field("finished"), countOnStage.field("on_stage"), countCanceled.field("canceled"), Quest.QUEST.CREATED_AT, Quest.QUEST.PRIVATE_QUEST,
-                            when(Quest.QUEST.USER_ID.eq(userId), 1).otherwise(0))
+                            when(Quest.QUEST.USER_ID.eq(userId), 1).otherwise(0), Quest.QUEST.PREMIUM)
             .from(countFinished, countOnStage, countCanceled, Quest.QUEST)
             .leftJoin(Category.CATEGORY)
                 .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
