@@ -339,6 +339,19 @@ public class QuestDetailService {
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndDailyAndPrivateQuest(questId, false, false);
         if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
+        if(quest.get().isPremium()){
+            Select<?> query =
+                create.select(Premium.PREMIUM.ID)
+                    .from(Premium.PREMIUM)
+                    .where(Premium.PREMIUM.USER_ID.eq(userId))
+                    .and(Premium.PREMIUM.STATE.eq("Active"))
+                    .and(Premium.PREMIUM.END_AT.greaterThan(currentTimestamp()));
+
+            Query q = entityManager.createNativeQuery(query.getSQL());
+            GeolyAPI.setBindParameterValues(q, query);
+            if(q.getResultList().isEmpty()) return new Response(StatusMessage.USER_DOESNT_HAVE_PREMIUM, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
+
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
