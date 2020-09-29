@@ -1,5 +1,6 @@
 package com.geoly.app.services;
 
+import com.geoly.app.dao.Response;
 import com.geoly.app.models.Premium;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -9,7 +10,6 @@ import com.paypal.api.payments.*;
 import com.paypal.api.payments.Currency;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
-import org.jooq.DSLContext;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,14 +25,14 @@ public class PremiumService {
 
     private APIContext context;
     private EntityManager entityManager;
-    private DSLContext create;
     private UserRepository userRepository;
     private PremiumRepository premiumRepository;
 
-    public PremiumService(APIContext context, EntityManager entityManager, DSLContext create, UserRepository userRepository, PremiumRepository premiumRepository) {
+    private String url = "http://localhost:3000/premiumresponse";
+
+    public PremiumService(APIContext context, EntityManager entityManager, UserRepository userRepository, PremiumRepository premiumRepository) {
         this.context = context;
         this.entityManager = entityManager;
-        this.create = create;
         this.userRepository = userRepository;
         this.premiumRepository = premiumRepository;
     }
@@ -44,8 +44,8 @@ public class PremiumService {
         Optional<Premium> premium = premiumRepository.findByUserAndState(user.get(), "Active");
         if(premium.isPresent()) return StatusMessage.USER_ALREADY_HAS_PREMIUM.toString();
 
-        String successUrl = "http://localhost:8080/premium/success";
-        String cancelUrl = "http://localhost:8080/premium/cancel";
+        String successUrl = url+"/success";
+        String cancelUrl = url+"/cancel";
 
         Plan plan = new Plan();
         plan.setName("Geoly Subscription");
@@ -135,16 +135,16 @@ public class PremiumService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List executeAgreement(String token, int userId) throws PayPalRESTException, ParseException {
+    public Response executeAgreement(String token, int userId) throws PayPalRESTException, ParseException {
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         Agreement agreement = new Agreement();
         agreement.setToken(token);
         Agreement activeAgreement = agreement.execute(context, agreement.getToken());
 
         if(!activeAgreement.getState().equals("Active")){
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.PAYMENT_WAS_CANCELED, HttpStatus.NOT_ACCEPTABLE));
+            return new Response(StatusMessage.PAYMENT_WAS_CANCELED, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
         Premium premium = new Premium();
@@ -155,7 +155,7 @@ public class PremiumService {
         premium.setUser(user.get());
         entityManager.persist(premium);
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.SIGNED_UP_PREMIUM, HttpStatus.OK));
+        return new Response(StatusMessage.SIGNED_UP_PREMIUM, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
