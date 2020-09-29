@@ -121,11 +121,14 @@ public class MapService {
             where = where.and(Category.CATEGORY.ID.in(list));
         }
 
+        if(!questSearch.isPremium()){
+            where = where.and(Quest.QUEST.PREMIUM.isFalse());
+        }
+
         if(stageType.size()>0){
             if(!stageType.contains(StageType.GO_TO_PLACE.name())){
                 stageType.add(StageType.GO_TO_PLACE.name());
             }
-            System.out.println(stageType.toString());
 
             where = where.and(
                 (create.select(count().as("count"))
