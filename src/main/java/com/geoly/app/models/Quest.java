@@ -31,6 +31,10 @@ public class Quest {
     @NotNull
     private int difficulty;
 
+    @Column(name = "premium", columnDefinition = "TINYINT")
+    @NotNull
+    private boolean premium;
+
     @Column(name = "description", nullable = false, columnDefinition = "VARCHAR(500)")
     private String description;
 
@@ -70,6 +74,7 @@ public class Quest {
 
     public Quest() {
     }
+
 
     public int getId() {
         return id;
@@ -125,6 +130,14 @@ public class Quest {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isPremium() {
+        return premium;
+    }
+
+    public void setPremium(boolean premium) {
+        this.premium = premium;
     }
 
     public boolean isPrivateQuest() {

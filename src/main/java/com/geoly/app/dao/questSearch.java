@@ -7,20 +7,30 @@ public class questSearch {
     private int[] difficulty;
     private int[] review;
     private boolean unreviewed;
+    private boolean premium;
     private float[] coordinatesNw;
     private float[] coordinatesSe;
 
     public questSearch() {
     }
 
-    public questSearch(int[] categoryId, String[] stageType, int[] difficulty, int[] review, boolean unreviewed, float[] coordinatesNw, float[] coordinatesSe) {
+    public questSearch(int[] categoryId, String[] stageType, int[] difficulty, int[] review, boolean unreviewed, boolean premium, float[] coordinatesNw, float[] coordinatesSe) {
         this.categoryId = categoryId;
         this.stageType = stageType;
         this.difficulty = difficulty;
         this.review = review;
         this.unreviewed = unreviewed;
+        this.premium = premium;
         this.coordinatesNw = coordinatesNw;
         this.coordinatesSe = coordinatesSe;
+    }
+
+    public boolean isPremium() {
+        return premium;
+    }
+
+    public void setPremium(boolean premium) {
+        this.premium = premium;
     }
 
     public int[] getCategoryId() {

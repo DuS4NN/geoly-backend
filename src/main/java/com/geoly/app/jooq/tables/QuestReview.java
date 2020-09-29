@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class QuestReview extends TableImpl<QuestReviewRecord> {
 
-    private static final long serialVersionUID = 1941897903;
+    private static final long serialVersionUID = -1453639295;
 
     /**
      * The reference instance of <code>geoly.QUEST_REVIEW</code>
@@ -74,7 +74,7 @@ public class QuestReview extends TableImpl<QuestReviewRecord> {
     /**
      * The column <code>geoly.QUEST_REVIEW.REVIEW_TEXT</code>.
      */
-    public final TableField<QuestReviewRecord, String> REVIEW_TEXT = createField("REVIEW_TEXT", org.jooq.impl.SQLDataType.VARCHAR(1000), this, "");
+    public final TableField<QuestReviewRecord, String> REVIEW_TEXT = createField("REVIEW_TEXT", org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
 
     /**
      * The column <code>geoly.QUEST_REVIEW.UPDATE_AT</code>.
