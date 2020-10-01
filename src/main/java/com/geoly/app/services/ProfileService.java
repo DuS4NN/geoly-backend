@@ -107,9 +107,13 @@ public class ProfileService {
         Select<?> query =
             create.select(User.USER.ID, UserOption.USER_OPTION.PRIVATE_PROFILE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ABOUT, User.USER.CREATED_AT, max(bestSeason.field("bestpoints")), thisSeason.field("points"),
                     when(User.USER.ID.eq(userId), 1).otherwise(0))
-            .from(bestSeason, thisSeason, User.USER)
+            .from(User.USER)
             .leftJoin(UserOption.USER_OPTION)
                 .on(UserOption.USER_OPTION.USER_ID.eq(User.USER.ID))
+            .leftJoin(thisSeason)
+                .on(thisSeason.field("points").isNotNull())
+            .leftJoin(bestSeason)
+                .on(bestSeason.field("bestpoints").isNotNull())
             .where(User.USER.NICK_NAME.eq(nickName))
             .and(User.USER.ACTIVE.isTrue());
 
