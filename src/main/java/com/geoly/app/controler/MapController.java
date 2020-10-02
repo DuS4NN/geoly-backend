@@ -2,7 +2,7 @@ package com.geoly.app.controler;
 
 import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
-import com.geoly.app.dao.questSearch;
+import com.geoly.app.dao.QuestSearch;
 import com.geoly.app.models.Category;
 import com.geoly.app.models.StageType;
 import com.geoly.app.services.MapService;
@@ -37,7 +37,7 @@ public class MapController {
     }
 
     @PostMapping(path = "/questByParam")
-    public Response getAllQuestByParametersInRadius(@RequestBody questSearch questSearch){
+    public Response getAllQuestByParametersInRadius(@RequestBody QuestSearch questSearch){
         ValidatorResponse validatorResponse = validator.getAllQuestByParametersInRadius(questSearch);
         if (!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 

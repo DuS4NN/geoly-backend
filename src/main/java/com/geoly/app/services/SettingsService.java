@@ -1,7 +1,9 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.API;
+import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
+import com.geoly.app.dao.Settings;
 import com.geoly.app.models.Language;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -11,6 +13,8 @@ import com.geoly.app.repositories.UserOptionRepository;
 import com.geoly.app.repositories.UserRepository;
 import com.tinify.Source;
 import com.tinify.Tinify;
+import org.jooq.DSLContext;
+import org.jooq.Select;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.util.Collections;
@@ -28,17 +33,36 @@ import java.util.Optional;
 public class SettingsService {
 
     private EntityManager entityManager;
+    private DSLContext create;
     private Argon2PasswordEncoder argon2PasswordEncoder;
     private UserRepository userRepository;
     private UserOptionRepository userOptionRepository;
     private LanguageRepository languageRepository;
 
-    public SettingsService(EntityManager entityManager, Argon2PasswordEncoder argon2PasswordEncoder, UserRepository userRepository, UserOptionRepository userOptionRepository, LanguageRepository languageRepository) {
+    public SettingsService(EntityManager entityManager, DSLContext create, Argon2PasswordEncoder argon2PasswordEncoder, UserRepository userRepository, UserOptionRepository userOptionRepository, LanguageRepository languageRepository) {
         this.entityManager = entityManager;
+        this.create = create;
         this.argon2PasswordEncoder = argon2PasswordEncoder;
         this.userRepository = userRepository;
         this.userOptionRepository = userOptionRepository;
         this.languageRepository = languageRepository;
+    }
+
+    public Response getSettings(int userId){
+        Select<?> query =
+            create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.PRIVATE_PROFILE, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ABOUT)
+                .from(com.geoly.app.jooq.tables.UserOption.USER_OPTION)
+                .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                    .on(com.geoly.app.jooq.tables.User.USER.ID.eq(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID))
+                .where(com.geoly.app.jooq.tables.User.USER.ID.eq(userId));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -56,32 +80,30 @@ public class SettingsService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List changeSettings(UserOption newUserOption, String about, int languagId, int userId){
+    public Response changeSettings(Settings settings, int userId){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<UserOption> userOption = userOptionRepository.findByUser(user.get());
-        if(!userOption.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_OPTION_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!userOption.isPresent()) return new Response(StatusMessage.USER_OPTION_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        Optional<Language> language = languageRepository.findById(languagId);
-        if(!language.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.LANGUAGE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Optional<Language> language = languageRepository.findById(settings.getLanguageId());
+        if(!language.isPresent()) return new Response(StatusMessage.LANGUAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        user.get().setAbout(about);
+        user.get().setAbout(settings.getAbout());
         entityManager.merge(user.get());
 
-        userOption.get().setDarkMode(newUserOption.isDarkMode());
-        userOption.get().setMapTheme(newUserOption.getMapTheme());
-        userOption.get().setPrivateProfile(newUserOption.isPrivateProfile());
+        userOption.get().setPrivateProfile(settings.isPrivateProfile());
         userOption.get().setLanguage(language.get());
         entityManager.merge(userOption.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.SETTINGS_UPDATED, HttpStatus.OK));
+        return new Response(StatusMessage.SETTINGS_UPDATED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List setProfileImage(MultipartFile file, int userId) throws Exception{
+    public Response setProfileImage(MultipartFile file, int userId) throws Exception{
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
 
         File dir = new File(API.userImageUrl+userId);
@@ -98,17 +120,18 @@ public class SettingsService {
         user.get().setProfileImageUrl(API.userImageUrl+userId+"/"+userId+".jpg");
         entityManager.merge(user.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.PROFILE_IMAGE_SET, HttpStatus.OK));
+        return new Response(StatusMessage.PROFILE_IMAGE_SET, HttpStatus.ACCEPTED, null);
     }
 
-    public List deleteProfileImage(int userId){
+    @Transactional(rollbackOn = Exception.class)
+    public Response deleteProfileImage(int userId){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        user.get().setProfileImageUrl(API.userImageUrl+"default_profile_picture.svg");
+        user.get().setProfileImageUrl(API.userImageUrl+"default_profile_picture.png");
         entityManager.merge(user.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.PROFILE_IMAGE_DELETED, HttpStatus.OK));
+        return new Response(StatusMessage.PROFILE_IMAGE_DELETED, HttpStatus.ACCEPTED, null);
     }
 
     public List changePassword(String oldPassword, String newPassword, int userId){

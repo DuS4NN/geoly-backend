@@ -15,7 +15,7 @@ public class ValidatorMethods {
     }
 
     boolean reviewTextFormatIsValid(String reviewText){
-        return (reviewText != null && reviewText.length() > 0);
+        return (reviewText != null);
     }
 
     boolean reviewTextLengthIsValid(String reviewText){

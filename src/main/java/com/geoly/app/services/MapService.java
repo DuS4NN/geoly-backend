@@ -2,7 +2,7 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
-import com.geoly.app.dao.questSearch;
+import com.geoly.app.dao.QuestSearch;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.StageType;
 import com.geoly.app.models.StatusMessage;
@@ -111,7 +111,7 @@ public class MapService {
         return new Response(StatusMessage.OK, HttpStatus.OK, response);
     }
 
-    public Response getAllQuestByParametersInRadius(questSearch questSearch){
+    public Response getAllQuestByParametersInRadius(QuestSearch questSearch){
 
         List<String> stageType = new ArrayList<>(Arrays.asList(questSearch.getStageType()));
 

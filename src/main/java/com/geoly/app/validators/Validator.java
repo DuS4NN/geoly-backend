@@ -1,7 +1,8 @@
 package com.geoly.app.validators;
 
 import com.geoly.app.dao.EditQuest;
-import com.geoly.app.dao.questSearch;
+import com.geoly.app.dao.QuestSearch;
+import com.geoly.app.dao.Settings;
 import com.geoly.app.models.QuestReview;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -43,7 +44,7 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
-    public ValidatorResponse getAllQuestByParametersInRadius(questSearch questSearch){
+    public ValidatorResponse getAllQuestByParametersInRadius(QuestSearch questSearch){
         if(questSearch.getCategoryId() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_CATEGORY);
         if(questSearch.getStageType() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TYPE);
         if(questSearch.getDifficulty() == null || !validatorMethods.difficultyArrayIsValid(questSearch.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
@@ -110,11 +111,10 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
-    public ValidatorResponse changeSettingsValidator(UserOption userOption, String about, int languageId){
-        if(!validatorMethods.idIsValid(languageId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_LANGUAGE);
-        if(!validatorMethods.idIsValid(userOption.getMapTheme())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_MAP_THEME);
-        if(!validatorMethods.reviewTextFormatIsValid(about)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ABOUT);
-        if(!validatorMethods.reviewTextLengthIsValid(about)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.ABOUT_TOO_LONG);
+    public ValidatorResponse changeSettingsValidator(Settings settings){
+        if(!validatorMethods.idIsValid(settings.getLanguageId())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_LANGUAGE);
+        if(!validatorMethods.reviewTextFormatIsValid(settings.getAbout())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ABOUT);
+        if(!validatorMethods.reviewTextLengthIsValid(settings.getAbout())) return new ValidatorResponse(false, HttpStatus.METHOD_NOT_ALLOWED, StatusMessage.INVALID_ABOUT_LENGTH_SIZE);
 
         return new ValidatorResponse(true);
     }

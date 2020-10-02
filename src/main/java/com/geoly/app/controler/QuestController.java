@@ -8,15 +8,12 @@ import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.services.QuestService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -128,17 +125,6 @@ public class QuestController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/signindaily")
-    public List signInDailyQuest(Authentication authentication){
-        try{
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return questService.signInDailyQuest(customUserDetails.getUser().getId());
-        }catch (Exception e){
-            return GeolyAPI.catchException(e);
-        }
-    }
-
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/quest/{id}/delete")
     public Response deleteQuest(@PathVariable(name = "id") int questId, Authentication authentication){
         try{
@@ -157,6 +143,17 @@ public class QuestController {
             return questService.doActionWithQuest(questId, customUserDetails.getUser().getId(), "ACTIVATE");
         }catch (Exception e){
             return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/signindaily")
+    public List signInDailyQuest(Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.signInDailyQuest(customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return GeolyAPI.catchException(e);
         }
     }
 
