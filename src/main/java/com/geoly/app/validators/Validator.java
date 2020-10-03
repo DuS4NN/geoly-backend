@@ -99,8 +99,8 @@ public class Validator {
     }
 
     public ValidatorResponse imageValidator(String type, long size){
-        if(!validatorMethods.imageTypeIsValid(type)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.UNSUPPORTED_IMAGE_TYPE);
-        if(!validatorMethods.imageSizeIsValid(size)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.IMAGE_SIZE_TOO_BIG);
+        if(!validatorMethods.imageTypeIsValid(type)) return new ValidatorResponse(false, HttpStatus.METHOD_NOT_ALLOWED, StatusMessage.UNSUPPORTED_IMAGE_TYPE);
+        if(!validatorMethods.imageSizeIsValid(size)) return new ValidatorResponse(false, HttpStatus.METHOD_NOT_ALLOWED, StatusMessage.IMAGE_SIZE_TOO_BIG);
 
         return new ValidatorResponse(true);
     }

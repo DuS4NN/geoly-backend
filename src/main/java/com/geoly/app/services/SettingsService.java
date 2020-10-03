@@ -50,7 +50,7 @@ public class SettingsService {
 
     public Response getSettings(int userId){
         Select<?> query =
-            create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.PRIVATE_PROFILE, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ABOUT)
+            create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.PRIVATE_PROFILE, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ABOUT, com.geoly.app.jooq.tables.User.USER.ID)
                 .from(com.geoly.app.jooq.tables.UserOption.USER_OPTION)
                 .leftJoin(com.geoly.app.jooq.tables.User.USER)
                     .on(com.geoly.app.jooq.tables.User.USER.ID.eq(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID))
