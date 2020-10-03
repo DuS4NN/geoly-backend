@@ -4,6 +4,7 @@ import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.dao.Settings;
+import com.geoly.app.jooq.tables.Premium;
 import com.geoly.app.models.Language;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -15,6 +16,8 @@ import com.tinify.Source;
 import com.tinify.Tinify;
 import org.jooq.DSLContext;
 import org.jooq.Select;
+import org.jooq.Table;
+import org.jooq.meta.derby.sys.Sys;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -28,6 +31,9 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.currentTimestamp;
 
 @Service
 public class SettingsService {
@@ -49,9 +55,17 @@ public class SettingsService {
     }
 
     public Response getSettings(int userId){
+        Table<?> premium =
+            create.select(count(Premium.PREMIUM.ID).as("premium"))
+                .from(Premium.PREMIUM)
+                .where(Premium.PREMIUM.USER_ID.eq(userId))
+                .and(Premium.PREMIUM.STATE.eq("Active"))
+                .and(Premium.PREMIUM.END_AT.greaterThan(currentTimestamp()))
+                .asTable("premium");
+
         Select<?> query =
-            create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.PRIVATE_PROFILE, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ABOUT, com.geoly.app.jooq.tables.User.USER.ID)
-                .from(com.geoly.app.jooq.tables.UserOption.USER_OPTION)
+            create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.PRIVATE_PROFILE, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ABOUT, com.geoly.app.jooq.tables.User.USER.ID, premium.field("premium"))
+                .from(premium, com.geoly.app.jooq.tables.UserOption.USER_OPTION)
                 .leftJoin(com.geoly.app.jooq.tables.User.USER)
                     .on(com.geoly.app.jooq.tables.User.USER.ID.eq(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID))
                 .where(com.geoly.app.jooq.tables.User.USER.ID.eq(userId));
@@ -134,13 +148,16 @@ public class SettingsService {
         return new Response(StatusMessage.PROFILE_IMAGE_DELETED, HttpStatus.ACCEPTED, null);
     }
 
-    public List changePassword(String oldPassword, String newPassword, int userId){
-        Optional<User> user = userRepository.findByIdAndPassword(userId, argon2PasswordEncoder.encode(oldPassword));
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INCORRECT_OLD_PASSWORD, HttpStatus.METHOD_NOT_ALLOWED));
+    @Transactional(rollbackOn = Exception.class)
+    public Response changePassword(String newPassword, String oldPassword, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        if(!argon2PasswordEncoder.matches(oldPassword, user.get().getPassword())) return new Response(StatusMessage.INCORRECT_OLD_PASSWORD, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         user.get().setPassword(argon2PasswordEncoder.encode(newPassword));
         entityManager.merge(user.get());
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.PASSWORD_CHANGED, HttpStatus.OK));
+        return new Response(StatusMessage.PASSWORD_CHANGED, HttpStatus.ACCEPTED, null);
     }
 }

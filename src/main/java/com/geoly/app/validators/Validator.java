@@ -106,7 +106,7 @@ public class Validator {
     }
 
     public ValidatorResponse changePasswordValidator(String password){
-        if(!validatorMethods.passwordIsValid(password)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_PASSWORD);
+        if(!validatorMethods.passwordIsValid(password)) return new ValidatorResponse(false, HttpStatus.METHOD_NOT_ALLOWED, StatusMessage.INVALID_PASSWORD);
 
         return new ValidatorResponse(true);
     }

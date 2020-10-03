@@ -90,7 +90,6 @@ public class SettingsController {
         }
     }
 
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("settings/darkmode")
     public Response toggleDarkMode(@RequestParam(name="toggle") boolean toggle, Authentication authentication){
@@ -104,15 +103,15 @@ public class SettingsController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/settings/changepassword")
-    public List changePassword(@RequestParam(name="newPassword") String newPassword, @RequestParam(name="oldPassword") String oldPassword, Authentication authentication){
+    public Response changePassword(@RequestParam(name="newPassword") String newPassword, @RequestParam(name="oldPassword") String oldPassword, Authentication authentication){
         ValidatorResponse validatorResponse = validator.changePasswordValidator(newPassword);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            return settingsService.changePassword(oldPassword, newPassword, customUserDetails.getUser().getId());
+            return settingsService.changePassword(newPassword, oldPassword+"", customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 }
