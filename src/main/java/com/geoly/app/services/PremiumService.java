@@ -159,12 +159,12 @@ public class PremiumService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List cancelAgreement(int userId) {
+    public Response cancelAgreement(int userId) {
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         Optional<Premium> premium = premiumRepository.findByUserAndState(user.get(), "Active");
-        if(!premium.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_DOESNT_HAVE_PREMIUM, HttpStatus.BAD_REQUEST));
+        if(!premium.isPresent()) return new Response(StatusMessage.SUBSCRIPTION_CAN_NOT_BE_CANCELED, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -182,9 +182,9 @@ public class PremiumService {
         if(answer == null){
             premium.get().setState("Cancelled");
             entityManager.merge(premium.get());
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SUBSCRIPTION_CANCELED, HttpStatus.METHOD_NOT_ALLOWED));
+            return new Response(StatusMessage.SUBSCRIPTION_CANCELED, HttpStatus.ACCEPTED, null);
         }else{
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.SUBSCRIPTION_CAN_NOT_BE_CANCELED, HttpStatus.METHOD_NOT_ALLOWED));
+            return new Response(StatusMessage.SUBSCRIPTION_CAN_NOT_BE_CANCELED, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
     }
 }

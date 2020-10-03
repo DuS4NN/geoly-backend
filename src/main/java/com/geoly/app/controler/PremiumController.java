@@ -65,12 +65,12 @@ public class PremiumController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/premium/unsubscribe")
-    public List cancelSubscription(Authentication authentication){
+    public Response cancelSubscription(Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return premiumService.cancelAgreement(customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 }
