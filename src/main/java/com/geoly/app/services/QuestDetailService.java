@@ -344,7 +344,6 @@ public class QuestDetailService {
                 create.select(Premium.PREMIUM.ID)
                     .from(Premium.PREMIUM)
                     .where(Premium.PREMIUM.USER_ID.eq(userId))
-                    .and(Premium.PREMIUM.STATE.eq("Active"))
                     .and(Premium.PREMIUM.END_AT.greaterThan(currentTimestamp()));
 
             Query q = entityManager.createNativeQuery(query.getSQL());
