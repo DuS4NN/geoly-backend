@@ -102,6 +102,17 @@ public class SettingsController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("settings/theme")
+    public Response changeTheme(@RequestParam(name="theme") int theme, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return settingsService.changeTheme(theme, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/settings/changepassword")
     public Response changePassword(@RequestParam(name="newPassword") String newPassword, @RequestParam(name="oldPassword") String oldPassword, Authentication authentication){
         ValidatorResponse validatorResponse = validator.changePasswordValidator(newPassword);

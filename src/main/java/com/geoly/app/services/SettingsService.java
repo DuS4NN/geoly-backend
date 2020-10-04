@@ -149,6 +149,19 @@ public class SettingsService {
     }
 
     @Transactional(rollbackOn = Exception.class)
+    public Response changeTheme(int theme, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+        Optional<UserOption> userOption = userOptionRepository.findByUser(user.get());
+        if(!userOption.isPresent()) return new Response(StatusMessage.USER_OPTION_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+
+        userOption.get().setMapTheme(theme);
+        entityManager.merge(userOption.get());
+
+        return new Response(StatusMessage.THEME_CHANGED, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
     public Response changePassword(String newPassword, String oldPassword, int userId){
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
