@@ -1,7 +1,6 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.config.API;
-import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.models.QuestReportReason;
@@ -9,14 +8,10 @@ import com.geoly.app.models.QuestReview;
 import com.geoly.app.services.QuestDetailService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 public class QuestDetailController {
