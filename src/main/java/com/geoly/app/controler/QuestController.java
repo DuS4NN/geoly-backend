@@ -1,7 +1,6 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.config.API;
-import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.EditQuest;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
@@ -147,24 +146,24 @@ public class QuestController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/signindaily")
-    public List signInDailyQuest(Authentication authentication){
+    @GetMapping("/signindaily")
+    public Response signInDailyQuest(Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.signInDailyQuest(customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/dailyquest")
-    public List getDailyQuest(Authentication authentication){
+    public Response getDailyQuest(Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.getDailyQuest(customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 

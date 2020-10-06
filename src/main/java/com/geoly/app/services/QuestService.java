@@ -300,22 +300,22 @@ public class QuestService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List signInDailyQuest(int userId){
+    public Response signInDailyQuest(int userId){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST,null);
 
         if(user.get().getAddress() == null){
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED));
+            return new Response(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByDaily(true);
-        if(!quest.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<com.geoly.app.models.Stage> stage = stageRepository.findByQuest(quest.get());
-        if(!stage.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<UserQuest> alreadyActive = userQuestRepository.findByUserAndStageAndStatus(user.get(), stage.get(), UserQuestStatus.ON_STAGE);
-        if(alreadyActive.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_HAS_ACTIVE_QUEST, HttpStatus.METHOD_NOT_ALLOWED));
+        if(alreadyActive.isPresent()) return new Response(StatusMessage.USER_HAS_ACTIVE_DAILY_QUEST, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         UserQuest userQuest = new UserQuest();
         userQuest.setUser(user.get());
@@ -323,7 +323,7 @@ public class QuestService {
         userQuest.setStatus(UserQuestStatus.ON_STAGE);
         entityManager.persist(userQuest);
 
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_SIGNED_UP_ON_QUEST, HttpStatus.CREATED));
+        return new Response(StatusMessage.USER_SIGNED_UP_ON_QUEST, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -351,12 +351,12 @@ public class QuestService {
         }
     }
 
-    public List getDailyQuest(int userId){
+    public Response getDailyQuest(int userId){
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         if(user.get().getAddress() == null){
-            return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED));
+            return new Response(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
         Select<?> query =
@@ -382,7 +382,7 @@ public class QuestService {
 
         result.add(duration.toMillis());
         result.add(randomCoordinates);
-        return result;
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     private Coordinates getRandomCoordinates(double lat, double lon, int radius, int userId){
