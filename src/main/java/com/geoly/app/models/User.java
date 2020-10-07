@@ -106,6 +106,9 @@ public class User implements Serializable {
     @OneToMany(targetEntity = UserPartyQuest.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserPartyQuest> userPartyQuest;
 
+    @OneToMany(targetEntity = Notification.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Notification> notifications;
+
     public User() {
     }
 

@@ -8,6 +8,7 @@ import com.geoly.app.jooq.tables.Badge;
 import com.geoly.app.jooq.tables.Category;
 import com.geoly.app.jooq.tables.Image;
 import com.geoly.app.jooq.tables.Language;
+import com.geoly.app.jooq.tables.Notification;
 import com.geoly.app.jooq.tables.Party;
 import com.geoly.app.jooq.tables.PartyInvite;
 import com.geoly.app.jooq.tables.PartyQuest;
@@ -58,6 +59,8 @@ public class Indexes {
     public static final Index FK3N5NEGXV9EYM0STD2EUTTVG6W_INDEX_4 = Indexes0.FK3N5NEGXV9EYM0STD2EUTTVG6W_INDEX_4;
     public static final Index PRIMARY_KEY_4 = Indexes0.PRIMARY_KEY_4;
     public static final Index PRIMARY_KEY_C = Indexes0.PRIMARY_KEY_C;
+    public static final Index FKB0YVOEP4H4K92IPON31WMDF7E_INDEX_A = Indexes0.FKB0YVOEP4H4K92IPON31WMDF7E_INDEX_A;
+    public static final Index PRIMARY_KEY_A = Indexes0.PRIMARY_KEY_A;
     public static final Index FKTCAG4FSDQKMO7OWJKK1P25H41_INDEX_4 = Indexes0.FKTCAG4FSDQKMO7OWJKK1P25H41_INDEX_4;
     public static final Index PRIMARY_KEY_48 = Indexes0.PRIMARY_KEY_48;
     public static final Index FK5N5BG86WU1LEDOPG6IN964H6J_INDEX_5 = Indexes0.FK5N5BG86WU1LEDOPG6IN964H6J_INDEX_5;
@@ -123,6 +126,8 @@ public class Indexes {
         public static Index FK3N5NEGXV9EYM0STD2EUTTVG6W_INDEX_4 = Internal.createIndex("FK3N5NEGXV9EYM0STD2EUTTVG6W_INDEX_4", Image.IMAGE, new OrderField[] { Image.IMAGE.QUEST_ID }, false);
         public static Index PRIMARY_KEY_4 = Internal.createIndex("PRIMARY_KEY_4", Image.IMAGE, new OrderField[] { Image.IMAGE.ID }, true);
         public static Index PRIMARY_KEY_C = Internal.createIndex("PRIMARY_KEY_C", Language.LANGUAGE, new OrderField[] { Language.LANGUAGE.ID }, true);
+        public static Index FKB0YVOEP4H4K92IPON31WMDF7E_INDEX_A = Internal.createIndex("FKB0YVOEP4H4K92IPON31WMDF7E_INDEX_A", Notification.NOTIFICATION, new OrderField[] { Notification.NOTIFICATION.USER_ID }, false);
+        public static Index PRIMARY_KEY_A = Internal.createIndex("PRIMARY_KEY_A", Notification.NOTIFICATION, new OrderField[] { Notification.NOTIFICATION.ID }, true);
         public static Index FKTCAG4FSDQKMO7OWJKK1P25H41_INDEX_4 = Internal.createIndex("FKTCAG4FSDQKMO7OWJKK1P25H41_INDEX_4", Party.PARTY, new OrderField[] { Party.PARTY.USER_ID }, false);
         public static Index PRIMARY_KEY_48 = Internal.createIndex("PRIMARY_KEY_48", Party.PARTY, new OrderField[] { Party.PARTY.ID }, true);
         public static Index FK5N5BG86WU1LEDOPG6IN964H6J_INDEX_5 = Internal.createIndex("FK5N5BG86WU1LEDOPG6IN964H6J_INDEX_5", PartyInvite.PARTY_INVITE, new OrderField[] { PartyInvite.PARTY_INVITE.USER_ID }, false);

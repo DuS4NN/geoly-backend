@@ -8,6 +8,7 @@ import com.geoly.app.jooq.tables.Badge;
 import com.geoly.app.jooq.tables.Category;
 import com.geoly.app.jooq.tables.Image;
 import com.geoly.app.jooq.tables.Language;
+import com.geoly.app.jooq.tables.Notification;
 import com.geoly.app.jooq.tables.Party;
 import com.geoly.app.jooq.tables.PartyInvite;
 import com.geoly.app.jooq.tables.PartyQuest;
@@ -32,6 +33,7 @@ import com.geoly.app.jooq.tables.records.BadgeRecord;
 import com.geoly.app.jooq.tables.records.CategoryRecord;
 import com.geoly.app.jooq.tables.records.ImageRecord;
 import com.geoly.app.jooq.tables.records.LanguageRecord;
+import com.geoly.app.jooq.tables.records.NotificationRecord;
 import com.geoly.app.jooq.tables.records.PartyInviteRecord;
 import com.geoly.app.jooq.tables.records.PartyQuestRecord;
 import com.geoly.app.jooq.tables.records.PartyRecord;
@@ -87,6 +89,7 @@ public class Keys {
     public static final UniqueKey<CategoryRecord> CONSTRAINT_31 = UniqueKeys0.CONSTRAINT_31;
     public static final UniqueKey<ImageRecord> CONSTRAINT_4 = UniqueKeys0.CONSTRAINT_4;
     public static final UniqueKey<LanguageRecord> CONSTRAINT_C = UniqueKeys0.CONSTRAINT_C;
+    public static final UniqueKey<NotificationRecord> CONSTRAINT_A = UniqueKeys0.CONSTRAINT_A;
     public static final UniqueKey<PartyRecord> CONSTRAINT_48 = UniqueKeys0.CONSTRAINT_48;
     public static final UniqueKey<PartyInviteRecord> CONSTRAINT_5 = UniqueKeys0.CONSTRAINT_5;
     public static final UniqueKey<PartyQuestRecord> CONSTRAINT_2 = UniqueKeys0.CONSTRAINT_2;
@@ -117,6 +120,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<ImageRecord, QuestRecord> FK3N5NEGXV9EYM0STD2EUTTVG6W = ForeignKeys0.FK3N5NEGXV9EYM0STD2EUTTVG6W;
+    public static final ForeignKey<NotificationRecord, UserRecord> FKB0YVOEP4H4K92IPON31WMDF7E = ForeignKeys0.FKB0YVOEP4H4K92IPON31WMDF7E;
     public static final ForeignKey<PartyRecord, UserRecord> FKTCAG4FSDQKMO7OWJKK1P25H41 = ForeignKeys0.FKTCAG4FSDQKMO7OWJKK1P25H41;
     public static final ForeignKey<PartyInviteRecord, PartyRecord> FKG0D7MD7NQV6Y8UNXO7TFR722F = ForeignKeys0.FKG0D7MD7NQV6Y8UNXO7TFR722F;
     public static final ForeignKey<PartyInviteRecord, UserRecord> FK5N5BG86WU1LEDOPG6IN964H6J = ForeignKeys0.FK5N5BG86WU1LEDOPG6IN964H6J;
@@ -157,6 +161,7 @@ public class Keys {
         public static final UniqueKey<CategoryRecord> CONSTRAINT_31 = Internal.createUniqueKey(Category.CATEGORY, "CONSTRAINT_31", Category.CATEGORY.ID);
         public static final UniqueKey<ImageRecord> CONSTRAINT_4 = Internal.createUniqueKey(Image.IMAGE, "CONSTRAINT_4", Image.IMAGE.ID);
         public static final UniqueKey<LanguageRecord> CONSTRAINT_C = Internal.createUniqueKey(Language.LANGUAGE, "CONSTRAINT_C", Language.LANGUAGE.ID);
+        public static final UniqueKey<NotificationRecord> CONSTRAINT_A = Internal.createUniqueKey(Notification.NOTIFICATION, "CONSTRAINT_A", Notification.NOTIFICATION.ID);
         public static final UniqueKey<PartyRecord> CONSTRAINT_48 = Internal.createUniqueKey(Party.PARTY, "CONSTRAINT_48", Party.PARTY.ID);
         public static final UniqueKey<PartyInviteRecord> CONSTRAINT_5 = Internal.createUniqueKey(PartyInvite.PARTY_INVITE, "CONSTRAINT_5", PartyInvite.PARTY_INVITE.ID);
         public static final UniqueKey<PartyQuestRecord> CONSTRAINT_2 = Internal.createUniqueKey(PartyQuest.PARTY_QUEST, "CONSTRAINT_2", PartyQuest.PARTY_QUEST.ID);
@@ -185,6 +190,7 @@ public class Keys {
 
     private static class ForeignKeys0 {
         public static final ForeignKey<ImageRecord, QuestRecord> FK3N5NEGXV9EYM0STD2EUTTVG6W = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_49, Image.IMAGE, "FK3N5NEGXV9EYM0STD2EUTTVG6W", Image.IMAGE.QUEST_ID);
+        public static final ForeignKey<NotificationRecord, UserRecord> FKB0YVOEP4H4K92IPON31WMDF7E = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, Notification.NOTIFICATION, "FKB0YVOEP4H4K92IPON31WMDF7E", Notification.NOTIFICATION.USER_ID);
         public static final ForeignKey<PartyRecord, UserRecord> FKTCAG4FSDQKMO7OWJKK1P25H41 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, Party.PARTY, "FKTCAG4FSDQKMO7OWJKK1P25H41", Party.PARTY.USER_ID);
         public static final ForeignKey<PartyInviteRecord, PartyRecord> FKG0D7MD7NQV6Y8UNXO7TFR722F = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_48, PartyInvite.PARTY_INVITE, "FKG0D7MD7NQV6Y8UNXO7TFR722F", PartyInvite.PARTY_INVITE.PARTY_ID);
         public static final ForeignKey<PartyInviteRecord, UserRecord> FK5N5BG86WU1LEDOPG6IN964H6J = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, PartyInvite.PARTY_INVITE, "FK5N5BG86WU1LEDOPG6IN964H6J", PartyInvite.PARTY_INVITE.USER_ID);

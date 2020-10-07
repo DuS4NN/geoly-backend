@@ -8,6 +8,7 @@ import com.geoly.app.jooq.tables.Badge;
 import com.geoly.app.jooq.tables.Category;
 import com.geoly.app.jooq.tables.Image;
 import com.geoly.app.jooq.tables.Language;
+import com.geoly.app.jooq.tables.Notification;
 import com.geoly.app.jooq.tables.Party;
 import com.geoly.app.jooq.tables.PartyInvite;
 import com.geoly.app.jooq.tables.PartyQuest;
@@ -54,7 +55,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Geoly extends SchemaImpl {
 
-    private static final long serialVersionUID = -1130164587;
+    private static final long serialVersionUID = 164699510;
 
     /**
      * The reference instance of <code>geoly</code>
@@ -80,6 +81,11 @@ public class Geoly extends SchemaImpl {
      * The table <code>geoly.LANGUAGE</code>.
      */
     public final Language LANGUAGE = com.geoly.app.jooq.tables.Language.LANGUAGE;
+
+    /**
+     * The table <code>geoly.NOTIFICATION</code>.
+     */
+    public final Notification NOTIFICATION = com.geoly.app.jooq.tables.Notification.NOTIFICATION;
 
     /**
      * The table <code>geoly.PARTY</code>.
@@ -222,6 +228,7 @@ public class Geoly extends SchemaImpl {
             Category.CATEGORY,
             Image.IMAGE,
             Language.LANGUAGE,
+            Notification.NOTIFICATION,
             Party.PARTY,
             PartyInvite.PARTY_INVITE,
             PartyQuest.PARTY_QUEST,
