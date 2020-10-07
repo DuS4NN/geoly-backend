@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Notification extends TableImpl<NotificationRecord> {
 
-    private static final long serialVersionUID = -720148281;
+    private static final long serialVersionUID = 399321604;
 
     /**
      * The reference instance of <code>geoly.NOTIFICATION</code>
@@ -70,6 +70,11 @@ public class Notification extends TableImpl<NotificationRecord> {
      * The column <code>geoly.NOTIFICATION.DATA</code>.
      */
     public final TableField<NotificationRecord, String> DATA = createField("DATA", org.jooq.impl.SQLDataType.VARCHAR(1000), this, "");
+
+    /**
+     * The column <code>geoly.NOTIFICATION.TYPE</code>.
+     */
+    public final TableField<NotificationRecord, String> TYPE = createField("TYPE", org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
 
     /**
      * The column <code>geoly.NOTIFICATION.SEEN</code>.

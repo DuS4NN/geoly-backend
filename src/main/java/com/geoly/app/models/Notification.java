@@ -29,6 +29,11 @@ public class Notification {
     @NotNull
     private boolean seen;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    @NotNull
+    private NotificationType notificationType;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
     private Date createdAt;
@@ -52,11 +57,11 @@ public class Notification {
         this.user = user;
     }
 
-    public String getImageUrl() {
+    public String getData() {
         return data;
     }
 
-    public void setImageUrl(String data) {
+    public void setData(String data) {
         this.data = data;
     }
 
@@ -74,5 +79,13 @@ public class Notification {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public NotificationType getNotificationType() {
+        return notificationType;
+    }
+
+    public void setNotificationType(NotificationType notificationType) {
+        this.notificationType = notificationType;
     }
 }
