@@ -34,16 +34,18 @@ public class AccountService {
     private EntityManager entityManager;
     private DSLContext create;
     private API api;
+    private NotificationService notificationService;
     private Argon2PasswordEncoder argon2PasswordEncoder;
     private LanguageRepository languageRepository;
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private TokenRepository tokenRepository;
 
-    public AccountService(API api, DSLContext create, EntityManager entityManager, Argon2PasswordEncoder argon2PasswordEncoder, LanguageRepository languageRepository, UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository) {
+    public AccountService(API api, DSLContext create, EntityManager entityManager, NotificationService notificationService, Argon2PasswordEncoder argon2PasswordEncoder, LanguageRepository languageRepository, UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.api = api;
+        this.notificationService = notificationService;
         this.argon2PasswordEncoder = argon2PasswordEncoder;
         this.languageRepository = languageRepository;
         this.userRepository = userRepository;
@@ -105,6 +107,10 @@ public class AccountService {
         userOption.setMapTheme(1);
         userOption.setDarkMode(false);
         entityManager.persist(userOption);
+
+        HashMap<String, Integer> data = new HashMap<>();
+        data.put("userId", newUser.getId());
+        notificationService.sendNotification(newUser, NotificationType.WELCOME, data, false);
 
         Token token = new Token();
         token.setAction(TokenType.CONFIRM_EMAIL);

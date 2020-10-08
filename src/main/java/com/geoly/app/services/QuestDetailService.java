@@ -3,6 +3,7 @@ package com.geoly.app.services;
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.NotificationType;
 import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.jooq.impl.DSL.*;
 
@@ -31,6 +29,7 @@ public class QuestDetailService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private NotificationService notificationService;
     private QuestRepository questRepository;
     private UserRepository userRepository;
     private QuestReviewRepository questReviewRepository;
@@ -40,9 +39,10 @@ public class QuestDetailService {
 
     private int REVIEW_ON_PAGE = 5;
 
-    public QuestDetailService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository, UserQuestRepository userQuestRepository){
+    public QuestDetailService(EntityManager entityManager, DSLContext create, NotificationService notificationService, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository, UserQuestRepository userQuestRepository){
         this.entityManager = entityManager;
         this.create = create;
+        this.notificationService = notificationService;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
         this.questReviewRepository = questReviewRepository;
@@ -297,13 +297,19 @@ public class QuestDetailService {
         questReview.setUser(user.get());
         entityManager.persist(questReview);
 
-        ArrayList data = new ArrayList();
-        data.add(userId);
-        data.add(questReview.getId());
-        data.add(user.get().getNickName());
-        data.add(user.get().getProfileImageUrl());
+        ArrayList review = new ArrayList();
+        review.add(userId);
+        review.add(questReview.getId());
+        review.add(user.get().getNickName());
+        review.add(user.get().getProfileImageUrl());
 
-        return new Response(StatusMessage.REVIEW_ADDED, HttpStatus.OK, data);
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("userNick", user.get().getNickName());
+        data.put("reviewId", questReview.getId());
+        data.put("questId", quest.get().getId());
+        notificationService.sendNotification(user.get(), NotificationType.ADD_REVIEW, data,true);
+
+        return new Response(StatusMessage.REVIEW_ADDED, HttpStatus.OK, review);
     }
 
     @Transactional(rollbackOn = Exception.class)
