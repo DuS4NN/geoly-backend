@@ -1,0 +1,94 @@
+package com.geoly.app.services;
+
+import com.geoly.app.config.API;
+import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
+import com.geoly.app.models.Notification;
+import com.geoly.app.models.NotificationType;
+import com.geoly.app.models.StatusMessage;
+import com.geoly.app.models.User;
+import com.google.common.hash.Hashing;
+import com.google.gson.Gson;
+import com.pusher.rest.Pusher;
+import org.jooq.DSLContext;
+import org.jooq.Select;
+import org.jooq.Update;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.field;
+
+@Service
+public class NotificationService {
+
+    private EntityManager entityManager;
+    private DSLContext create;
+    private Pusher pusher;
+
+    public NotificationService(EntityManager entityManager, DSLContext create, Pusher pusher) {
+        this.entityManager = entityManager;
+        this.create = create;
+        this.pusher = pusher;
+    }
+
+    @Async
+    @Transactional(rollbackOn = Exception.class)
+    public void sendNotification(User user, NotificationType notificationType, HashMap data, boolean push){
+        Gson gson = new Gson();
+        Notification notification = new Notification();
+        notification.setData(gson.toJson(data));
+        notification.setSeen(false);
+        notification.setUser(user);
+        notification.setNotificationType(notificationType);
+        entityManager.persist(notification);
+
+        if(push){
+            String id = Hashing.sha256().hashString(user.getId()+"", StandardCharsets.UTF_8).toString();
+            pusher.trigger("notifications-"+id, notificationType.name(), data);
+        }
+    }
+
+    public int getCountOfUnseen(int userId){
+        Select<?> query =
+            create.select(count())
+            .from(com.geoly.app.jooq.tables.Notification.NOTIFICATION)
+            .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.SEEN.isFalse())
+            .and(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        API.setBindParameterValues(q, query);
+        Object result = q.getSingleResult();
+        return Integer.parseInt(String.valueOf(result));
+    }
+
+    public Response getNotifications(int userId, int count){
+        Select<?> query =
+            create.select()
+                .from(com.geoly.app.jooq.tables.Notification.NOTIFICATION)
+                .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId))
+                .orderBy(com.geoly.app.jooq.tables.Notification.NOTIFICATION.CREATED_AT.desc())
+                .limit(10)
+                .offset(count);
+
+        if(count == 0){
+            create.update(com.geoly.app.jooq.tables.Notification.NOTIFICATION).set(field("seen"), 1)
+                    .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.SEEN.isFalse())
+                    .and(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId))
+                    .execute();
+        }
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        API.setBindParameterValues(q, query);
+        List result = q.getResultList();
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+}
