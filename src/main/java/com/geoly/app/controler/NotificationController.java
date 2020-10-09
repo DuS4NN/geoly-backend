@@ -33,7 +33,7 @@ public class NotificationController {
 
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/setunseen")
+    @GetMapping("/notification/setunseen")
     public void setUnseen(Authentication authentication) {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         notificationService.setUnseen(customUserDetails.getUser().getId());

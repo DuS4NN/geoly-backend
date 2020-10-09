@@ -102,7 +102,7 @@ public class NotificationService {
                 .from(com.geoly.app.jooq.tables.Notification.NOTIFICATION)
                 .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId))
                 .orderBy(com.geoly.app.jooq.tables.Notification.NOTIFICATION.CREATED_AT.desc())
-                .limit(10)
+                .limit(5)
                 .offset(count);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
