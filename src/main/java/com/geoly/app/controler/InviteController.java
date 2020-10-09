@@ -45,30 +45,30 @@ public class InviteController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/invite/{id}/cancel")
-    public List cancelInvite(@PathVariable(name = "id") int inviteId, Authentication authentication){
+    @GetMapping("/invite/cancel")
+    public Response cancelInvite(@RequestParam(name = "id") int inviteId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(inviteId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return inviteService.cancelInvite(inviteId, customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/invite/{id}/accept")
-    public List acceptInvite(@PathVariable(name = "id") int inviteId, Authentication authentication){
+    @GetMapping("/invite/accept")
+    public Response acceptInvite(@RequestParam(name = "id") int inviteId, Authentication authentication){
         ValidatorResponse validatorResponse = validator.checkOnlyId(inviteId);
-        if(!validatorResponse.isValid()) return Collections.singletonList(new ResponseEntity<>(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus()));
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return inviteService.acceptInvite(inviteId, customUserDetails.getUser().getId());
         }catch (Exception e){
-            return GeolyAPI.catchException(e);
+            return API.catchException(e);
         }
     }
 

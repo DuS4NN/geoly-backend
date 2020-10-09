@@ -70,25 +70,26 @@ public class InviteService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List cancelInvite(int inviteId, int userId){
+    public Response cancelInvite(int inviteId, int userId){
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<com.geoly.app.models.PartyInvite> partyInvite = partyInviteRepository.findByIdAndStatus(inviteId, PartyInvateStatus.PENDING);
-        if(!partyInvite.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!partyInvite.isPresent()) return new Response(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyInvite.get().setStatus(PartyInvateStatus.DENIED);
         entityManager.merge(partyInvite.get());
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVITE_DENIED, HttpStatus.OK));
+
+        return new Response(StatusMessage.INVITE_DENIED, HttpStatus.OK, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List acceptInvite(int inviteId, int userId){
+    public Response acceptInvite(int inviteId, int userId){
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
-        if(!user.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<com.geoly.app.models.PartyInvite> partyInvite = partyInviteRepository.findByIdAndStatus(inviteId, PartyInvateStatus.PENDING);
-        if(!partyInvite.isPresent()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        if(!partyInvite.isPresent()) return new Response(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyInvite.get().setStatus(PartyInvateStatus.ACCEPTED);
 
@@ -98,7 +99,7 @@ public class InviteService {
 
         entityManager.merge(partyInvite.get());
         entityManager.persist(partyUser);
-        return Collections.singletonList(new ResponseEntity<>(StatusMessage.INVITE_ACCEPT, HttpStatus.OK));
+        return new Response(StatusMessage.INVITE_ACCEPT, HttpStatus.OK, null);
     }
 
 }
