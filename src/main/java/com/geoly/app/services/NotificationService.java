@@ -53,6 +53,8 @@ public class NotificationService {
         notification.setNotificationType(notificationType);
         entityManager.persist(notification);
 
+        data.put("notificationId", notification.getId());
+
         if(push){
             String id = Hashing.sha256().hashString(user.getId()+"", StandardCharsets.UTF_8).toString();
             pusher.trigger("notifications-"+id, notificationType.name(), data);
@@ -87,21 +89,21 @@ public class NotificationService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
+    public void setUnseen(int userId){
+        create.update(com.geoly.app.jooq.tables.Notification.NOTIFICATION).set(field("seen"), 1)
+                .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.SEEN.isFalse())
+                .and(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId))
+                .execute();
+    }
+
     public Response getNotifications(int userId, int count){
         Select<?> query =
-            create.select()
+            create.select(com.geoly.app.jooq.tables.Notification.NOTIFICATION.ID, com.geoly.app.jooq.tables.Notification.NOTIFICATION.CREATED_AT, com.geoly.app.jooq.tables.Notification.NOTIFICATION.DATA, com.geoly.app.jooq.tables.Notification.NOTIFICATION.TYPE)
                 .from(com.geoly.app.jooq.tables.Notification.NOTIFICATION)
                 .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId))
                 .orderBy(com.geoly.app.jooq.tables.Notification.NOTIFICATION.CREATED_AT.desc())
                 .limit(10)
                 .offset(count);
-
-        if(count == 0){
-            create.update(com.geoly.app.jooq.tables.Notification.NOTIFICATION).set(field("seen"), 1)
-                    .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.SEEN.isFalse())
-                    .and(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId))
-                    .execute();
-        }
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         API.setBindParameterValues(q, query);

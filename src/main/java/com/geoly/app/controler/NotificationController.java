@@ -31,6 +31,14 @@ public class NotificationController {
         }
     }
 
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/setunseen")
+    public void setUnseen(Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        notificationService.setUnseen(customUserDetails.getUser().getId());
+    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/notification")
     public Response getNotifications(@RequestParam(name = "count") int count, Authentication authentication){
