@@ -8,6 +8,8 @@ import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.*;
+import com.google.common.hash.Hashing;
+import com.pusher.rest.Pusher;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.jooq.impl.DSL.count;
@@ -28,6 +31,7 @@ public class PartyService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private Pusher pusher;
     private UserRepository userRepository;
     private PartyRepository partyRepository;
     private PartyUserRepository partyUserRepository;
@@ -39,9 +43,10 @@ public class PartyService {
 
     private int PARTY_ON_PAGE = 5;
 
-    public PartyService(EntityManager entityManager, DSLContext create, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository, PartyInviteRepository partyInviteRepository, QuestRepository questRepository, PartyQuestRepository partyQuestRepository, StageRepository stageRepository, UserPartyQuestRepository userPartyQuestRepository) {
+    public PartyService(EntityManager entityManager, DSLContext create, Pusher pusher, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository, PartyInviteRepository partyInviteRepository, QuestRepository questRepository, PartyQuestRepository partyQuestRepository, StageRepository stageRepository, UserPartyQuestRepository userPartyQuestRepository) {
         this.entityManager = entityManager;
         this.create = create;
+        this.pusher = pusher;
         this.userRepository = userRepository;
         this.partyRepository = partyRepository;
         this.partyUserRepository = partyUserRepository;
@@ -248,7 +253,16 @@ public class PartyService {
         partyInvite.setParty(party.get());
         partyInvite.setUser(user.get());
         partyInvite.setStatus(PartyInvateStatus.PENDING);
+        partyInvite.setSeen(false);
         entityManager.persist(partyInvite);
+
+        HashMap data = new HashMap();
+        data.put("invitationId", partyInvite.getId());
+        data.put("partyId", partyId);
+        data.put("partyName", party.get().getName());
+        data.put("userNick", creator.get().getNickName());
+        String id = Hashing.sha256().hashString(user.get().getId()+"", StandardCharsets.UTF_8).toString();
+        pusher.trigger("invitations-"+id, "PARTY_INVITE", data);
 
         return new Response(StatusMessage.USER_INVITED, HttpStatus.ACCEPTED, null);
     }
@@ -263,8 +277,6 @@ public class PartyService {
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
-
-        if(result.isEmpty()) return new Response(StatusMessage.NO_PARTY, HttpStatus.NO_CONTENT, null);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
