@@ -3,6 +3,7 @@ package com.geoly.app.services;
 import com.geoly.app.config.API;
 import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
+import com.geoly.app.jooq.tables.PartyInvite;
 import com.geoly.app.models.Notification;
 import com.geoly.app.models.NotificationType;
 import com.geoly.app.models.StatusMessage;
@@ -12,6 +13,7 @@ import com.google.gson.Gson;
 import com.pusher.rest.Pusher;
 import org.jooq.DSLContext;
 import org.jooq.Select;
+import org.jooq.Table;
 import org.jooq.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
@@ -57,17 +59,32 @@ public class NotificationService {
         }
     }
 
-    public int getCountOfUnseen(int userId){
-        Select<?> query =
-            create.select(count())
+    public Response getCountOfUnseen(int userId){
+        Table<?> invite =
+            create.select(count().as("inviteCount"))
+            .from(PartyInvite.PARTY_INVITE)
+            .where(PartyInvite.PARTY_INVITE.USER_ID.eq(userId))
+            .and(PartyInvite.PARTY_INVITE.SEEN.isFalse())
+            .asTable("invite");
+
+        Table<?> notification =
+            create.select(count().as("notificationCount"))
             .from(com.geoly.app.jooq.tables.Notification.NOTIFICATION)
             .where(com.geoly.app.jooq.tables.Notification.NOTIFICATION.SEEN.isFalse())
-            .and(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId));
+            .and(com.geoly.app.jooq.tables.Notification.NOTIFICATION.USER_ID.eq(userId))
+            .asTable("notification");
+
+        Select<?> query =
+            create.select()
+            .from(invite, notification);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         API.setBindParameterValues(q, query);
-        Object result = q.getSingleResult();
-        return Integer.parseInt(String.valueOf(result));
+        List result = q.getResultList();
+
+        result.add(Hashing.sha256().hashString(userId+"", StandardCharsets.UTF_8).toString());
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     public Response getNotifications(int userId, int count){

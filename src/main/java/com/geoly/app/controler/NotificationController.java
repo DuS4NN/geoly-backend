@@ -21,15 +21,19 @@ public class NotificationController {
 
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/notification/count")
-    public int getUnseenNotificationCount(Authentication authentication){
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        return notificationService.getCountOfUnseen(customUserDetails.getUser().getId());
+    @GetMapping("/headercountinfo")
+    public Response getUnseenNotificationCount(Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return notificationService.getCountOfUnseen(customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/notification")
-    public Response getNotifications(@RequestParam(name = "page") int count, Authentication authentication){
+    public Response getNotifications(@RequestParam(name = "count") int count, Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return notificationService.getNotifications(customUserDetails.getUser().getId(), count);
