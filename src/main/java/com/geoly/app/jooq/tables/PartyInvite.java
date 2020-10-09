@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PartyInvite extends TableImpl<PartyInviteRecord> {
 
-    private static final long serialVersionUID = -701755624;
+    private static final long serialVersionUID = -511231417;
 
     /**
      * The reference instance of <code>geoly.PARTY_INVITE</code>
@@ -65,6 +65,11 @@ public class PartyInvite extends TableImpl<PartyInviteRecord> {
      * The column <code>geoly.PARTY_INVITE.CREATED_AT</code>.
      */
     public final TableField<PartyInviteRecord, Timestamp> CREATED_AT = createField("CREATED_AT", org.jooq.impl.SQLDataType.TIMESTAMP.precision(6), this, "");
+
+    /**
+     * The column <code>geoly.PARTY_INVITE.SEEN</code>.
+     */
+    public final TableField<PartyInviteRecord, Byte> SEEN = createField("SEEN", org.jooq.impl.SQLDataType.TINYINT, this, "");
 
     /**
      * The column <code>geoly.PARTY_INVITE.STATUS</code>.

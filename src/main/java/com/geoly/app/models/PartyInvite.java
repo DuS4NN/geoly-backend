@@ -31,11 +31,23 @@ public class PartyInvite {
     @NotNull
     private PartyInvateStatus status;
 
+    @Column(name = "seen", columnDefinition = "TINYINT")
+    @NotNull
+    private boolean seen;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
     private Date created_at;
 
     public PartyInvite() {
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
 
     public int getId() {
