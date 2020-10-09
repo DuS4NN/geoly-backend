@@ -1,6 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Party;
 import com.geoly.app.jooq.tables.PartyInvite;
 import com.geoly.app.jooq.tables.User;
@@ -23,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.jooq.impl.DSL.field;
+
 @Service
 public class InviteService {
 
@@ -38,24 +41,32 @@ public class InviteService {
         this.userRepository = userRepository;
     }
 
-    public List getPendingInvites(int userId){
+    public Response getPendingInvites(int userId, int count){
         Select<?> query =
-            create.select(User.USER.ID, User.USER.NICK_NAME, Party.PARTY.NAME, Party.PARTY.ID.as("partyId"))
+            create.select(PartyInvite.PARTY_INVITE.ID, User.USER.NICK_NAME, Party.PARTY.NAME, Party.PARTY.ID.as("partyId"))
             .from(PartyInvite.PARTY_INVITE)
             .leftJoin(Party.PARTY)
                 .on(Party.PARTY.ID.eq(PartyInvite.PARTY_INVITE.PARTY_ID))
             .leftJoin(User.USER)
                 .on(User.USER.ID.eq(Party.PARTY.USER_ID))
             .where(PartyInvite.PARTY_INVITE.USER_ID.eq(userId))
-            .and(PartyInvite.PARTY_INVITE.STATUS.eq(PartyInvateStatus.PENDING.name()));
+            .and(PartyInvite.PARTY_INVITE.STATUS.eq(PartyInvateStatus.PENDING.name()))
+            .orderBy(PartyInvite.PARTY_INVITE.CREATED_AT.desc())
+            .limit(10)
+            .offset(count);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         GeolyAPI.setBindParameterValues(q, query);
         List result = q.getResultList();
 
-        if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.NO_INVITES, HttpStatus.NO_CONTENT));
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
 
-        return result;
+    public void setUnseen(int userId){
+        create.update(PartyInvite.PARTY_INVITE).set(field("seen"), 1)
+            .where(PartyInvite.PARTY_INVITE.SEEN.isFalse())
+            .and(PartyInvite.PARTY_INVITE.USER_ID.eq(userId))
+            .execute();
     }
 
     @Transactional(rollbackOn = Exception.class)
