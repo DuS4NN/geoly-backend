@@ -307,7 +307,7 @@ public class QuestDetailService {
         data.put("userNick", user.get().getNickName());
         data.put("reviewId", questReview.getId());
         data.put("questId", quest.get().getId());
-        notificationService.sendNotification(user.get(), NotificationType.ADD_REVIEW, data,true);
+        notificationService.sendNotification(quest.get().getUser(), NotificationType.ADD_REVIEW, data,true);
 
         return new Response(StatusMessage.REVIEW_ADDED, HttpStatus.OK, review);
     }
