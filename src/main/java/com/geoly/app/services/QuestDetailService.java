@@ -124,7 +124,7 @@ public class QuestDetailService {
         Object[] result = (Object[]) q.getSingleResult();
 
         if(Integer.parseInt(String.valueOf(result[0])) > 0) return StatusMessage.REVIEW_ALREADY_EXIST;
-        if(Integer.parseInt(String.valueOf(result[1])) < 0) return StatusMessage.USER_DOESNT_PLAY_QUEST;
+        if(Integer.parseInt(String.valueOf(result[1])) == 0) return StatusMessage.USER_DOESNT_PLAY_QUEST;
 
         return StatusMessage.OK;
     }
@@ -142,19 +142,18 @@ public class QuestDetailService {
         GeolyAPI.setBindParameterValues(q, query);
         Object result = q.getSingleResult();
 
-        StatusMessage response = checkIfUserCanAddReview(questId, userId);
-
         ArrayList<Integer> data = new ArrayList<>();
         data.add(Integer.parseInt(String.valueOf(result)));
 
-        if(response == StatusMessage.OK){
+        if(userId == 0){
+            data.add(0);
+        }else if(checkIfUserCanAddReview(questId, userId) == StatusMessage.OK){
             data.add(1);
         }else{
             data.add(0);
         }
 
         return new Response(StatusMessage.OK, HttpStatus.OK, data);
-
     }
 
     public Response getReviewsOfQuest(int id, int userId, int page){
