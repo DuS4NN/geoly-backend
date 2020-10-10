@@ -8,6 +8,7 @@ import com.geoly.app.models.StageType;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.CategoryRepository;
+import com.geoly.app.repositories.UserRepository;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -31,11 +32,20 @@ public class MapService {
     private EntityManager entityManager;
     private DSLContext create;
     private CategoryRepository categoryRepository;
+    private UserRepository userRepository;
 
-    public MapService(EntityManager entityManager, DSLContext create, CategoryRepository categoryRepository){
+    public MapService(EntityManager entityManager, DSLContext create, CategoryRepository categoryRepository, UserRepository userRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
+    }
+
+    public Response getCenterCoordinates(int userId){
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        return new Response(StatusMessage.OK, HttpStatus.OK,  Collections.singletonList(user.get().getAddress()));
     }
 
     public Response getQuestDetailsById(int id){
