@@ -15,5 +15,7 @@ public interface PartyInviteRepository extends JpaRepository<PartyInvite, Intege
     Optional<PartyInvite> findByUserAndPartyAndStatus(User user, Party party, PartyInvateStatus partyInvateStatus);
 
     Optional<PartyInvite> findByIdAndStatus(int id, PartyInvateStatus partyInvateStatus);
+
+    Optional<PartyInvite> findByUserAndIdAndStatus(User user, int id, PartyInvateStatus partyInvateStatus);
 }
 

@@ -74,13 +74,13 @@ public class InviteService {
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        Optional<com.geoly.app.models.PartyInvite> partyInvite = partyInviteRepository.findByIdAndStatus(inviteId, PartyInvateStatus.PENDING);
+        Optional<com.geoly.app.models.PartyInvite> partyInvite = partyInviteRepository.findByUserAndIdAndStatus(user.get(), inviteId, PartyInvateStatus.PENDING);
         if(!partyInvite.isPresent()) return new Response(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyInvite.get().setStatus(PartyInvateStatus.DENIED);
         entityManager.merge(partyInvite.get());
 
-        return new Response(StatusMessage.INVITE_DENIED, HttpStatus.OK, null);
+        return new Response(StatusMessage.INVITE_DENIED, HttpStatus.ACCEPTED, null);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -88,7 +88,7 @@ public class InviteService {
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        Optional<com.geoly.app.models.PartyInvite> partyInvite = partyInviteRepository.findByIdAndStatus(inviteId, PartyInvateStatus.PENDING);
+        Optional<com.geoly.app.models.PartyInvite> partyInvite = partyInviteRepository.findByUserAndIdAndStatus(user.get(), inviteId, PartyInvateStatus.PENDING);
         if(!partyInvite.isPresent()) return new Response(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyInvite.get().setStatus(PartyInvateStatus.ACCEPTED);
@@ -99,7 +99,7 @@ public class InviteService {
 
         entityManager.merge(partyInvite.get());
         entityManager.persist(partyUser);
-        return new Response(StatusMessage.INVITE_ACCEPT, HttpStatus.OK, null);
+        return new Response(StatusMessage.INVITE_ACCEPTED, HttpStatus.ACCEPTED, null);
     }
 
 }
