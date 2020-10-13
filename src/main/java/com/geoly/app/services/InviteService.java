@@ -1,6 +1,6 @@
 package com.geoly.app.services;
 
-import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Party;
 import com.geoly.app.jooq.tables.PartyInvite;
@@ -9,18 +9,15 @@ import com.geoly.app.models.PartyInvateStatus;
 import com.geoly.app.models.PartyUser;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.repositories.PartyInviteRepository;
-import com.geoly.app.repositories.PartyRepository;
 import com.geoly.app.repositories.UserRepository;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +53,7 @@ public class InviteService {
             .offset(count);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);

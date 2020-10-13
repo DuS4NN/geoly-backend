@@ -1,6 +1,6 @@
 package com.geoly.app.services;
 
-import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.PartyInvateStatus;
@@ -67,7 +67,7 @@ public class PartyService {
                 .offset((page-1)*PARTY_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.NO_PARTY, HttpStatus.NO_CONTENT, null);
@@ -82,7 +82,7 @@ public class PartyService {
                         .where(Party.PARTY.USER_ID.eq(userId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object result = q.getSingleResult();
 
         return Integer.parseInt(String.valueOf(result));
@@ -98,7 +98,7 @@ public class PartyService {
                         .and(PartyUser.PARTY_USER.USER_ID.notEqual(Party.PARTY.USER_ID));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object result = q.getSingleResult();
 
         return Integer.parseInt(String.valueOf(result));
@@ -153,7 +153,7 @@ public class PartyService {
                 .and(Party.PARTY.USER_ID.eq(userId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
@@ -205,7 +205,7 @@ public class PartyService {
             .and(Party.PARTY.ID.eq(partyId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
@@ -275,7 +275,7 @@ public class PartyService {
                         .orderBy(Party.PARTY.CREATED_AT.desc());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
@@ -324,7 +324,7 @@ public class PartyService {
             .offset((page-1)*PARTY_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.USER_IS_NOT_IN_GROUP, HttpStatus.NO_CONTENT, null);
@@ -359,7 +359,7 @@ public class PartyService {
             .and(PartyUser.PARTY_USER.PARTY_ID.eq(partyId));
 
         Query q1 = entityManager.createNativeQuery(queryDetail.getSQL());
-        GeolyAPI.setBindParameterValues(q1, queryDetail);
+        API.setBindParameterValues(q1, queryDetail);
         List resultDetail = q1.getResultList();
 
         if(resultDetail.isEmpty()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
@@ -373,7 +373,7 @@ public class PartyService {
             .orderBy(PartyUser.PARTY_USER.CREATED_AT);
 
         Query q2 = entityManager.createNativeQuery(queryUser.getSQL());
-        GeolyAPI.setBindParameterValues(q2, queryUser);
+        API.setBindParameterValues(q2, queryUser);
         List resultUser = q2.getResultList();
 
         Select<?> queryQuest =
@@ -389,7 +389,7 @@ public class PartyService {
             .orderBy(PartyQuest.PARTY_QUEST.ID.desc());
 
         Query q3 = entityManager.createNativeQuery(queryQuest.getSQL());
-        GeolyAPI.setBindParameterValues(q3, queryQuest);
+        API.setBindParameterValues(q3, queryQuest);
         List resultQuest = q3.getResultList();
 
         List<List> finalResult = new ArrayList<>();
@@ -417,7 +417,7 @@ public class PartyService {
                 .where(Stage.STAGE.QUEST_ID.eq(questId));
 
         Query q1 = entityManager.createNativeQuery(stageDetails.getSQL());
-        GeolyAPI.setBindParameterValues(q1, stageDetails);
+        API.setBindParameterValues(q1, stageDetails);
         List stageDetailsResult = q1.getResultList();
 
 
@@ -427,7 +427,7 @@ public class PartyService {
                 .where(Image.IMAGE.QUEST_ID.eq(questId));
 
         Query q4 = entityManager.createNativeQuery(images.getSQL());
-        GeolyAPI.setBindParameterValues(q4, images);
+        API.setBindParameterValues(q4, images);
         List imagesResult = q4.getResultList();
 
         Select<?> isActive =
@@ -441,7 +441,7 @@ public class PartyService {
                 .and(UserPartyQuest.USER_PARTY_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()));
 
         Query q2 = entityManager.createNativeQuery(isActive.getSQL());
-        GeolyAPI.setBindParameterValues(q2, isActive);
+        API.setBindParameterValues(q2, isActive);
         List isActiveResult = q2.getResultList();
 
         Select<?> query =
@@ -457,7 +457,7 @@ public class PartyService {
                 .orderBy(UserPartyQuest.USER_PARTY_QUEST.STAGE_ID, when( UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT.isNull(),  UserPartyQuest.USER_PARTY_QUEST.CREATED_AT).otherwise( UserPartyQuest.USER_PARTY_QUEST.UPDATED_AT).desc());
 
         Query q3 = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q3, query);
+        API.setBindParameterValues(q3, query);
         List result = q3.getResultList();
 
 
@@ -512,7 +512,7 @@ public class PartyService {
                 .and(UserPartyQuest.USER_PARTY_QUEST.STAGE_ID.in(stages.field("stage_id")));
 
         Query q1 = entityManager.createNativeQuery(isOnStage.getSQL());
-        GeolyAPI.setBindParameterValues(q1, isOnStage);
+        API.setBindParameterValues(q1, isOnStage);
         Object isOnStageResult = q1.getSingleResult();
 
 
@@ -526,7 +526,7 @@ public class PartyService {
 
 
         Query q = entityManager.createNativeQuery(isFinished.getSQL());
-        GeolyAPI.setBindParameterValues(q, isFinished);
+        API.setBindParameterValues(q, isFinished);
         Object isFinishedResult = q.getSingleResult();
 
 
@@ -564,7 +564,7 @@ public class PartyService {
             .limit(1);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object stageId = q.getSingleResult();
 
         Optional<com.geoly.app.models.UserPartyQuest> userQuest = userPartyQuestRepository.findById(Integer.parseInt(String.valueOf(stageId)));

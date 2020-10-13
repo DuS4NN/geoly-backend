@@ -1,6 +1,6 @@
 package com.geoly.app.services;
 
-import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.dao.QuestSearch;
 import com.geoly.app.jooq.tables.*;
@@ -114,7 +114,7 @@ public class MapService {
                     .and(Quest.QUEST.DAILY.isFalse());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
 
         List response = q.getResultList();
         if(response.isEmpty()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
@@ -193,7 +193,7 @@ public class MapService {
                 .having(having);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
 
         List response = q.getResultList();
         if(response.isEmpty()) return new Response(StatusMessage.QUESTS_WITH_PARAMETERS_NOT_FOUND, HttpStatus.NO_CONTENT, null);

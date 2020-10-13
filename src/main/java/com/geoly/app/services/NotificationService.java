@@ -1,7 +1,6 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.API;
-import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.PartyInvite;
 import com.geoly.app.models.Notification;
@@ -14,7 +13,6 @@ import com.pusher.rest.Pusher;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
-import org.jooq.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

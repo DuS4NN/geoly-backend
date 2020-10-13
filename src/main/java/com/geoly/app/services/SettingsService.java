@@ -1,7 +1,6 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.API;
-import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.dao.Settings;
 import com.geoly.app.jooq.tables.Premium;
@@ -17,9 +16,7 @@ import com.tinify.Tinify;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
-import org.jooq.meta.derby.sys.Sys;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +25,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +67,7 @@ public class SettingsService {
                 .where(com.geoly.app.jooq.tables.User.USER.ID.eq(userId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);

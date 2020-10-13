@@ -1,6 +1,6 @@
 package com.geoly.app.services;
 
-import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.StatusMessage;
@@ -51,7 +51,7 @@ public class ProfileService {
                 .and(Quest.QUEST.PRIVATE_QUEST.isFalse());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return result;
@@ -76,7 +76,7 @@ public class ProfileService {
                                         .groupBy(Stage.STAGE.QUEST_ID)));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return result;
@@ -118,7 +118,7 @@ public class ProfileService {
             .and(User.USER.ACTIVE.isTrue());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         return q.getResultList();
     }
 
@@ -134,7 +134,7 @@ public class ProfileService {
             .orderBy(UserBadge.USER_BADGE.CREATED_AT.desc());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return Collections.singletonList(new ResponseEntity<>(StatusMessage.BADGES_EMPTY, HttpStatus.NO_CONTENT));
@@ -158,7 +158,7 @@ public class ProfileService {
             .offset((page-1)*QUESTS_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return result;
@@ -179,7 +179,7 @@ public class ProfileService {
                 .groupBy(date(UserQuest.USER_QUEST.UPDATED_AT));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return result;
@@ -209,7 +209,7 @@ public class ProfileService {
             .offset((page-1)*QUESTS_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return result;

@@ -1,6 +1,6 @@
 package com.geoly.app.services;
 
-import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.NotificationType;
@@ -8,13 +8,11 @@ import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.*;
-import com.sun.org.apache.regexp.internal.RE;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -64,7 +62,7 @@ public class QuestDetailService {
                     .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()));
 
         Query q = entityManager.createNativeQuery(activeQuest.getSQL());
-        GeolyAPI.setBindParameterValues(q, activeQuest);
+        API.setBindParameterValues(q, activeQuest);
         Object result = q.getSingleResult();
 
         if(Integer.parseInt(String.valueOf(result))>0){
@@ -86,7 +84,7 @@ public class QuestDetailService {
                     .limit(1);
 
         Query q2 = entityManager.createNativeQuery(alreadyStarted.getSQL());
-        GeolyAPI.setBindParameterValues(q2, alreadyStarted);
+        API.setBindParameterValues(q2, alreadyStarted);
         List result2 = q2.getResultList();
 
         if(result2 != null && !result2.isEmpty() && String.valueOf(result2.get(0)).equals(UserQuestStatus.FINISHED.name() )){
@@ -120,7 +118,7 @@ public class QuestDetailService {
                         .from(ifReviewExist, ifUserStartedQuest);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object[] result = (Object[]) q.getSingleResult();
 
         if(Integer.parseInt(String.valueOf(result[0])) > 0) return StatusMessage.REVIEW_ALREADY_EXIST;
@@ -139,7 +137,7 @@ public class QuestDetailService {
                 .and(QuestReview.QUEST_REVIEW.QUEST_ID.eq(questId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object result = q.getSingleResult();
 
         ArrayList<Integer> data = new ArrayList<>();
@@ -172,7 +170,7 @@ public class QuestDetailService {
             .offset((page-1)*REVIEW_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.NO_REVIEW, HttpStatus.NO_CONTENT, null);
@@ -186,7 +184,7 @@ public class QuestDetailService {
             .where(Stage.STAGE.QUEST_ID.eq(id));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
@@ -258,7 +256,7 @@ public class QuestDetailService {
             .and(Quest.QUEST.ID.eq(id));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
@@ -272,7 +270,7 @@ public class QuestDetailService {
             .where(Image.IMAGE.QUEST_ID.eq(id));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.NO_IMAGES, HttpStatus.NO_CONTENT, null);
@@ -352,7 +350,7 @@ public class QuestDetailService {
                     .and(Premium.PREMIUM.END_AT.greaterThan(currentTimestamp()));
 
             Query q = entityManager.createNativeQuery(query.getSQL());
-            GeolyAPI.setBindParameterValues(q, query);
+            API.setBindParameterValues(q, query);
             if(q.getResultList().isEmpty()) return new Response(StatusMessage.USER_DOESNT_HAVE_PREMIUM, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
@@ -391,7 +389,7 @@ public class QuestDetailService {
             .limit(1);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object stageId = q.getSingleResult();
 
         Optional<com.geoly.app.models.UserQuest> userQuest = userQuestRepository.findById(Integer.parseInt(String.valueOf(stageId)));

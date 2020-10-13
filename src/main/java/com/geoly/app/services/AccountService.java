@@ -1,7 +1,6 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.API;
-import com.geoly.app.config.GeolyAPI;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.LanguageRepository;
@@ -66,7 +65,7 @@ public class AccountService {
             .limit(5);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
@@ -82,7 +81,7 @@ public class AccountService {
                 .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.USER_NOT_LOGGED_IN, HttpStatus.UNAUTHORIZED, null);

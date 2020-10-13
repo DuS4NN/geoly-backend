@@ -1,6 +1,6 @@
 package com.geoly.app.services;
 
-import com.geoly.app.config.GeolyAPI;
+import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Point;
 import com.geoly.app.jooq.tables.User;
@@ -54,7 +54,7 @@ public class RankService {
             .limit(50);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.TOP_PLAYERS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
@@ -88,7 +88,7 @@ public class RankService {
             .where(field("userId").greaterOrEqual(userId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()){
@@ -124,7 +124,7 @@ public class RankService {
                             .limit(50);
 
             Query q = entityManager.createNativeQuery(query.getSQL());
-            GeolyAPI.setBindParameterValues(q, query);
+            API.setBindParameterValues(q, query);
             List result = q.getResultList();
 
             for(int i = 0; i < result.size(); i++){
@@ -157,7 +157,7 @@ public class RankService {
                 entityManager.persist(userBadge);
             }
         }catch (Exception e){
-            GeolyAPI.catchException(e);
+            API.catchException(e);
         }
     }
 }

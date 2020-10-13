@@ -1,7 +1,7 @@
 package com.geoly.app.services;
 
 import com.geoly.app.config.API;
-import com.geoly.app.config.GeolyAPI;
+
 import com.geoly.app.dao.EditQuest;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Quest;
@@ -16,7 +16,6 @@ import org.jooq.Select;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,7 +69,7 @@ public class QuestService {
                 .orderBy(Stage.STAGE.QUEST_ID, Stage.STAGE.ID);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.ACTIVE_QUESTS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
@@ -92,7 +91,7 @@ public class QuestService {
                     .offset((page-1)*QUESTS_ON_PAGE);
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.CREATED_QUESTS_NOT_FOUND, HttpStatus.NO_CONTENT, null);
@@ -109,7 +108,7 @@ public class QuestService {
                         .and(Quest.QUEST.DAILY.isFalse());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object result = q.getSingleResult();
 
         return Integer.parseInt(String.valueOf(result));
@@ -212,7 +211,7 @@ public class QuestService {
             .and(Quest.QUEST.USER_ID.eq(userId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.NO_IMAGES, HttpStatus.NO_CONTENT, null);
@@ -232,7 +231,7 @@ public class QuestService {
                 .and(Quest.QUEST.DAILY.isFalse());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         Object result = q.getSingleResult();
 
         return Integer.parseInt(String.valueOf(result));
@@ -269,7 +268,7 @@ public class QuestService {
 
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         if(result.isEmpty()) return new Response(StatusMessage.PLAYED_QUESTS_EMPTY, HttpStatus.NO_CONTENT, null);
@@ -367,7 +366,7 @@ public class QuestService {
             .where(com.geoly.app.jooq.tables.Quest.QUEST.DAILY.isTrue());
 
         Query q = entityManager.createNativeQuery(query.getSQL());
-        GeolyAPI.setBindParameterValues(q, query);
+        API.setBindParameterValues(q, query);
         List result = q.getResultList();
 
         Coordinates coordinates = new Coordinates();
