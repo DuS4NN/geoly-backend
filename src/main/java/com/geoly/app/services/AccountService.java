@@ -72,6 +72,24 @@ public class AccountService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
+    public Response checkUser(int id){
+        Select<?> query =
+            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.DARK_MODE, com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID)
+                .from(com.geoly.app.jooq.tables.User.USER)
+                .leftJoin(com.geoly.app.jooq.tables.UserOption.USER_OPTION)
+                    .on(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID.eq(com.geoly.app.jooq.tables.User.USER.ID))
+                .where(com.geoly.app.jooq.tables.User.USER.ID.eq(id))
+                .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue());
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        GeolyAPI.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        if(result.isEmpty()) return new Response(StatusMessage.USER_NOT_LOGGED_IN, HttpStatus.UNAUTHORIZED, null);
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
     @Transactional(rollbackOn = Exception.class)
     public Response register(User user, int languageId, Coordinates coordinates){
         Optional<Language> language = languageRepository.findById(languageId);

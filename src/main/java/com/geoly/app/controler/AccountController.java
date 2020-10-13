@@ -3,10 +3,15 @@ package com.geoly.app.controler;
 import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.Coordinates;
+import com.geoly.app.models.CustomUserDetails;
+import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
 import com.geoly.app.services.AccountService;
 import com.geoly.app.validators.Validator;
 import com.geoly.app.validators.ValidatorResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +26,21 @@ public class AccountController {
     public AccountController(Validator validator, AccountService accountService){
         this.validator = validator;
         this.accountService = accountService;
+    }
+
+
+    @GetMapping("checkUser")
+    public Response checkUser(Authentication authentication){
+        try{
+            if(authentication == null){
+                return new Response(StatusMessage.USER_NOT_LOGGED_IN, HttpStatus.UNAUTHORIZED, null);
+            }else{
+                CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                return accountService.checkUser(customUserDetails.getUser().getId());
+            }
+        }catch (Exception e){
+            return API.catchException(e);
+        }
     }
 
     @GetMapping("/finduser")
