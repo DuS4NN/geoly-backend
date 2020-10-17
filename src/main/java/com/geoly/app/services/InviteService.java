@@ -75,6 +75,7 @@ public class InviteService {
         if(!partyInvite.isPresent()) return new Response(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyInvite.get().setStatus(PartyInvateStatus.DENIED);
+        partyInvite.get().setSeen(true);
         entityManager.merge(partyInvite.get());
 
         return new Response(StatusMessage.INVITE_DENIED, HttpStatus.ACCEPTED, null);
@@ -89,6 +90,7 @@ public class InviteService {
         if(!partyInvite.isPresent()) return new Response(StatusMessage.INVITE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyInvite.get().setStatus(PartyInvateStatus.ACCEPTED);
+        partyInvite.get().setSeen(true);
 
         PartyUser partyUser = new PartyUser();
         partyUser.setUser(user.get());
