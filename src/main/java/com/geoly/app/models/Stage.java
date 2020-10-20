@@ -40,6 +40,15 @@ public class Stage {
     @Column(name = "qr_code_url", columnDefinition = "VARCHAR(100)")
     private String qrCodeUrl;
 
+    @Column(name = "answers_list", columnDefinition = "VARCHAR(1000)")
+    private String answersList;
+
+    @Column(name = "note", columnDefinition = "VARCHAR(200)")
+    private String note;
+
+    @Column(name = "advise", columnDefinition = "VARCHAR(200)")
+    private String advise;
+
     @OneToMany(targetEntity = UserQuest.class, fetch = FetchType.LAZY, mappedBy = "stage", cascade = CascadeType.ALL)
     private Set<UserQuest> userQuest;
 
@@ -119,6 +128,30 @@ public class Stage {
 
     public void setQrCodeUrl(String qrCodeUrl) {
         this.qrCodeUrl = qrCodeUrl;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getAdvise() {
+        return advise;
+    }
+
+    public void setAdvise(String advise) {
+        this.advise = advise;
+    }
+
+    public String getAnswersList() {
+        return answersList;
+    }
+
+    public void setAnswersList(String answersList) {
+        this.answersList = answersList;
     }
 
     public Set<UserPartyQuest> getUserPartyQuest() {

@@ -179,7 +179,7 @@ public class QuestDetailService {
 
     public Response getStagesOfQuest(int id){
         Select<?> query =
-            create.select()
+            create.select(Stage.STAGE.ID, Stage.STAGE.ANSWER, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.TYPE, Stage.STAGE.QUEST_ID, Stage.STAGE.ADVISE, Stage.STAGE.ANSWERS_LIST, Stage.STAGE.NOTE)
             .from(Stage.STAGE)
             .where(Stage.STAGE.QUEST_ID.eq(id));
 

@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = -1340876610;
+    private static final long serialVersionUID = 1110279238;
 
     /**
      * The reference instance of <code>geoly.STAGE</code>
@@ -61,9 +61,19 @@ public class Stage extends TableImpl<StageRecord> {
     public final TableField<StageRecord, Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
+     * The column <code>geoly.STAGE.ADVISE</code>.
+     */
+    public final TableField<StageRecord, String> ADVISE = createField("ADVISE", org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
+
+    /**
      * The column <code>geoly.STAGE.ANSWER</code>.
      */
     public final TableField<StageRecord, String> ANSWER = createField("ANSWER", org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
+
+    /**
+     * The column <code>geoly.STAGE.ANSWERS_LIST</code>.
+     */
+    public final TableField<StageRecord, String> ANSWERS_LIST = createField("ANSWERS_LIST", org.jooq.impl.SQLDataType.VARCHAR(1000), this, "");
 
     /**
      * The column <code>geoly.STAGE.LATITUDE</code>.
@@ -74,6 +84,11 @@ public class Stage extends TableImpl<StageRecord> {
      * The column <code>geoly.STAGE.LONGITUDE</code>.
      */
     public final TableField<StageRecord, Double> LONGITUDE = createField("LONGITUDE", org.jooq.impl.SQLDataType.DOUBLE, this, "");
+
+    /**
+     * The column <code>geoly.STAGE.NOTE</code>.
+     */
+    public final TableField<StageRecord, String> NOTE = createField("NOTE", org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
 
     /**
      * The column <code>geoly.STAGE.QR_CODE_URL</code>.
