@@ -1,6 +1,7 @@
 package com.geoly.app.validators;
 
 import com.geoly.app.dao.EditQuest;
+import com.geoly.app.dao.EditStage;
 import com.geoly.app.dao.QuestSearch;
 import com.geoly.app.dao.Settings;
 import com.geoly.app.models.QuestReview;
@@ -134,6 +135,23 @@ public class Validator {
         for(MultipartFile file : files){
             if(!validatorMethods.imageSizeIsValid(file.getSize())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.IMAGE_SIZE_TOO_BIG);
             if(!validatorMethods.imageTypeIsValid(file.getContentType())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.UNSUPPORTED_IMAGE_TYPE);
+        }
+
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse editStage(EditStage editStage){
+        if(!validatorMethods.isStageTextValid(editStage.getQuestion())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TEXT);
+        if(!validatorMethods.isStageTextValid(editStage.getAnswer())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TEXT);
+
+        if(editStage.getAdvise() != null && editStage.getNote() != null){
+            if(!validatorMethods.isStageTextValid(editStage.getAdvise())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TEXT);
+            if(!validatorMethods.isStageTextValid(editStage.getNote())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TEXT);
+        }
+
+        if(editStage.getAnswerList() != null){
+            if(editStage.getAnswerList().length() > 1000) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TEXT);
+            if(editStage.getAnswerList().split(";").length > 5) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ANSWER_COUNT);
         }
 
         return new ValidatorResponse(true);

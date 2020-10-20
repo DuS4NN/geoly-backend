@@ -2,6 +2,7 @@ package com.geoly.app.controler;
 
 import com.geoly.app.config.API;
 import com.geoly.app.dao.EditQuest;
+import com.geoly.app.dao.EditStage;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.services.QuestService;
@@ -54,6 +55,20 @@ public class QuestController {
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return questService.getAllPlayedQuests(customUserDetails.getUser().getId(), page);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/editstage")
+    public Response editStage(@RequestBody @Validated EditStage editStage, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.editStage(editStage);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.editStage(editStage, customUserDetails.getUser().getId());
         }catch (Exception e){
             return API.catchException(e);
         }

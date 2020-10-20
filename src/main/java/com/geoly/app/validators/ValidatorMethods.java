@@ -70,6 +70,10 @@ public class ValidatorMethods {
         return size < 5;
     }
 
+    boolean isStageTextValid(String text){
+        return text.length()>0 && text.length()<201;
+    }
+
     boolean partyNameFormatIsValid(String name){
         Pattern r = Pattern.compile("[A-Z,a-z,\\-,_,.,0-9]*");
         Matcher m = r.matcher(name);

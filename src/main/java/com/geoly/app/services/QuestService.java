@@ -3,6 +3,7 @@ package com.geoly.app.services;
 import com.geoly.app.config.API;
 
 import com.geoly.app.dao.EditQuest;
+import com.geoly.app.dao.EditStage;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.Stage;
@@ -51,6 +52,27 @@ public class QuestService {
         this.userQuestRepository = userQuestRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response editStage(EditStage editStage, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(editStage.getQuestId(), user.get());
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.Stage> stage = stageRepository.findByQuestAndId(quest.get(), editStage.getStageId());
+        if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        stage.get().setQuestion(editStage.getQuestion());
+        stage.get().setAnswer(editStage.getAnswer());
+        stage.get().setAdvise(editStage.getAdvise());
+        stage.get().setNote(editStage.getNote());
+        stage.get().setAnswersList(editStage.getAnswerList());
+
+        entityManager.merge(stage.get());
+        return new Response(StatusMessage.STAGE_EDITED, HttpStatus.ACCEPTED, null);
     }
 
     public Response getActiveQuest(int userId){
