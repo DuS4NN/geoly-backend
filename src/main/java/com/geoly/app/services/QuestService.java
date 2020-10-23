@@ -429,9 +429,10 @@ public class QuestService {
     }
 
     private float getSeedFromDate(int userId){
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now().plusDays(5);
         int seed = date.getYear() + date.getMonthValue() + date.getDayOfMonth() + userId;
         Random random = new Random(seed);
+        random.nextFloat();
 
         return random.nextFloat();
     }
