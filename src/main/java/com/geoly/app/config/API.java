@@ -4,24 +4,24 @@ import com.geoly.app.dao.Response;
 import com.geoly.app.models.StatusMessage;
 import io.sentry.Sentry;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-
+import javax.mail.internet.MimeMessage;
 import javax.persistence.Query;
 import java.util.List;
 
 @Component
 public class API {
 
-    private JavaMailSender mailSender;
+    private JavaMailSenderImpl mailSender;
     public static String questImageUrl = "static/images/quest/";
     public static String userImageUrl = "static/images/user/";
 
-    public API(JavaMailSender mailSender) {
+    public API(JavaMailSenderImpl mailSender) {
         this.mailSender = mailSender;
     }
 
@@ -40,11 +40,17 @@ public class API {
 
     @Async
     public void sendEmail(String text, String email, String subject){
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("noreply@geoly.com");
-        mailMessage.setTo(email);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(text);
-        mailSender.send(mailMessage);
+        try{
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setFrom("noreply@geoly.com");
+            helper.setText(text, true);
+            mailSender.send(message);
+        }catch (Exception e){
+            Sentry.capture(e);
+            e.printStackTrace();
+        }
     }
 }

@@ -19,7 +19,7 @@ public class EmailConfiguration {
 
 
     @Bean
-    public JavaMailSender getJavaMailSender(){
+    public JavaMailSenderImpl getJavaMailSender(){
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(this.host);
         mailSender.setPassword(this.password);

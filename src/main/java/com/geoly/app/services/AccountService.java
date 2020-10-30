@@ -136,8 +136,22 @@ public class AccountService {
         token.setToken(tokenValue);
         entityManager.persist(token);
 
-        String emailText = "Verify your account \n localhost:3000/verify/"+tokenValue;
-        api.sendEmail(emailText, user.getEmail(), "Email verification");
+        String emailText = "<h1 style=\"color: #30dd8a; text-align: center;\">Welcome to Geoly</h1>\n" +
+                "\n" +
+                "<div style=\"margin-left: 10%; margin-right: 10%; text-align: center;\">\n" +
+                "  Thank you for signing up for Geoly! Please verify your email address by clicking the button below.\n" +
+                "</div> \n" +
+                "<div style=\"text-align: center;\">\n" +
+                "<br><br>  \n" +
+                "\n" +
+                "  \n" +
+                "  <a href=\"localhost:3000/verify/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
+                "VERIFY\n" +
+                "</a>\n" +
+                "  \n" +
+                "  \n" +
+                "</div>\n";
+        api.sendEmail(emailText, user.getEmail(), "Geoly - Email Verification");
 
         return new Response(StatusMessage.USER_CREATED, HttpStatus.ACCEPTED, null);
     }
@@ -196,8 +210,24 @@ public class AccountService {
         token.setToken(tokenValue);
         entityManager.persist(token);
 
-        String emailText = "Reset your password \n localhost:3000/forgot/"+tokenValue;
-        api.sendEmail(emailText, user.get().getEmail(), "Password reset");
+        String emailText = "<h1 style=\"color: #30dd8a; text-align: center;\">Reset password</h1>\n" +
+                "\n" +
+                "<div style=\"margin-left: 10%; margin-right: 10%; text-align: center;\">\n" +
+                "No need to worry, you can reset your Geoly password by clicking the the button below.\n" +
+                "</div> \n" +
+                "<div style=\"text-align: center;\">\n" +
+                "<br><br>  \n" +
+                "\n" +
+                "  \n" +
+                "  <a href=\"localhost:3000/forgot/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
+                "RESET\n" +
+                "</a>\n" +
+                "  \n" +
+                "  \n" +
+                "</div>\n";
+
+
+        api.sendEmail(emailText, user.get().getEmail(), "Geoly - Password Reset");
 
         return new Response(StatusMessage.EMAIL_SENT, HttpStatus.ACCEPTED, null);
     }
