@@ -33,4 +33,15 @@ public class AdminUserController {
     public long getUsers(){
         return adminUserService.getUserCounts();
     }
+
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminUserDetail")
+    public Response getUser(@RequestParam(name = "id") int id){
+        try{
+            return adminUserService.getUser(id);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }
