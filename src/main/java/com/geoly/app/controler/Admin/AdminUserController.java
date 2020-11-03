@@ -1,23 +1,27 @@
 package com.geoly.app.controler.Admin;
 
 import com.geoly.app.config.API;
+import com.geoly.app.dao.AdminEditUser;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.services.Admin.AdminUserService;
+import com.geoly.app.validators.Validator;
+import com.geoly.app.validators.ValidatorResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AdminUserController {
 
 
     private AdminUserService adminUserService;
+    private Validator validator;
 
-    public AdminUserController(AdminUserService adminUserService) {
+    public AdminUserController(AdminUserService adminUserService, Validator validator) {
         this.adminUserService = adminUserService;
+        this.validator = validator;
     }
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
@@ -66,6 +70,32 @@ public class AdminUserController {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
             return adminUserService.removeReview(id, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminRemoveProfileImage")
+    public Response removeImage(@RequestParam(name = "id") int id, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            return adminUserService.removeImage(id, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @PostMapping("/adminEditUser")
+    public Response editUser(@RequestBody @Validated AdminEditUser adminEditUser, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.editUser(adminEditUser);
+        if (!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            return adminUserService.editUser(adminEditUser, customUserDetails.getUser().getId());
         }catch (Exception e){
             return API.catchException(e);
         }

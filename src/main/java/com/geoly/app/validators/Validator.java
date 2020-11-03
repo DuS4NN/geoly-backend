@@ -1,9 +1,6 @@
 package com.geoly.app.validators;
 
-import com.geoly.app.dao.EditQuest;
-import com.geoly.app.dao.EditStage;
-import com.geoly.app.dao.QuestSearch;
-import com.geoly.app.dao.Settings;
+import com.geoly.app.dao.*;
 import com.geoly.app.models.QuestReview;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.User;
@@ -153,6 +150,17 @@ public class Validator {
             if(editStage.getAnswerList().length() > 1000) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TEXT);
             if(editStage.getAnswerList().split(";").length > 5) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ANSWER_COUNT);
         }
+
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse editUser(AdminEditUser adminEditUser){
+        if(!validatorMethods.nickNameFormatIsValid(adminEditUser.getNickName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_FORMAT);
+        if(!validatorMethods.nickNameLengthIsValid(adminEditUser.getNickName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NICKNAME_LENGTH);
+
+        if (!validatorMethods.emailIsValid(adminEditUser.getEmail())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_EMAIL);
+
+        if(!validatorMethods.addressIsValid(adminEditUser.getAddress())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ADDRESS);
 
         return new ValidatorResponse(true);
     }

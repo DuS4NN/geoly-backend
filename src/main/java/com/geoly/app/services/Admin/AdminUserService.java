@@ -1,15 +1,14 @@
 package com.geoly.app.services.Admin;
 
 import com.geoly.app.config.API;
+import com.geoly.app.dao.AdminEditUser;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
 import com.geoly.app.models.Log;
 import com.geoly.app.models.LogType;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
-import com.geoly.app.repositories.QuestReviewRepository;
-import com.geoly.app.repositories.UserBadgeRepository;
-import com.geoly.app.repositories.UserRepository;
+import com.geoly.app.repositories.*;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -33,15 +32,19 @@ public class AdminUserService {
     private EntityManager entityManager;
     private DSLContext create;
     private UserRepository userRepository;
+    private UserOptionRepository userOptionRepository;
     private UserBadgeRepository userBadgeRepository;
     private QuestReviewRepository questReviewRepository;
+    private LanguageRepository languageRepository;
 
-    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserBadgeRepository userBadgeRepository, QuestReviewRepository questReviewRepository) {
+    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserOptionRepository userOptionRepository, UserBadgeRepository userBadgeRepository, QuestReviewRepository questReviewRepository, LanguageRepository languageRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
+        this.userOptionRepository = userOptionRepository;
         this.userBadgeRepository = userBadgeRepository;
         this.questReviewRepository = questReviewRepository;
+        this.languageRepository = languageRepository;
     }
 
     public Response getUsers(String nick , int page){
@@ -209,5 +212,62 @@ public class AdminUserService {
         entityManager.persist(log);
 
         return new Response(StatusMessage.REVIEW_DELETED, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response removeImage(int id, int userId){
+        Optional<com.geoly.app.models.User> user = userRepository.findById(id);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", userId);
+        jo.put("userId", id);
+
+        Log log = new Log();
+        log.setLogType(LogType.REMOVE_PROFILE_IMAGE);
+        log.setData(jo.toString());
+
+
+        user.get().setProfileImageUrl(API.userImageUrl+"default_profile_picture.png");
+        entityManager.merge(user.get());
+        entityManager.persist(log);
+
+        return new Response(StatusMessage.PROFILE_IMAGE_DELETED, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response editUser (AdminEditUser adminEditUser, int adminId){
+        Optional<com.geoly.app.models.User> user = userRepository.findById(adminEditUser.getId());
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.UserOption> userOption = userOptionRepository.findByUser(user.get());
+        if(!userOption.isPresent()) return new Response(StatusMessage.USER_OPTION_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.Language> language = languageRepository.findById(adminEditUser.getLanguage());
+        if(!language.isPresent()) return new Response(StatusMessage.LANGUAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Log log = new Log();
+        log.setLogType(LogType.USER_UPDATE);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("editObject", adminEditUser.toString());
+        log.setData(jo.toString());
+
+        user.get().setNickName(adminEditUser.getNickName());
+        user.get().setEmail(adminEditUser.getEmail());
+        user.get().setAbout(adminEditUser.getAbout());
+        user.get().setAddress(adminEditUser.getAddress());
+        user.get().setVerified(adminEditUser.isVerified());
+        user.get().setActive(adminEditUser.isActive());
+
+        userOption.get().setLanguage(language.get());
+        userOption.get().setPrivateProfile(adminEditUser.isPrivateProfile());
+
+        entityManager.merge(user.get());
+        entityManager.merge(userOption.get());
+        entityManager.persist(log);
+
+        return new Response(StatusMessage.USER_UPDATED, HttpStatus.ACCEPTED, null);
     }
 }

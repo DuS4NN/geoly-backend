@@ -36,11 +36,18 @@ public class ValidatorMethods {
         return m.matches();
     }
 
+    boolean addressIsValid(String address){
+        return address.split(",").length == 2 && address.length() > 0 && address.length() < 101;
+    }
+
     boolean passwordIsValid(String password){
         return (password.length() > 3 && password.length() < 21);
     }
 
     boolean emailIsValid(String email){
+        if(email.length() > 254){
+            return false;
+        }
         Pattern r = Pattern.compile(".+@.+\\..+");
         Matcher m = r.matcher(email);
         return m.matches();
