@@ -7,6 +7,7 @@ import com.geoly.app.models.Log;
 import com.geoly.app.models.LogType;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
+import com.geoly.app.repositories.QuestReviewRepository;
 import com.geoly.app.repositories.UserBadgeRepository;
 import com.geoly.app.repositories.UserRepository;
 import org.jooq.Condition;
@@ -33,14 +34,15 @@ public class AdminUserService {
     private DSLContext create;
     private UserRepository userRepository;
     private UserBadgeRepository userBadgeRepository;
+    private QuestReviewRepository questReviewRepository;
 
-    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserBadgeRepository userBadgeRepository) {
+    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserBadgeRepository userBadgeRepository, QuestReviewRepository questReviewRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
         this.userBadgeRepository = userBadgeRepository;
+        this.questReviewRepository = questReviewRepository;
     }
-
 
     public Response getUsers(String nick , int page){
 
@@ -122,7 +124,6 @@ public class AdminUserService {
                 .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
                 .where(UserQuest.USER_QUEST.USER_ID.eq(id))
                 .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
-                .and(Quest.QUEST.DAILY.isFalse())
                 .and(UserQuest.USER_QUEST.STAGE_ID.in(
                         create.select(max(Stage.STAGE.ID))
                                 .from(Stage.STAGE)
@@ -172,8 +173,8 @@ public class AdminUserService {
 
 
         JSONObject jo = new JSONObject();
-        jo.put("userId", userBadge.get().getUser().getId());
         jo.put("adminId", userId);
+        jo.put("userId", userBadge.get().getUser().getId());
         jo.put("badgeId", userBadge.get().getBadge().getId());
         jo.put("userBadgeId", userBadge.get().getId());
 
@@ -185,5 +186,28 @@ public class AdminUserService {
         entityManager.remove(userBadge.get());
 
         return new Response(StatusMessage.BADGE_DELETED, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response removeReview(int id, int userId){
+        Optional<com.geoly.app.models.QuestReview> questReview = questReviewRepository.findById(id);
+        if(!questReview.isPresent()) return new Response(StatusMessage.REVIEW_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", userId);
+        jo.put("userId", questReview.get().getUser().getId());
+        jo.put("questId", questReview.get().getQuest().getId());
+        jo.put("reviewText", questReview.get().getReviewText());
+        jo.put("reviewRating", questReview.get().getReview());
+        jo.put("reviewId", questReview.get().getId());
+
+        Log log = new Log();
+        log.setLogType(LogType.REMOVE_REVIEW);
+        log.setData(jo.toString());
+
+        entityManager.remove(questReview.get());
+        entityManager.persist(log);
+
+        return new Response(StatusMessage.REVIEW_DELETED, HttpStatus.ACCEPTED, null);
     }
 }

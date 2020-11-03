@@ -58,4 +58,16 @@ public class AdminUserController {
             return API.catchException(e);
         }
     }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminRemoveReview")
+    public Response removeReview(@RequestParam(name = "id") int id, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            return adminUserService.removeReview(id, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }
