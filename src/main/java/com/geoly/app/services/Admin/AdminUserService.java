@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.jooq.impl.DSL.max;
+import static org.jooq.impl.DSL.*;
 
 @Service
 public class AdminUserService {
@@ -157,6 +157,17 @@ public class AdminUserService {
         API.setBindParameterValues(q7, reviews);
         List reviewsResult = q7.getResultList();
 
+        Select<?> points =
+            create.select(month(Point.POINT.CREATED_AT), year(Point.POINT.CREATED_AT), sum(Point.POINT.AMOUNT))
+                .from(Point.POINT)
+                .where(Point.POINT.USER_ID.eq(id))
+                .groupBy(concat(month(Point.POINT.CREATED_AT), year(Point.POINT.CREATED_AT)))
+                .orderBy(year(Point.POINT.CREATED_AT).desc(), month(Point.POINT.CREATED_AT).desc());
+
+        Query q8 = entityManager.createNativeQuery(points.getSQL());
+        API.setBindParameterValues(q8, points);
+        List pointsResult = q8.getResultList();
+
         List<List> result = new ArrayList<>();
         result.add(userDetailsResult);
         result.add(playedQuestsResult);
@@ -165,6 +176,7 @@ public class AdminUserService {
         result.add(createdGroupsResult);
         result.add(badgesResult);
         result.add(reviewsResult);
+        result.add(pointsResult);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
