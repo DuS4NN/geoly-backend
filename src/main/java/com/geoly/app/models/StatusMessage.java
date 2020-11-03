@@ -2,6 +2,8 @@ package com.geoly.app.models;
 
 public enum StatusMessage {
     NO_IMAGES,
+    BADGE_NOT_FOUND,
+    BADGE_DELETED,
     NO_REVIEW,
     GROUP_EDITED,
     GROUP_IS_FULL,

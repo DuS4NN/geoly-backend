@@ -3,20 +3,26 @@ package com.geoly.app.services.Admin;
 import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.Log;
+import com.geoly.app.models.LogType;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
+import com.geoly.app.repositories.UserBadgeRepository;
 import com.geoly.app.repositories.UserRepository;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.impl.DSL;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.jooq.impl.DSL.max;
 
@@ -26,12 +32,15 @@ public class AdminUserService {
     private EntityManager entityManager;
     private DSLContext create;
     private UserRepository userRepository;
+    private UserBadgeRepository userBadgeRepository;
 
-    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository) {
+    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserBadgeRepository userBadgeRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
+        this.userBadgeRepository = userBadgeRepository;
     }
+
 
     public Response getUsers(String nick , int page){
 
@@ -62,8 +71,10 @@ public class AdminUserService {
     public Response getUser(int id){
 
         Select<?> badges =
-            create.select(UserBadge.USER_BADGE.BADGE_ID, UserBadge.USER_BADGE.ID, UserBadge.USER_BADGE.CREATED_AT)
+            create.select(UserBadge.USER_BADGE.ID, Badge.BADGE.NAME, Badge.BADGE.IMAGE_URL, UserBadge.USER_BADGE.CREATED_AT)
                 .from(UserBadge.USER_BADGE)
+                .leftJoin(Badge.BADGE)
+                    .on(Badge.BADGE.ID.eq(UserBadge.USER_BADGE.BADGE_ID))
                 .where(UserBadge.USER_BADGE.USER_ID.eq(id));
 
         Query q1 = entityManager.createNativeQuery(badges.getSQL());
@@ -80,10 +91,12 @@ public class AdminUserService {
         List createdGroupsResult = q2.getResultList();
 
         Select<?> joinedGroups =
-            create.select(Party.PARTY.ID, Party.PARTY.NAME, Party.PARTY.USER_ID.as("creator"), PartyUser.PARTY_USER.CREATED_AT)
+            create.select(Party.PARTY.ID, Party.PARTY.NAME, Party.PARTY.USER_ID.as("creator"), User.USER.NICK_NAME, PartyUser.PARTY_USER.CREATED_AT)
                 .from(Party.PARTY)
                 .leftJoin(PartyUser.PARTY_USER)
-                .on(PartyUser.PARTY_USER.PARTY_ID.eq(Party.PARTY.ID))
+                    .on(PartyUser.PARTY_USER.PARTY_ID.eq(Party.PARTY.ID))
+                .leftJoin(User.USER)
+                    .on(User.USER.ID.eq(Party.PARTY.USER_ID))
                 .where(PartyUser.PARTY_USER.USER_ID.eq(id))
                 .and(Party.PARTY.USER_ID.notEqual(id));
 
@@ -132,7 +145,7 @@ public class AdminUserService {
         List userDetailsResult = q6.getResultList();
 
         Select<?> reviews =
-            create.select(QuestReview.QUEST_REVIEW.CREATED_AT, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.QUEST_ID, QuestReview.QUEST_REVIEW.ID)
+            create.select(QuestReview.QUEST_REVIEW.CREATED_AT, QuestReview.QUEST_REVIEW.REVIEW_TEXT, QuestReview.QUEST_REVIEW.REVIEW, QuestReview.QUEST_REVIEW.QUEST_ID, QuestReview.QUEST_REVIEW.ID)
                 .from(QuestReview.QUEST_REVIEW)
                 .where(QuestReview.QUEST_REVIEW.USER_ID.eq(id));
 
@@ -150,5 +163,27 @@ public class AdminUserService {
         result.add(reviewsResult);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response removeBadge(int id, int userId){
+        Optional<com.geoly.app.models.UserBadge> userBadge = userBadgeRepository.findById(id);
+        if(!userBadge.isPresent()) return new Response(StatusMessage.BADGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+
+        JSONObject jo = new JSONObject();
+        jo.put("userId", userBadge.get().getUser().getId());
+        jo.put("adminId", userId);
+        jo.put("badgeId", userBadge.get().getBadge().getId());
+        jo.put("userBadgeId", userBadge.get().getId());
+
+        Log log = new Log();
+        log.setLogType(LogType.REMOVE_BADGE);
+        log.setData(jo.toString());
+
+        entityManager.persist(log);
+        entityManager.remove(userBadge.get());
+
+        return new Response(StatusMessage.BADGE_DELETED, HttpStatus.ACCEPTED, null);
     }
 }
