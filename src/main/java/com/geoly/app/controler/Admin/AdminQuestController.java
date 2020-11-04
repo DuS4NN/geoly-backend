@@ -32,4 +32,26 @@ public class AdminQuestController {
     public long getUsers(){
         return adminQuestService.getQuestCount();
     }
+
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminQuestDetails")
+    public Response getQuestDetails(@RequestParam(name = "id") int id){
+        try{
+            return adminQuestService.getQuestDetails(id);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminQuestPlayed")
+    public Response getQuestPlayed(@RequestParam(name = "id") int id, @RequestParam(name = "page") int page, @RequestParam(name = "userId") int userId){
+        try{
+            return adminQuestService.getQuestPlayed(id, page, userId);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }
