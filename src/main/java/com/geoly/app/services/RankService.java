@@ -49,6 +49,7 @@ public class RankService {
                 .on(User.USER.ID.eq(Point.POINT.USER_ID))
             .where(month(Point.POINT.CREATED_AT).eq(month(currentDate())))
             .and(year(Point.POINT.CREATED_AT).eq(year(currentDate())))
+            .and(User.USER.ACTIVE.isTrue())
             .groupBy(Point.POINT.USER_ID)
             .orderBy(sum(Point.POINT.AMOUNT).desc())
             .limit(50);

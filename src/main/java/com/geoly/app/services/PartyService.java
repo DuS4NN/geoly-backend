@@ -202,6 +202,7 @@ public class PartyService {
             .leftJoin(com.geoly.app.jooq.tables.User.USER)
                 .on(com.geoly.app.jooq.tables.User.USER.ID.eq(PartyUser.PARTY_USER.USER_ID))
             .where(Party.PARTY.USER_ID.eq(userId))
+            .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue())
             .and(Party.PARTY.ID.eq(partyId));
 
         Query q = entityManager.createNativeQuery(query.getSQL());
@@ -235,6 +236,7 @@ public class PartyService {
 
         Optional<User> user = userRepository.findByNickName(nickName);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
+        if(!user.get().isActive()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
 
         Optional<com.geoly.app.models.Party> party = partyRepository.findByIdAndUser(partyId, creator.get());
         if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.BAD_REQUEST, null);
@@ -245,7 +247,19 @@ public class PartyService {
         Optional<com.geoly.app.models.PartyInvite> partyInviteOptional = partyInviteRepository.findByUserAndPartyAndStatus(user.get(), party.get(), PartyInvateStatus.PENDING);
         if(partyInviteOptional.isPresent()) return new Response(StatusMessage.USER_INVITED, HttpStatus.ACCEPTED, null);
 
-        if(partyUserRepository.countAllByParty(party.get()) == 10){
+        Select<?> count =
+            create.select(count())
+                .from(PartyUser.PARTY_USER)
+                .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                    .on(com.geoly.app.jooq.tables.User.USER.ID.eq(PartyUser.PARTY_USER.USER_ID))
+                .where(PartyUser.PARTY_USER.PARTY_ID.eq(partyId))
+                .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue());
+
+        Query q = entityManager.createNativeQuery(count.getSQL());
+        API.setBindParameterValues(q, count);
+        Object countResult = q.getSingleResult();
+
+        if(Integer.parseInt(String.valueOf(countResult)) >= 10){
             return new Response(StatusMessage.GROUP_IS_FULL, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
@@ -317,7 +331,10 @@ public class PartyService {
             .from(Party.PARTY)
             .leftJoin(PartyUser.PARTY_USER)
                 .on(PartyUser.PARTY_USER.PARTY_ID.eq(Party.PARTY.ID))
+            .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                .on(com.geoly.app.jooq.tables.User.USER.ID.eq(Party.PARTY.USER_ID))
             .where(PartyUser.PARTY_USER.USER_ID.eq(userId))
+            .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue())
             .and(Party.PARTY.USER_ID.notEqual(userId))
             .orderBy(PartyUser.PARTY_USER.CREATED_AT.desc())
             .limit(PARTY_ON_PAGE)
@@ -356,6 +373,7 @@ public class PartyService {
             .leftJoin(com.geoly.app.jooq.tables.User.USER)
                 .on(com.geoly.app.jooq.tables.User.USER.ID.eq(Party.PARTY.USER_ID))
             .where(PartyUser.PARTY_USER.USER_ID.eq(userId))
+            .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue())
             .and(PartyUser.PARTY_USER.PARTY_ID.eq(partyId));
 
         Query q1 = entityManager.createNativeQuery(queryDetail.getSQL());
@@ -370,6 +388,7 @@ public class PartyService {
             .leftJoin(com.geoly.app.jooq.tables.User.USER)
                 .on(com.geoly.app.jooq.tables.User.USER.ID.eq(PartyUser.PARTY_USER.USER_ID))
             .where(PartyUser.PARTY_USER.PARTY_ID.eq(partyId))
+            .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue())
             .orderBy(PartyUser.PARTY_USER.CREATED_AT);
 
         Query q2 = entityManager.createNativeQuery(queryUser.getSQL());
@@ -382,7 +401,7 @@ public class PartyService {
             .leftJoin(Quest.QUEST)
                 .on(Quest.QUEST.ID.eq(PartyQuest.PARTY_QUEST.QUEST_ID))
             .leftJoin(Category.CATEGORY)
-                    .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
+                .on(Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
             .where(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
             .and(Quest.QUEST.ACTIVE.isTrue())
             .and(Quest.QUEST.DAILY.isFalse())
