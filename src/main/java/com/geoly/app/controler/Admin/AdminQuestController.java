@@ -34,12 +34,6 @@ public class AdminQuestController {
     }
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
-    @GetMapping("/adminQuestCount")
-    public long getUsers(){
-        return adminQuestService.getQuestCount();
-    }
-
-    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @GetMapping("/adminQuestDetails")
     public Response getQuestDetails(@RequestParam(name = "id") int id){
         try{

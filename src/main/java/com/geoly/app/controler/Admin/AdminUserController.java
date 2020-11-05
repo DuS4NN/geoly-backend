@@ -35,13 +35,6 @@ public class AdminUserController {
     }
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
-    @GetMapping("/adminUserCount")
-    public long getUsers(){
-        return adminUserService.getUserCounts();
-    }
-
-
-    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @GetMapping("/adminUserDetail")
     public Response getUser(@RequestParam(name = "id") int id){
         try{

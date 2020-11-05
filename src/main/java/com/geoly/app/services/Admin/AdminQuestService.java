@@ -49,6 +49,15 @@ public class AdminQuestService {
             condition = condition.and(Quest.QUEST.NAME.like("%"+name+"%"));
         }
 
+        Select<?> count =
+            create.select(count())
+                .from(Quest.QUEST)
+                .where(condition);
+
+        Query q1 = entityManager.createNativeQuery(count.getSQL());
+        API.setBindParameterValues(q1, count);
+        Object countResult = q1.getSingleResult();
+
         Select<?> query =
             create.select(Quest.QUEST.NAME, Quest.QUEST.ID, Quest.QUEST.CREATED_AT)
                 .from(Quest.QUEST)
@@ -59,14 +68,15 @@ public class AdminQuestService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         API.setBindParameterValues(q, query);
-        List response = q.getResultList();
+        List queryResult = q.getResultList();
+
+        List response = new ArrayList();
+        response.add(Integer.parseInt(String.valueOf(countResult)));
+        response.add(queryResult);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, response);
     }
 
-    public long getQuestCount(){
-        return questRepository.count();
-    }
 
     public Response getQuestDetails(int id){
         Select<?> details =

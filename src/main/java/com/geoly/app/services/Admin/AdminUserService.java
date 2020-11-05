@@ -54,6 +54,15 @@ public class AdminUserService {
             condition = condition.and(User.USER.NICK_NAME.like("%"+nick+"%"));
         }
 
+        Select<?> count =
+            create.select(count())
+                .from(User.USER)
+                .where(condition);
+
+        Query q1 = entityManager.createNativeQuery(count.getSQL());
+        API.setBindParameterValues(q1, count);
+        Object countResult = q1.getSingleResult();
+
         Select<?> query =
             create.select(User.USER.ID, User.USER.NICK_NAME, User.USER.CREATED_AT, User.USER.PROFILE_IMAGE_URL)
                 .from(User.USER)
@@ -64,13 +73,13 @@ public class AdminUserService {
 
         Query q = entityManager.createNativeQuery(query.getSQL());
         API.setBindParameterValues(q, query);
-        List response = q.getResultList();
+        List resultList = q.getResultList();
 
-        return new Response(StatusMessage.OK, HttpStatus.OK, response);
-    }
+        List result = new ArrayList();
+        result.add(Integer.parseInt(String.valueOf(countResult)));
+        result.add(resultList);
 
-    public long getUserCounts(){
-        return userRepository.count();
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
     public Response getUser(int id){
