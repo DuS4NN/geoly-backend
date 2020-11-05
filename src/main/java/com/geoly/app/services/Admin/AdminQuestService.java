@@ -109,7 +109,7 @@ public class AdminQuestService {
 
         Condition condition = DSL.trueCondition();
         if(userId != 0){
-            condition = condition.and(User.USER.ID.eq(userId));
+            condition = condition.and(UserQuest.USER_QUEST.USER_ID.eq(userId));
         }
 
 
@@ -126,7 +126,7 @@ public class AdminQuestService {
         Object countResult = q1.getSingleResult();
 
         Select<?> query =
-            create.select(UserQuest.USER_QUEST.ID.as("userQuestId"), UserQuest.USER_QUEST.UPDATED_AT, UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stageId"), Stage.STAGE.TYPE, User.USER.NICK_NAME, User.USER.ID.as("userId"), User.USER.PROFILE_IMAGE_URL)
+            create.select(UserQuest.USER_QUEST.ID.as("userQuestId"), UserQuest.USER_QUEST.UPDATED_AT, UserQuest.USER_QUEST.STATUS, Stage.STAGE.ID.as("stageId"), Stage.STAGE.TYPE, User.USER.NICK_NAME, User.USER.ID.as("userId"), User.USER.PROFILE_IMAGE_URL, UserQuest.USER_QUEST.CREATED_AT)
                 .from(UserQuest.USER_QUEST)
                 .leftJoin(Stage.STAGE)
                     .on(Stage.STAGE.ID.eq(UserQuest.USER_QUEST.STAGE_ID))
@@ -134,6 +134,7 @@ public class AdminQuestService {
                     .on(User.USER.ID.eq(UserQuest.USER_QUEST.USER_ID))
                 .where(Stage.STAGE.QUEST_ID.eq(id))
                 .and(condition)
+                .orderBy(UserQuest.USER_QUEST.CREATED_AT.desc())
                 .limit(20)
                 .offset((page - 1)*20);
 
