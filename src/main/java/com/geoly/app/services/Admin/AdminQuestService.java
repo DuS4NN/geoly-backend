@@ -1,24 +1,29 @@
 package com.geoly.app.services.Admin;
 
 import com.geoly.app.config.API;
+import com.geoly.app.dao.AdminEditQuest;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserQuest;
-import com.geoly.app.models.StatusMessage;
+import com.geoly.app.models.*;
+import com.geoly.app.repositories.CategoryRepository;
 import com.geoly.app.repositories.QuestRepository;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.impl.DSL;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.jooq.impl.DSL.count;
 
@@ -28,11 +33,13 @@ public class AdminQuestService {
     private EntityManager entityManager;
     private DSLContext create;
     private QuestRepository questRepository;
+    private CategoryRepository categoryRepository;
 
-    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository) {
+    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, CategoryRepository categoryRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.questRepository = questRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public Response getQuests(String name, int page){
@@ -88,7 +95,6 @@ public class AdminQuestService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
-
     public Response getQuestPlayed(int id, int page, int userId){
 
         Condition condition = DSL.trueCondition();
@@ -131,5 +137,35 @@ public class AdminQuestService {
         result.add(resultList);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response editQuest(AdminEditQuest adminEditQuest, int adminId){
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(adminEditQuest.getId());
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<Category> category = categoryRepository.findById(adminEditQuest.getCategory());
+        if(!category.isPresent()) return new Response(StatusMessage.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        quest.get().setName(adminEditQuest.getName());
+        quest.get().setDescription(adminEditQuest.getDescription());
+        quest.get().setDifficulty(adminEditQuest.getDifficulty());
+        quest.get().setActive(adminEditQuest.isActive());
+        quest.get().setPrivateQuest(adminEditQuest.isPrivateQuest());
+        quest.get().setPremium(adminEditQuest.isPremium());
+        quest.get().setCategory(category.get());
+
+        Log log = new Log();
+        log.setLogType(LogType.QUEST_UPDATE);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("editObject", adminEditQuest.toString());
+        log.setData(jo.toString());
+
+        entityManager.persist(log);
+        entityManager.merge(quest.get());
+
+        return new Response(StatusMessage.QUEST_EDITED, HttpStatus.ACCEPTED, null);
     }
 }

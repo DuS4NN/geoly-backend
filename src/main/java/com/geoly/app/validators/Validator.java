@@ -120,6 +120,7 @@ public class Validator {
     public ValidatorResponse editQuest(EditQuest questDetails, int questId){
         if(!validatorMethods.idIsValid(questId)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
         if(!validatorMethods.idIsValid(questDetails.getCategoryId())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
+        if(!validatorMethods.nameIsValid(questDetails.getName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NAME_LENGTH_SIZE);
         if(!validatorMethods.difficultyIsValidInt(questDetails.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
         if(questDetails.getDescription() != null && !validatorMethods.descriptionIsValid(questDetails.getDescription())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DESCRIPTION);
 
@@ -161,6 +162,15 @@ public class Validator {
         if (!validatorMethods.emailIsValid(adminEditUser.getEmail())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_EMAIL);
 
         if(!validatorMethods.addressIsValid(adminEditUser.getAddress())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ADDRESS);
+
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse adminEditQuest(AdminEditQuest adminEditQuest){
+        if(!validatorMethods.idIsValid(adminEditQuest.getCategory())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ID);
+        if(!validatorMethods.difficultyIsValidInt(adminEditQuest.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
+        if(!validatorMethods.nameIsValid(adminEditQuest.getName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NAME_LENGTH_SIZE);
+        if(adminEditQuest.getDescription() != null && !validatorMethods.descriptionIsValid(adminEditQuest.getDescription())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DESCRIPTION);
 
         return new ValidatorResponse(true);
     }

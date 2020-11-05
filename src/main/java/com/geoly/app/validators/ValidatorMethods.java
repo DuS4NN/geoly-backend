@@ -69,6 +69,10 @@ public class ValidatorMethods {
         return description.length() > 0 && description.length() < 500;
     }
 
+    boolean nameIsValid(String questName){
+        return questName.length() > 0 && questName.length() < 51;
+    }
+
     boolean difficultyIsValidInt(int difficulty){
         return difficulty > 0 && difficulty < 6;
     }
