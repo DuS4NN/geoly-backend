@@ -229,6 +229,7 @@ public class ProfileService {
         userReport.setReason(reason);
         userReport.setUserComplainant(complainant.get());
         userReport.setUserReported(reported.get());
+        userReport.setSolved(false);
         entityManager.merge(userReport);
 
         return new Response(StatusMessage.USER_REPORT_CREATED, HttpStatus.ACCEPTED, null);

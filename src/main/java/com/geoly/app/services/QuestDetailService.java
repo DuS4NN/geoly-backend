@@ -415,6 +415,8 @@ public class QuestDetailService {
         questReport.setReason(questReportReason);
         questReport.setQuest(quest.get());
         questReport.setUser(user.get());
+        questReport.setSolved(false);
+
         entityManager.persist(questReport);
 
         return new Response(StatusMessage.QUEST_REPORT_CREATED, HttpStatus.ACCEPTED, null);

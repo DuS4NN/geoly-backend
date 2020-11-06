@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserReport extends TableImpl<UserReportRecord> {
 
-    private static final long serialVersionUID = -1212470748;
+    private static final long serialVersionUID = -544395819;
 
     /**
      * The reference instance of <code>geoly.USER_REPORT</code>
@@ -70,6 +70,11 @@ public class UserReport extends TableImpl<UserReportRecord> {
      * The column <code>geoly.USER_REPORT.REASON</code>.
      */
     public final TableField<UserReportRecord, String> REASON = createField("REASON", org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>geoly.USER_REPORT.SOLVED</code>.
+     */
+    public final TableField<UserReportRecord, Byte> SOLVED = createField("SOLVED", org.jooq.impl.SQLDataType.TINYINT, this, "");
 
     /**
      * The column <code>geoly.USER_REPORT.COMPLAINANT</code>.

@@ -33,11 +33,23 @@ public class UserReport {
     @NotNull
     private UserReportReason reason;
 
+    @Column(name = "solved", columnDefinition = "TINYINT")
+    @NotNull
+    private boolean solved;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     @CreationTimestamp
     private Date createdAt;
 
     public UserReport() {
+    }
+
+    public boolean isSolved() {
+        return solved;
+    }
+
+    public void setSolved(boolean solved) {
+        this.solved = solved;
     }
 
     public int getId() {
