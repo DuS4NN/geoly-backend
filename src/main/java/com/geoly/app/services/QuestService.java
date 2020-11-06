@@ -15,6 +15,7 @@ import io.sentry.Sentry;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
+import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -361,15 +362,14 @@ public class QuestService {
             return;
         }
 
-        Optional<List<UserQuest>> userQuests = userQuestRepository.findAllByStageAndStatus(stage.get().get(0), UserQuestStatus.ON_STAGE);
-        if(!userQuests.isPresent() || userQuests.get().isEmpty()){
-            return;
-        }
+        Update<?> query = create.update(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+                .set(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, UserQuestStatus.ON_STAGE.toString())
+                .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID.eq(stage.get().get(0).getId()))
+                .and(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.toString()));
 
-        for(UserQuest userQuest : userQuests.get()){
-            userQuest.setStatus(UserQuestStatus.CANCELED);
-            entityManager.merge(userQuest);
-        }
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        API.setBindParameterValues(q, query);
+        q.executeUpdate();
     }
 
     public Response getDailyQuest(int userId){
