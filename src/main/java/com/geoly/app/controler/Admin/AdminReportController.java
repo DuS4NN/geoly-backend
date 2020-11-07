@@ -19,9 +19,9 @@ public class AdminReportController {
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @GetMapping("/adminReportUser")
-    public Response getReports(@RequestParam(name = "nick") String nick, @RequestParam(name = "page") int page){
+    public Response getUserReports(@RequestParam(name = "nick") String nick, @RequestParam(name = "page") int page){
         try{
-            return adminReportService.getReports(nick, page);
+            return adminReportService.getUserReports(nick, page);
         }catch (Exception e){
             return API.catchException(e);
         }
@@ -29,9 +29,9 @@ public class AdminReportController {
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @GetMapping("/adminReportUserDetails")
-    public Response getReportDetails(@RequestParam(name = "id") int id){
+    public Response getUserReportDetails(@RequestParam(name = "id") int id){
         try{
-            return adminReportService.getReportDetails(id);
+            return adminReportService.getUserReportDetails(id);
         }catch (Exception e){
             return API.catchException(e);
         }
@@ -39,9 +39,40 @@ public class AdminReportController {
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @GetMapping("/adminReportUserSolve")
-    public Response solveReport(@RequestParam(name = "id") int id){
+    public Response solveUserReport(@RequestParam(name = "id") int id){
         try{
-            return adminReportService.solveReport(id);
+            return adminReportService.solveUserReport(id);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminReportQuest")
+    public Response getQuestReports(@RequestParam(name = "name") String name, @RequestParam(name = "page") int page){
+        try{
+            return adminReportService.getQuestReports(name, page);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminReportQuestDetails")
+    public Response getQuestReportDetails(@RequestParam(name = "id") int id){
+        try{
+            return adminReportService.getQuestReportDetails(id);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminReportQuestSolve")
+    public Response solveQuestReport(@RequestParam(name = "id") int id){
+        try{
+            return adminReportService.solveQuestReport(id);
         }catch (Exception e){
             return API.catchException(e);
         }
