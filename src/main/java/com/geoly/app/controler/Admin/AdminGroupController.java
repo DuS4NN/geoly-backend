@@ -41,4 +41,16 @@ public class AdminGroupController {
             return API.catchException(e);
         }
     }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @GetMapping("/adminGroupDeleteQuest")
+    public Response deleteQuestFromGroup(@RequestParam(name = "groupId") int groupId, @RequestParam(name = "questId") int questId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            return adminGroupService.deleteQuestFromGroup(groupId, questId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }
