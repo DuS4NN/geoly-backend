@@ -3,26 +3,40 @@ package com.geoly.app.services.Admin;
 import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.*;
+import com.geoly.app.models.Log;
+import com.geoly.app.models.LogType;
 import com.geoly.app.models.StatusMessage;
+import com.geoly.app.repositories.PartyRepository;
+import com.geoly.app.repositories.PartyUserRepository;
+import com.geoly.app.repositories.UserRepository;
 import org.jooq.DSLContext;
 import org.jooq.Select;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminGroupService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private UserRepository userRepository;
+    private PartyRepository partyRepository;
+    private PartyUserRepository partyUserRepository;
 
-    public AdminGroupService(EntityManager entityManager, DSLContext create) {
+    public AdminGroupService(EntityManager entityManager, DSLContext create, UserRepository userRepository, PartyRepository partyRepository, PartyUserRepository partyUserRepository) {
         this.entityManager = entityManager;
         this.create = create;
+        this.userRepository = userRepository;
+        this.partyRepository = partyRepository;
+        this.partyUserRepository = partyUserRepository;
     }
 
     public Response getGroupDetails(int id){
@@ -65,5 +79,35 @@ public class AdminGroupService {
         result.add(questsList);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response kickUserFromGroup(int groupId, int userId, int adminId){
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.Party> party = partyRepository.findById(groupId);
+        if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        if(party.get().getUser().getId() == userId){
+            return new Response(StatusMessage.CAN_NOT_KICK_OWNER, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
+
+        Optional<com.geoly.app.models.PartyUser> partyUser = partyUserRepository.findByUserAndParty(user.get(), party.get());
+        if(!partyUser.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+
+        Log log = new Log();
+        log.setLogType(LogType.KICK_USER_FROM_GROUP);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("userId", userId);
+        jo.put("groupId", groupId);
+
+        entityManager.persist(log);
+        entityManager.remove(partyUser.get());
+
+        return new Response(StatusMessage.USER_KICKED, HttpStatus.ACCEPTED, null);
     }
 }

@@ -6,5 +6,6 @@ public enum LogType {
     REMOVE_PROFILE_IMAGE,
     USER_UPDATE,
     QUEST_UPDATE,
-    SOLVE_REPORT
+    SOLVE_REPORT,
+    KICK_USER_FROM_GROUP
 }
