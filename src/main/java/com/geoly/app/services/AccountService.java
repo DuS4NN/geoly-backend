@@ -2,6 +2,7 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
+import com.geoly.app.jooq.tables.UserRole;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.LanguageRepository;
 import com.geoly.app.repositories.RoleRepository;
@@ -72,19 +73,34 @@ public class AccountService {
     }
 
     public Response checkUser(int id){
-        Select<?> query =
-            create.select(com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.DARK_MODE, com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID)
-                .from(com.geoly.app.jooq.tables.User.USER)
-                .leftJoin(com.geoly.app.jooq.tables.UserOption.USER_OPTION)
-                    .on(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID.eq(com.geoly.app.jooq.tables.User.USER.ID))
-                .where(com.geoly.app.jooq.tables.User.USER.ID.eq(id))
-                .and(com.geoly.app.jooq.tables.User.USER.ACTIVE.isTrue());
+        Select<?> roles =
+                create.select(com.geoly.app.jooq.tables.Role.ROLE.NAME)
+                        .from(UserRole.USER_ROLE)
+                        .leftJoin(com.geoly.app.jooq.tables.Role.ROLE)
+                        .on(com.geoly.app.jooq.tables.Role.ROLE.ID.eq(UserRole.USER_ROLE.ROLE_ID))
+                        .where(UserRole.USER_ROLE.USER_ID.eq(id));
 
-        Query q = entityManager.createNativeQuery(query.getSQL());
-        API.setBindParameterValues(q, query);
-        List result = q.getResultList();
+        Query q1 = entityManager.createNativeQuery(roles.getSQL());
+        API.setBindParameterValues(q1, roles);
+        List rolesResult = q1.getResultList();
 
-        if(result.isEmpty()) return new Response(StatusMessage.USER_NOT_LOGGED_IN, HttpStatus.UNAUTHORIZED, null);
+        Select<?> options =
+                create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.DARK_MODE, com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL)
+                        .from(com.geoly.app.jooq.tables.UserOption.USER_OPTION)
+                        .leftJoin(com.geoly.app.jooq.tables.User.USER)
+                        .on(com.geoly.app.jooq.tables.User.USER.ID.eq(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID))
+                        .where(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID.eq(id));
+
+        Query q2 = entityManager.createNativeQuery(options.getSQL());
+        API.setBindParameterValues(q2, options);
+        List optionsResult = q2.getResultList();
+
+        List<List> result = new ArrayList<>();
+        result.add(rolesResult);
+        result.add(optionsResult);
+
+
+        if(optionsResult.isEmpty()) return new Response(StatusMessage.USER_NOT_LOGGED_IN, HttpStatus.UNAUTHORIZED, null);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
