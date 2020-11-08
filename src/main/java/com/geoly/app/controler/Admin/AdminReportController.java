@@ -2,8 +2,10 @@ package com.geoly.app.controler.Admin;
 
 import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
+import com.geoly.app.models.CustomUserDetails;
 import com.geoly.app.services.Admin.AdminReportService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,9 +41,11 @@ public class AdminReportController {
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @GetMapping("/adminReportUserSolve")
-    public Response solveUserReport(@RequestParam(name = "id") int id){
+    public Response solveUserReport(@RequestParam(name = "id") int id, Authentication authentication){
         try{
-            return adminReportService.solveUserReport(id);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            return adminReportService.solveUserReport(id, customUserDetails.getUser().getId());
         }catch (Exception e){
             return API.catchException(e);
         }
@@ -70,9 +74,11 @@ public class AdminReportController {
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @GetMapping("/adminReportQuestSolve")
-    public Response solveQuestReport(@RequestParam(name = "id") int id){
+    public Response solveQuestReport(@RequestParam(name = "id") int id, Authentication authentication){
         try{
-            return adminReportService.solveQuestReport(id);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            return adminReportService.solveQuestReport(id, customUserDetails.getUser().getId());
         }catch (Exception e){
             return API.catchException(e);
         }

@@ -6,12 +6,15 @@ import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.QuestReport;
 import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserReport;
+import com.geoly.app.models.Log;
+import com.geoly.app.models.LogType;
 import com.geoly.app.models.StatusMessage;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -113,7 +116,7 @@ public class AdminReportService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Response solveUserReport(int id){
+    public Response solveUserReport(int id, int adminId){
        Update<?> query = create.update(UserReport.USER_REPORT)
             .set(UserReport.USER_REPORT.SOLVED, DSL.coerce(1, Byte.class))
             .where(UserReport.USER_REPORT.REPORTED.eq(id))
@@ -122,6 +125,16 @@ public class AdminReportService {
         Query q = entityManager.createNativeQuery(query.getSQL());
         API.setBindParameterValues(q, query);
         q.executeUpdate();
+
+        Log log = new Log();
+        log.setLogType(LogType.SOLVE_REPORT);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("userId", id);
+        log.setData(jo.toString());
+
+        entityManager.persist(log);
 
         return new Response(StatusMessage.REPORTS_SOLVED, HttpStatus.ACCEPTED, null);
     }
@@ -205,7 +218,7 @@ public class AdminReportService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Response solveQuestReport(int id){
+    public Response solveQuestReport(int id, int adminId){
         Update<?> query = create.update(QuestReport.QUEST_REPORT)
                 .set(QuestReport.QUEST_REPORT.SOLVED, DSL.coerce(1, Byte.class))
                 .where(QuestReport.QUEST_REPORT.QUEST_ID.eq(id))
@@ -214,6 +227,16 @@ public class AdminReportService {
         Query q = entityManager.createNativeQuery(query.getSQL());
         API.setBindParameterValues(q, query);
         q.executeUpdate();
+
+        Log log = new Log();
+        log.setLogType(LogType.SOLVE_REPORT);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("questId", id);
+        log.setData(jo.toString());
+
+        entityManager.persist(log);
 
         return new Response(StatusMessage.REPORTS_SOLVED, HttpStatus.ACCEPTED, null);
     }

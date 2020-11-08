@@ -5,5 +5,6 @@ public enum LogType {
     REMOVE_REVIEW,
     REMOVE_PROFILE_IMAGE,
     USER_UPDATE,
-    QUEST_UPDATE
+    QUEST_UPDATE,
+    SOLVE_REPORT
 }
