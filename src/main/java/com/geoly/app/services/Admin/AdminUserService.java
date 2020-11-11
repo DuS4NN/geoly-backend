@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.jooq.impl.DSL.*;
 
@@ -36,8 +34,9 @@ public class AdminUserService {
     private UserBadgeRepository userBadgeRepository;
     private QuestReviewRepository questReviewRepository;
     private LanguageRepository languageRepository;
+    private RoleRepository roleRepository;
 
-    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserOptionRepository userOptionRepository, UserBadgeRepository userBadgeRepository, QuestReviewRepository questReviewRepository, LanguageRepository languageRepository) {
+    public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserOptionRepository userOptionRepository, UserBadgeRepository userBadgeRepository, QuestReviewRepository questReviewRepository, LanguageRepository languageRepository, RoleRepository roleRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userRepository = userRepository;
@@ -45,6 +44,33 @@ public class AdminUserService {
         this.userBadgeRepository = userBadgeRepository;
         this.questReviewRepository = questReviewRepository;
         this.languageRepository = languageRepository;
+        this.roleRepository = roleRepository;
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response updateRoles(List<Integer> roles, int id, int adminId){
+        Optional<com.geoly.app.models.User> user = userRepository.findById(id);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<Set<com.geoly.app.models.Role>> newRoleList = roleRepository.findAlLByIdIn(roles);
+        if(!newRoleList.isPresent()) return new Response(StatusMessage.ROLE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        user.get().setRole(new HashSet<>(newRoleList.get()));
+
+        Log log = new Log();
+        log.setLogType(LogType.ROLES_UPDATE);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("userId", id);
+        jo.put("rolesId", roles.toString());
+
+        log.setData(jo.toString());
+
+        entityManager.merge(user.get());
+        entityManager.persist(log);
+
+        return new Response(StatusMessage.ROLES_UPDATED, HttpStatus.ACCEPTED, null);
     }
 
     public Response getUsers(String nick , int page){
@@ -177,6 +203,17 @@ public class AdminUserService {
         API.setBindParameterValues(q8, points);
         List pointsResult = q8.getResultList();
 
+        Select<?> roles =
+            create.select(Role.ROLE.NAME, Role.ROLE.ID)
+                .from(UserRole.USER_ROLE)
+                .leftJoin(Role.ROLE)
+                    .on(Role.ROLE.ID.eq(UserRole.USER_ROLE.ROLE_ID))
+                .where(UserRole.USER_ROLE.USER_ID.eq(id));
+
+        Query q9 = entityManager.createNativeQuery(roles.getSQL());
+        API.setBindParameterValues(q9, roles);
+        List rolesResult = q9.getResultList();
+
         List<List> result = new ArrayList<>();
         result.add(userDetailsResult);
         result.add(playedQuestsResult);
@@ -186,6 +223,7 @@ public class AdminUserService {
         result.add(badgesResult);
         result.add(reviewsResult);
         result.add(pointsResult);
+        result.add(rolesResult);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }

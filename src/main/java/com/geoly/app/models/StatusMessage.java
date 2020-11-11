@@ -9,6 +9,7 @@ public enum StatusMessage {
     GROUP_EDITED,
     GROUP_IS_FULL,
     OK,
+    ROLES_UPDATED,
     INVALID_ADDRESS,
     REPORT_NOT_FOUND,
     INVALID_STAGE_TEXT,
