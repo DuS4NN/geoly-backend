@@ -69,14 +69,14 @@ public class AdminQuestController {
 
     @PreAuthorize("hasAnyRole('MOD, ADMIN')")
     @PostMapping("/adminAddQuest")
-    public Response addQuest(@RequestBody @Validated AddQuest quest, Authentication authentication){
+    public Response addQuest(@RequestBody AddQuest quest, Authentication authentication) {
         ValidatorResponse validatorResponse = validator.addQuest(quest);
         if (!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
 
-        try{
+        try {
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             return adminQuestService.addQuest(quest, customUserDetails.getUser().getId());
-        }catch (Exception e){
+        } catch (Exception e) {
             return API.catchException(e);
         }
     }

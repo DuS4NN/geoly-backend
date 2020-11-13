@@ -19,6 +19,8 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.tinify.Source;
+import com.tinify.Tinify;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -26,6 +28,7 @@ import org.jooq.impl.DSL;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -192,7 +195,7 @@ public class AdminQuestService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Response addQuest(AddQuest addQuest, int adminId){
+    public Response addQuest(AddQuest addQuest, int adminId) throws Exception{
 
         Optional<com.geoly.app.models.User> user = userRepository.findByEmail("geoly@info.com");
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
@@ -210,39 +213,30 @@ public class AdminQuestService {
         quest.setDescription(addQuest.getDescription());
         quest.setName(addQuest.getName());
         quest.setDaily(false);
+        entityManager.persist(quest);
 
         for(com.geoly.app.models.Stage stage : addQuest.getStages()){
             stage.setQuest(quest);
-        }
-        quest.setStage(new HashSet<>(addQuest.getStages()));
-
-        entityManager.persist(quest);
-
-        for(com.geoly.app.models.Stage stage : quest.getStage()){
             if(stage.getType() == StageType.SCAN_QR_CODE){
-                try{
-
-                    File file = new File(API.qrCodeImageUrl+"/"+quest.getId()+"/"+stage.getId()+".png");
-                    if(!file.exists()){
-                        file.mkdirs();
-                    }
-
-                    Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<>();
-                    hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-
-                    Random rand = new Random();
-
-                    BitMatrix matrix = new MultiFormatWriter().encode(
-                            new String(Hashing.sha256().hashString(""+rand.nextInt(999999)).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500
-                    );
-
-                    MatrixToImageWriter.writeToPath(matrix, "png", file.toPath());
-
-                    stage.setQrCodeUrl(file.toString().replace("\\", "/"));
-                }catch (Exception e){
-                    API.catchException(e);
+                File file = new File(API.qrCodeImageUrl+"/"+quest.getId()+"/"+stage.getId()+".png");
+                if(!file.exists()){
+                    file.mkdirs();
                 }
+
+                Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<>();
+                hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+
+                Random rand = new Random();
+
+                BitMatrix matrix = new MultiFormatWriter().encode(
+                        new String(Hashing.sha256().hashString(""+rand.nextInt(999999)).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500
+                );
+
+                MatrixToImageWriter.writeToPath(matrix, "png", file.toPath());
+
+                stage.setQrCodeUrl(file.toString().replace("\\", "/"));
             }
+            entityManager.persist(stage);
         }
 
         Log log = new Log();
@@ -255,6 +249,9 @@ public class AdminQuestService {
 
         entityManager.persist(log);
 
-        return new Response(StatusMessage.QUEST_CREATED, HttpStatus.ACCEPTED, null);
+        List result = new ArrayList();
+        result.add(quest.getId());
+
+        return new Response(StatusMessage.QUEST_CREATED, HttpStatus.ACCEPTED, result);
     }
 }
