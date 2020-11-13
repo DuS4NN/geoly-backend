@@ -9,5 +9,6 @@ public enum LogType {
     SOLVE_REPORT,
     KICK_USER_FROM_GROUP,
     REMOVE_QUEST_FROM_GROUP,
-    ROLES_UPDATE
+    ROLES_UPDATE,
+    ADD_QUEST
 }

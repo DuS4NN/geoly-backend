@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 public class ValidatorMethods {
 
     boolean idIsValid(int id) {
-        System.out.println(id);
         return id > 0;
     }
 
@@ -105,5 +104,19 @@ public class ValidatorMethods {
 
     boolean coordinatesArrayIsValid(float[] coordinatesArray){
         return coordinatesArray.length == 2;
+    }
+
+    //Question, Answer,
+    boolean stageRequiredTextIsValid(String text){
+        return text != null && text.length() > 0 && text.length() < 201;
+    }
+
+    //Advise, Note
+    boolean stageNonRequiredTextIsValid(String text){
+        return text == null || (text.length() > 0 && text.length() < 201);
+    }
+
+    boolean answersListIsValid(String answersList){
+        return answersList == null || (answersList.length() > 0 && answersList.length() < 1001 && answersList.split(";").length < 6);
     }
 }

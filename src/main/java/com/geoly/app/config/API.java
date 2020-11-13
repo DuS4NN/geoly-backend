@@ -20,6 +20,7 @@ public class API {
     private JavaMailSenderImpl mailSender;
     public static String questImageUrl = "static/images/quest/";
     public static String userImageUrl = "static/images/user/";
+    public static String qrCodeImageUrl = "static/images/qrCode";
 
     public API(JavaMailSenderImpl mailSender) {
         this.mailSender = mailSender;

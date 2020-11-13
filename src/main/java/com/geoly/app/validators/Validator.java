@@ -1,10 +1,7 @@
 package com.geoly.app.validators;
 
 import com.geoly.app.dao.*;
-import com.geoly.app.models.QuestReview;
-import com.geoly.app.models.StatusMessage;
-import com.geoly.app.models.User;
-import com.geoly.app.models.UserOption;
+import com.geoly.app.models.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -171,6 +168,33 @@ public class Validator {
         if(!validatorMethods.difficultyIsValidInt(adminEditQuest.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
         if(!validatorMethods.nameIsValid(adminEditQuest.getName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NAME_LENGTH_SIZE);
         if(adminEditQuest.getDescription() != null && !validatorMethods.descriptionIsValid(adminEditQuest.getDescription())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DESCRIPTION);
+
+        return new ValidatorResponse(true);
+    }
+
+    public ValidatorResponse addQuest(AddQuest addQuest){
+        if(!validatorMethods.difficultyIsValidInt(addQuest.getDifficulty())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DIFFICULTY);
+        if(!validatorMethods.idIsValid(addQuest.getCategoryId())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.CATEGORY_NOT_FOUND);
+        if(!validatorMethods.nameIsValid(addQuest.getName())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NAME_LENGTH_SIZE);
+        if(!validatorMethods.descriptionIsValid(addQuest.getDescription())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_DESCRIPTION);
+
+        for(Stage stage : addQuest.getStages()){
+            switch (stage.getType()){
+                case GO_TO_PLACE:
+                    if(stage.getLatitude() == null || stage.getLongitude() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_COORDINATES);
+                    break;
+                case SCAN_QR_CODE:
+                    break;
+                case ANSWER_QUESTION:
+                    if(!validatorMethods.stageRequiredTextIsValid(stage.getQuestion())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_QUESTION);
+                    if(!validatorMethods.stageRequiredTextIsValid(stage.getAnswer())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ANSWER);
+
+                    if(!validatorMethods.stageNonRequiredTextIsValid(stage.getAdvise())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ADVISE);
+                    if(!validatorMethods.stageNonRequiredTextIsValid(stage.getNote())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_NOTE);
+                    if(!validatorMethods.answersListIsValid(stage.getAnswersList())) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ANSWERS_LIST);
+                    break;
+            }
+        }
 
         return new ValidatorResponse(true);
     }

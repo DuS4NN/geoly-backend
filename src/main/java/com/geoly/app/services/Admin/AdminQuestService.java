@@ -1,6 +1,7 @@
 package com.geoly.app.services.Admin;
 
 import com.geoly.app.config.API;
+import com.geoly.app.dao.AddQuest;
 import com.geoly.app.dao.AdminEditQuest;
 import com.geoly.app.dao.Response;
 import com.geoly.app.jooq.tables.Quest;
@@ -10,6 +11,14 @@ import com.geoly.app.jooq.tables.UserQuest;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.CategoryRepository;
 import com.geoly.app.repositories.QuestRepository;
+import com.geoly.app.repositories.UserRepository;
+import com.google.common.hash.Hashing;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -21,9 +30,10 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 import static org.jooq.impl.DSL.count;
 
@@ -33,12 +43,14 @@ public class AdminQuestService {
     private EntityManager entityManager;
     private DSLContext create;
     private QuestRepository questRepository;
+    private UserRepository userRepository;
     private CategoryRepository categoryRepository;
 
-    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, CategoryRepository categoryRepository) {
+    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.questRepository = questRepository;
+        this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
     }
 
@@ -76,7 +88,6 @@ public class AdminQuestService {
 
         return new Response(StatusMessage.OK, HttpStatus.OK, response);
     }
-
 
     public Response getQuestDetails(int id){
         Select<?> details =
@@ -178,5 +189,72 @@ public class AdminQuestService {
         entityManager.merge(quest.get());
 
         return new Response(StatusMessage.QUEST_EDITED, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response addQuest(AddQuest addQuest, int adminId){
+
+        Optional<com.geoly.app.models.User> user = userRepository.findByEmail("geoly@info.com");
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<Category> category = categoryRepository.findById(addQuest.getCategoryId());
+        if(!category.isPresent()) return new Response(StatusMessage.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        com.geoly.app.models.Quest quest = new com.geoly.app.models.Quest();
+        quest.setCategory(category.get());
+        quest.setPremium(addQuest.isPremium());
+        quest.setPrivateQuest(addQuest.isPrivateQuest());
+        quest.setActive(addQuest.isActive());
+        quest.setUser(user.get());
+        quest.setDifficulty(addQuest.getDifficulty());
+        quest.setDescription(addQuest.getDescription());
+        quest.setName(addQuest.getName());
+        quest.setDaily(false);
+
+        for(com.geoly.app.models.Stage stage : addQuest.getStages()){
+            stage.setQuest(quest);
+        }
+        quest.setStage(new HashSet<>(addQuest.getStages()));
+
+        entityManager.persist(quest);
+
+        for(com.geoly.app.models.Stage stage : quest.getStage()){
+            if(stage.getType() == StageType.SCAN_QR_CODE){
+                try{
+
+                    File file = new File(API.qrCodeImageUrl+"/"+quest.getId()+"/"+stage.getId()+".png");
+                    if(!file.exists()){
+                        file.mkdirs();
+                    }
+
+                    Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<>();
+                    hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+
+                    Random rand = new Random();
+
+                    BitMatrix matrix = new MultiFormatWriter().encode(
+                            new String(Hashing.sha256().hashString(""+rand.nextInt(999999)).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500
+                    );
+
+                    MatrixToImageWriter.writeToPath(matrix, "png", file.toPath());
+
+                    stage.setQrCodeUrl(file.toString().replace("\\", "/"));
+                }catch (Exception e){
+                    API.catchException(e);
+                }
+            }
+        }
+
+        Log log = new Log();
+        log.setLogType(LogType.ADD_QUEST);
+
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("questId", quest.getId());
+        log.setData(jo.toString());
+
+        entityManager.persist(log);
+
+        return new Response(StatusMessage.QUEST_CREATED, HttpStatus.ACCEPTED, null);
     }
 }

@@ -1,6 +1,7 @@
 package com.geoly.app.controler.Admin;
 
 import com.geoly.app.config.API;
+import com.geoly.app.dao.AddQuest;
 import com.geoly.app.dao.AdminEditQuest;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
@@ -65,4 +66,19 @@ public class AdminQuestController {
             return API.catchException(e);
         }
     }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @PostMapping("/adminAddQuest")
+    public Response addQuest(@RequestBody @Validated AddQuest quest, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.addQuest(quest);
+        if (!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return adminQuestService.addQuest(quest, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
 }

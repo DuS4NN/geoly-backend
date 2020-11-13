@@ -1,6 +1,12 @@
 package com.geoly.app.models;
 
 public enum StatusMessage {
+    INVALID_QUESTION,
+    INVALID_ANSWER,
+    INVALID_ADVISE,
+    INVALID_NOTE,
+    INVALID_ANSWERS_LIST,
+
     NO_IMAGES,
     BADGE_NOT_FOUND,
     INVALID_NAME_LENGTH_SIZE,
@@ -11,6 +17,7 @@ public enum StatusMessage {
     OK,
     ROLES_UPDATED,
     INVALID_ADDRESS,
+    QUEST_CREATED,
     REPORT_NOT_FOUND,
     INVALID_STAGE_TEXT,
     REVIEW_EDITED,

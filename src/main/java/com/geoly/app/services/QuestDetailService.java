@@ -88,7 +88,6 @@ public class QuestDetailService {
         List result2 = q2.getResultList();
 
         if(result2 != null && !result2.isEmpty() && String.valueOf(result2.get(0)).equals(UserQuestStatus.FINISHED.name() )){
-            System.out.println(String.valueOf(result2));
             return StatusMessage.USER_ALREADY_FINISHED_QUEST;
         }
 

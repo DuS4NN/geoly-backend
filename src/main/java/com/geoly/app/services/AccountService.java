@@ -250,12 +250,10 @@ public class AccountService {
 
     @Transactional(rollbackOn = Exception.class)
     public Response resetPassword(String tokenValue, String password){
-        System.out.println(tokenValue);
         Optional<Token> token = tokenRepository.findByTokenAndAction(tokenValue, TokenType.PASSWORD_RESET);
         if(!token.isPresent()) return new Response(StatusMessage.INVALID_TOKEN, HttpStatus.NOT_FOUND, null);
 
         if(System.currentTimeMillis() - token.get().getCreatedAt().getTime() > 604800000){
-            System.out.println(tokenValue);
             entityManager.remove(token.get());
             return new Response(StatusMessage.INVALID_TOKEN, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
