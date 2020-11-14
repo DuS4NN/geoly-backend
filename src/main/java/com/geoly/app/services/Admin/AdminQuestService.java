@@ -19,8 +19,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.tinify.Source;
-import com.tinify.Tinify;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -28,14 +26,11 @@ import org.jooq.impl.DSL;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static org.jooq.impl.DSL.count;
