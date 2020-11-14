@@ -20,7 +20,7 @@ public class Log {
     @CreationTimestamp
     private Date createdAt;
 
-    @Column(name = "data", columnDefinition = "JSON")
+    @Column(name = "data", columnDefinition = "TEXT")
     @NotNull
     private String data;
 

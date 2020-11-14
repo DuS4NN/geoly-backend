@@ -8,6 +8,7 @@ import com.geoly.app.jooq.tables.Badge;
 import com.geoly.app.jooq.tables.Category;
 import com.geoly.app.jooq.tables.Image;
 import com.geoly.app.jooq.tables.Language;
+import com.geoly.app.jooq.tables.Log;
 import com.geoly.app.jooq.tables.Notification;
 import com.geoly.app.jooq.tables.Party;
 import com.geoly.app.jooq.tables.PartyInvite;
@@ -65,6 +66,11 @@ public class Tables {
      * The table <code>geoly.LANGUAGE</code>.
      */
     public static final Language LANGUAGE = com.geoly.app.jooq.tables.Language.LANGUAGE;
+
+    /**
+     * The table <code>geoly.LOG</code>.
+     */
+    public static final Log LOG = com.geoly.app.jooq.tables.Log.LOG;
 
     /**
      * The table <code>geoly.NOTIFICATION</code>.

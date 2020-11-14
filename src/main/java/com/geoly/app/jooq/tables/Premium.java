@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Premium extends TableImpl<PremiumRecord> {
 
-    private static final long serialVersionUID = 1683310017;
+    private static final long serialVersionUID = 544249314;
 
     /**
      * The reference instance of <code>geoly.PREMIUM</code>
@@ -132,7 +132,7 @@ public class Premium extends TableImpl<PremiumRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1, Indexes.PRIMARY_KEY_1);
+        return Arrays.<Index>asList(Indexes.FK55RHAW7HB4IB9USGJD0RVYUBB_INDEX_1, Indexes.PRIMARY_KEY_17);
     }
 
     /**
@@ -140,7 +140,7 @@ public class Premium extends TableImpl<PremiumRecord> {
      */
     @Override
     public UniqueKey<PremiumRecord> getPrimaryKey() {
-        return Keys.CONSTRAINT_1;
+        return Keys.CONSTRAINT_17;
     }
 
     /**
@@ -148,7 +148,7 @@ public class Premium extends TableImpl<PremiumRecord> {
      */
     @Override
     public List<UniqueKey<PremiumRecord>> getKeys() {
-        return Arrays.<UniqueKey<PremiumRecord>>asList(Keys.CONSTRAINT_1);
+        return Arrays.<UniqueKey<PremiumRecord>>asList(Keys.CONSTRAINT_17);
     }
 
     /**
