@@ -17,6 +17,7 @@ import com.geoly.app.jooq.tables.UserBadge;
 import com.geoly.app.jooq.tables.UserOption;
 import com.geoly.app.jooq.tables.UserQuest;
 import com.geoly.app.models.*;
+import com.geoly.app.models.Log;
 import com.geoly.app.repositories.*;
 import org.jooq.Condition;
 import org.jooq.DSLContext;

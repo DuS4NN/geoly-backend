@@ -1,6 +1,7 @@
 package com.geoly.app.models;
 
 public enum LogType {
+    ALL,
     REMOVE_BADGE,
     REMOVE_REVIEW,
     REMOVE_PROFILE_IMAGE,
