@@ -107,9 +107,21 @@ public class AdminQuestService {
         API.setBindParameterValues(q2, stages);
         List stagesResult = q2.getResultList();
 
+        Select<?> images =
+            create.select(com.geoly.app.jooq.tables.Image.IMAGE.ID, com.geoly.app.jooq.tables.Image.IMAGE.IMAGE_URL)
+                .from(com.geoly.app.jooq.tables.Image.IMAGE)
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(com.geoly.app.jooq.tables.Image.IMAGE.QUEST_ID))
+                .where(Quest.QUEST.ID.eq(id));
+
+        Query q3 = entityManager.createNativeQuery(images.getSQL());
+        API.setBindParameterValues(q3, images);
+        List imagesResult = q3.getResultList();
+
         List<List> result = new ArrayList<>();
         result.add(detailsResult);
         result.add(stagesResult);
+        result.add(imagesResult);
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
