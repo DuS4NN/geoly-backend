@@ -1,8 +1,6 @@
 package com.geoly.app.models;
 
 import com.sun.istack.NotNull;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -26,7 +24,7 @@ public class Premium {
     @NotNull
     private String state;
 
-    @Column(name = "agreementId", columnDefinition = "VARCHAR(100)")
+    @Column(name = "agreement_id", columnDefinition = "VARCHAR(100)")
     @NotNull
     private String agreementId;
 

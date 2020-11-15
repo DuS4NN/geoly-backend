@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Premium extends TableImpl<PremiumRecord> {
 
-    private static final long serialVersionUID = 544249314;
+    private static final long serialVersionUID = 1234721227;
 
     /**
      * The reference instance of <code>geoly.PREMIUM</code>
@@ -62,9 +62,9 @@ public class Premium extends TableImpl<PremiumRecord> {
     public final TableField<PremiumRecord, Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>geoly.PREMIUM.AGREEMENTID</code>.
+     * The column <code>geoly.PREMIUM.AGREEMENT_ID</code>.
      */
-    public final TableField<PremiumRecord, String> AGREEMENTID = createField("AGREEMENTID", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
+    public final TableField<PremiumRecord, String> AGREEMENT_ID = createField("AGREEMENT_ID", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
 
     /**
      * The column <code>geoly.PREMIUM.END_AT</code>.

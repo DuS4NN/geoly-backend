@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PremiumRecord extends UpdatableRecordImpl<PremiumRecord> implements Record6<Integer, String, Timestamp, Timestamp, String, Integer> {
 
-    private static final long serialVersionUID = -1334105458;
+    private static final long serialVersionUID = 590094875;
 
     /**
      * Setter for <code>geoly.PREMIUM.ID</code>.
@@ -47,16 +47,16 @@ public class PremiumRecord extends UpdatableRecordImpl<PremiumRecord> implements
     }
 
     /**
-     * Setter for <code>geoly.PREMIUM.AGREEMENTID</code>.
+     * Setter for <code>geoly.PREMIUM.AGREEMENT_ID</code>.
      */
-    public void setAgreementid(String value) {
+    public void setAgreementId(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>geoly.PREMIUM.AGREEMENTID</code>.
+     * Getter for <code>geoly.PREMIUM.AGREEMENT_ID</code>.
      */
-    public String getAgreementid() {
+    public String getAgreementId() {
         return (String) get(1);
     }
 
@@ -161,7 +161,7 @@ public class PremiumRecord extends UpdatableRecordImpl<PremiumRecord> implements
      */
     @Override
     public Field<String> field2() {
-        return Premium.PREMIUM.AGREEMENTID;
+        return Premium.PREMIUM.AGREEMENT_ID;
     }
 
     /**
@@ -209,7 +209,7 @@ public class PremiumRecord extends UpdatableRecordImpl<PremiumRecord> implements
      */
     @Override
     public String component2() {
-        return getAgreementid();
+        return getAgreementId();
     }
 
     /**
@@ -257,7 +257,7 @@ public class PremiumRecord extends UpdatableRecordImpl<PremiumRecord> implements
      */
     @Override
     public String value2() {
-        return getAgreementid();
+        return getAgreementId();
     }
 
     /**
@@ -306,7 +306,7 @@ public class PremiumRecord extends UpdatableRecordImpl<PremiumRecord> implements
      */
     @Override
     public PremiumRecord value2(String value) {
-        setAgreementid(value);
+        setAgreementId(value);
         return this;
     }
 
@@ -374,11 +374,11 @@ public class PremiumRecord extends UpdatableRecordImpl<PremiumRecord> implements
     /**
      * Create a detached, initialised PremiumRecord
      */
-    public PremiumRecord(Integer id, String agreementid, Timestamp endAt, Timestamp startAt, String state, Integer userId) {
+    public PremiumRecord(Integer id, String agreementId, Timestamp endAt, Timestamp startAt, String state, Integer userId) {
         super(Premium.PREMIUM);
 
         set(0, id);
-        set(1, agreementid);
+        set(1, agreementId);
         set(2, endAt);
         set(3, startAt);
         set(4, state);
