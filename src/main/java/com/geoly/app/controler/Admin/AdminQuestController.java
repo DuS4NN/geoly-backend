@@ -12,6 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 public class AdminQuestController {
@@ -29,6 +32,20 @@ public class AdminQuestController {
     public Response getQuests(@RequestParam(name = "name") String name, @RequestParam(name = "page") int page){
         try{
             return adminQuestService.getQuests(name, page);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('MOD, ADMIN')")
+    @PostMapping("/adminUpdateImages")
+    public Response updateImages(@RequestParam List<MultipartFile> files, @RequestParam(name = "id") int questId, @RequestParam(name = "deleted") int[] deleted, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.imagesValidator(files, questId);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return adminQuestService.updateImages(files, customUserDetails.getUser().getId(), questId, deleted);
         }catch (Exception e){
             return API.catchException(e);
         }

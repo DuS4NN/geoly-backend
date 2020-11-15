@@ -11,5 +11,6 @@ public enum LogType {
     KICK_USER_FROM_GROUP,
     REMOVE_QUEST_FROM_GROUP,
     ROLES_UPDATE,
-    ADD_QUEST
+    ADD_QUEST,
+    UPDATE_IMAGES
 }

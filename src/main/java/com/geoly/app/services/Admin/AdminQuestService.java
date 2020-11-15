@@ -10,6 +10,7 @@ import com.geoly.app.jooq.tables.User;
 import com.geoly.app.jooq.tables.UserQuest;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.CategoryRepository;
+import com.geoly.app.repositories.ImageRepository;
 import com.geoly.app.repositories.QuestRepository;
 import com.geoly.app.repositories.UserRepository;
 import com.google.common.hash.Hashing;
@@ -19,6 +20,8 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.tinify.Source;
+import com.tinify.Tinify;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Select;
@@ -26,6 +29,7 @@ import org.jooq.impl.DSL;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -43,13 +47,15 @@ public class AdminQuestService {
     private QuestRepository questRepository;
     private UserRepository userRepository;
     private CategoryRepository categoryRepository;
+    private ImageRepository imageRepository;
 
-    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
+    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.imageRepository = imageRepository;
     }
 
     public Response getQuests(String name, int page){
@@ -260,5 +266,51 @@ public class AdminQuestService {
         result.add(quest.getId());
 
         return new Response(StatusMessage.QUEST_CREATED, HttpStatus.ACCEPTED, result);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response updateImages(List<MultipartFile> files, int adminId, int questId, int[] deleted) throws Exception{
+
+        Optional<com.geoly.app.models.Quest> quest = questRepository.findById(questId);
+        if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        for(int deletedImageId : deleted){
+            Optional<Image> image = imageRepository.findByIdAndQuest(deletedImageId, quest.get());
+            if(image.isPresent()){
+                File dir = new File(image.get().getImageUrl());
+                if(dir.exists()){
+                    dir.delete();
+                }
+                entityManager.remove(image.get());
+            }
+        }
+
+        File dir = new File(API.questImageUrl+questId);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+
+        for(MultipartFile file : files){
+
+            long imageName = System.currentTimeMillis();
+
+            Source source = Tinify.fromBuffer(file.getBytes());
+            source.toFile(API.questImageUrl+questId+"/"+imageName+".jpg");
+
+            Image image = new Image();
+            image.setQuest(quest.get());
+            image.setImageUrl(API.questImageUrl+questId+"/"+imageName+".jpg");
+            entityManager.persist(image);
+        }
+
+        Log log = new Log();
+        log.setLogType(LogType.UPDATE_IMAGES);
+        JSONObject jo = new JSONObject();
+        jo.put("adminId", adminId);
+        jo.put("questId", questId);
+        log.setData(jo.toString());
+        entityManager.persist(log);
+
+        return new Response(StatusMessage.IMAGES_SAVED, HttpStatus.ACCEPTED, null);
     }
 }
