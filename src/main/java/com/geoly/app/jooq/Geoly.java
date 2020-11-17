@@ -20,7 +20,6 @@ import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.QuestReport;
 import com.geoly.app.jooq.tables.QuestReview;
 import com.geoly.app.jooq.tables.Role;
-import com.geoly.app.jooq.tables.Sale;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.Token;
 import com.geoly.app.jooq.tables.User;
@@ -56,7 +55,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Geoly extends SchemaImpl {
 
-    private static final long serialVersionUID = -1579382643;
+    private static final long serialVersionUID = 1599121378;
 
     /**
      * The reference instance of <code>geoly</code>
@@ -142,11 +141,6 @@ public class Geoly extends SchemaImpl {
      * The table <code>geoly.ROLE</code>.
      */
     public final Role ROLE = com.geoly.app.jooq.tables.Role.ROLE;
-
-    /**
-     * The table <code>geoly.SALE</code>.
-     */
-    public final Sale SALE = com.geoly.app.jooq.tables.Sale.SALE;
 
     /**
      * The table <code>geoly.STAGE</code>.
@@ -246,7 +240,6 @@ public class Geoly extends SchemaImpl {
             QuestReport.QUEST_REPORT,
             QuestReview.QUEST_REVIEW,
             Role.ROLE,
-            Sale.SALE,
             Stage.STAGE,
             Token.TOKEN,
             User.USER,

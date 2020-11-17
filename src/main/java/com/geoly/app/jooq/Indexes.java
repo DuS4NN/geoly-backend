@@ -20,7 +20,6 @@ import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.QuestReport;
 import com.geoly.app.jooq.tables.QuestReview;
 import com.geoly.app.jooq.tables.Role;
-import com.geoly.app.jooq.tables.Sale;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.Token;
 import com.geoly.app.jooq.tables.User;
@@ -89,7 +88,6 @@ public class Indexes {
     public static final Index PRIMARY_KEY_105 = Indexes0.PRIMARY_KEY_105;
     public static final Index UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1 = Indexes0.UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1;
     public static final Index PRIMARY_KEY_26 = Indexes0.PRIMARY_KEY_26;
-    public static final Index PRIMARY_KEY_26B = Indexes0.PRIMARY_KEY_26B;
     public static final Index FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4 = Indexes0.FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4;
     public static final Index PRIMARY_KEY_4B = Indexes0.PRIMARY_KEY_4B;
     public static final Index FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4 = Indexes0.FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4;
@@ -157,7 +155,6 @@ public class Indexes {
         public static Index PRIMARY_KEY_105 = Internal.createIndex("PRIMARY_KEY_105", QuestReview.QUEST_REVIEW, new OrderField[] { QuestReview.QUEST_REVIEW.ID }, true);
         public static Index UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1 = Internal.createIndex("UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1", QuestReview.QUEST_REVIEW, new OrderField[] { QuestReview.QUEST_REVIEW.USER_ID, QuestReview.QUEST_REVIEW.QUEST_ID }, true);
         public static Index PRIMARY_KEY_26 = Internal.createIndex("PRIMARY_KEY_26", Role.ROLE, new OrderField[] { Role.ROLE.ID }, true);
-        public static Index PRIMARY_KEY_26B = Internal.createIndex("PRIMARY_KEY_26B", Sale.SALE, new OrderField[] { Sale.SALE.ID }, true);
         public static Index FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4 = Internal.createIndex("FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4", Stage.STAGE, new OrderField[] { Stage.STAGE.QUEST_ID }, false);
         public static Index PRIMARY_KEY_4B = Internal.createIndex("PRIMARY_KEY_4B", Stage.STAGE, new OrderField[] { Stage.STAGE.ID }, true);
         public static Index FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4 = Internal.createIndex("FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4", Token.TOKEN, new OrderField[] { Token.TOKEN.USER_ID }, false);

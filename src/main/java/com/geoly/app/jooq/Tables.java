@@ -20,7 +20,6 @@ import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.QuestReport;
 import com.geoly.app.jooq.tables.QuestReview;
 import com.geoly.app.jooq.tables.Role;
-import com.geoly.app.jooq.tables.Sale;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.Token;
 import com.geoly.app.jooq.tables.User;
@@ -126,11 +125,6 @@ public class Tables {
      * The table <code>geoly.ROLE</code>.
      */
     public static final Role ROLE = com.geoly.app.jooq.tables.Role.ROLE;
-
-    /**
-     * The table <code>geoly.SALE</code>.
-     */
-    public static final Sale SALE = com.geoly.app.jooq.tables.Sale.SALE;
 
     /**
      * The table <code>geoly.STAGE</code>.
