@@ -166,7 +166,7 @@ public class MapService {
         }
 
         Table<?> coordinates =
-            create.select(min(Stage.STAGE.ID), Stage.STAGE.LONGITUDE.as("longitude"), Stage.STAGE.LATITUDE.as("latitude"), Stage.STAGE.QUEST_ID)
+            create.select(min(Stage.STAGE.ID), Stage.STAGE.LONGITUDE.as("longitude"), Stage.STAGE.LATITUDE.as("latitude"), Stage.STAGE.QUEST_ID.as("quest"))
             .from(Stage.STAGE)
             .groupBy(Stage.STAGE.QUEST_ID)
             .having(Stage.STAGE.LONGITUDE.between(DSL.coerce(questSearch.getCoordinatesNw()[0], Double.class)).and(DSL.coerce(questSearch.getCoordinatesNw()[1], Double.class)))
@@ -183,7 +183,7 @@ public class MapService {
                 .leftJoin(QuestReview.QUEST_REVIEW)
                     .on(QuestReview.QUEST_REVIEW.QUEST_ID.eq(Quest.QUEST.ID))
                 .rightJoin(coordinates)
-                    .on(Stage.STAGE.QUEST_ID.eq(Quest.QUEST.ID))
+                    .on(Quest.QUEST.ID.eq(DSL.coerce(DSL.field("quest"), Integer.class)))
                 .where(Quest.QUEST.ACTIVE.isTrue())
                 .and(Quest.QUEST.PRIVATE_QUEST.isFalse())
                 .and(Quest.QUEST.DAILY.isFalse())
