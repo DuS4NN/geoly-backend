@@ -6,6 +6,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: allow
     ports:
     - "3306:3306"
+    command: mysqld --sql_mode=""
     restart: always
   backend:
     image: geoly-backend
