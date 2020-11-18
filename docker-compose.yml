@@ -1,0 +1,25 @@
+services:
+  database:
+    container_name: geoly-mysql
+    image: mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: allow
+    ports:
+    - "3306:3306"
+    restart: always
+  backend:
+    image: geoly-backend
+    container_name: geoly-backend
+    depends_on:
+    - database
+    ports:
+    - '8080:8080'
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin
+    depends_on:
+    - database
+    environment:
+      PMA_HOST: database
+    ports:
+    - '8081:80'
