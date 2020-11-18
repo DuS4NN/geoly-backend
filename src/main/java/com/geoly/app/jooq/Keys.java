@@ -149,8 +149,8 @@ public class Keys {
     public static final ForeignKey<UserQuestRecord, UserRecord> FKIBRQXFYCOQIS0E2L8A5SWRCR2 = ForeignKeys0.FKIBRQXFYCOQIS0E2L8A5SWRCR2;
     public static final ForeignKey<UserReportRecord, UserRecord> FKEXPBI245VX37PEBS9ETDEG4G1 = ForeignKeys0.FKEXPBI245VX37PEBS9ETDEG4G1;
     public static final ForeignKey<UserReportRecord, UserRecord> FKGNN173IDLEQCFVAJHRI6YGFDD = ForeignKeys0.FKGNN173IDLEQCFVAJHRI6YGFDD;
-    public static final ForeignKey<UserRoleRecord, UserRecord> FKAJV9EEKANU4QVFWEDRXCJV7CC = ForeignKeys0.FKAJV9EEKANU4QVFWEDRXCJV7CC;
-    public static final ForeignKey<UserRoleRecord, RoleRecord> FK4B5NVKOUA6RK047A3BLLBO4I7 = ForeignKeys0.FK4B5NVKOUA6RK047A3BLLBO4I7;
+    public static final ForeignKey<UserRoleRecord, UserRecord> FKSN0101OEGD6LSFNUMN271CH3I = ForeignKeys0.FKSN0101OEGD6LSFNUMN271CH3I;
+    public static final ForeignKey<UserRoleRecord, RoleRecord> FK52VEH3J2TGVKROGJW2I0TUCAC = ForeignKeys0.FK52VEH3J2TGVKROGJW2I0TUCAC;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -219,7 +219,7 @@ public class Keys {
         public static final ForeignKey<UserQuestRecord, UserRecord> FKIBRQXFYCOQIS0E2L8A5SWRCR2 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserQuest.USER_QUEST, "FKIBRQXFYCOQIS0E2L8A5SWRCR2", UserQuest.USER_QUEST.USER_ID);
         public static final ForeignKey<UserReportRecord, UserRecord> FKEXPBI245VX37PEBS9ETDEG4G1 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserReport.USER_REPORT, "FKEXPBI245VX37PEBS9ETDEG4G1", UserReport.USER_REPORT.COMPLAINANT);
         public static final ForeignKey<UserReportRecord, UserRecord> FKGNN173IDLEQCFVAJHRI6YGFDD = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserReport.USER_REPORT, "FKGNN173IDLEQCFVAJHRI6YGFDD", UserReport.USER_REPORT.REPORTED);
-        public static final ForeignKey<UserRoleRecord, UserRecord> FKAJV9EEKANU4QVFWEDRXCJV7CC = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserRole.USER_ROLE, "FKAJV9EEKANU4QVFWEDRXCJV7CC", UserRole.USER_ROLE.USER_ID);
-        public static final ForeignKey<UserRoleRecord, RoleRecord> FK4B5NVKOUA6RK047A3BLLBO4I7 = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_26, UserRole.USER_ROLE, "FK4B5NVKOUA6RK047A3BLLBO4I7", UserRole.USER_ROLE.ROLE_ID);
+        public static final ForeignKey<UserRoleRecord, UserRecord> FKSN0101OEGD6LSFNUMN271CH3I = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_27, UserRole.USER_ROLE, "FKSN0101OEGD6LSFNUMN271CH3I", UserRole.USER_ROLE.USER_ID);
+        public static final ForeignKey<UserRoleRecord, RoleRecord> FK52VEH3J2TGVKROGJW2I0TUCAC = Internal.createForeignKey(com.geoly.app.jooq.Keys.CONSTRAINT_26, UserRole.USER_ROLE, "FK52VEH3J2TGVKROGJW2I0TUCAC", UserRole.USER_ROLE.ROLE_ID);
     }
 }

@@ -112,8 +112,8 @@ public class Indexes {
     public static final Index FKGNN173IDLEQCFVAJHRI6YGFDD_INDEX_1 = Indexes0.FKGNN173IDLEQCFVAJHRI6YGFDD_INDEX_1;
     public static final Index PRIMARY_KEY_11 = Indexes0.PRIMARY_KEY_11;
     public static final Index UKD8H5NIRV4QEVOSRD38T6ATCD6_INDEX_1 = Indexes0.UKD8H5NIRV4QEVOSRD38T6ATCD6_INDEX_1;
-    public static final Index FK4B5NVKOUA6RK047A3BLLBO4I7_INDEX_B = Indexes0.FK4B5NVKOUA6RK047A3BLLBO4I7_INDEX_B;
-    public static final Index FKAJV9EEKANU4QVFWEDRXCJV7CC_INDEX_B = Indexes0.FKAJV9EEKANU4QVFWEDRXCJV7CC_INDEX_B;
+    public static final Index FK52VEH3J2TGVKROGJW2I0TUCAC_INDEX_B = Indexes0.FK52VEH3J2TGVKROGJW2I0TUCAC_INDEX_B;
+    public static final Index FKSN0101OEGD6LSFNUMN271CH3I_INDEX_B = Indexes0.FKSN0101OEGD6LSFNUMN271CH3I_INDEX_B;
     public static final Index PRIMARY_KEY_B = Indexes0.PRIMARY_KEY_B;
 
     // -------------------------------------------------------------------------
@@ -179,8 +179,8 @@ public class Indexes {
         public static Index FKGNN173IDLEQCFVAJHRI6YGFDD_INDEX_1 = Internal.createIndex("FKGNN173IDLEQCFVAJHRI6YGFDD_INDEX_1", UserReport.USER_REPORT, new OrderField[] { UserReport.USER_REPORT.REPORTED }, false);
         public static Index PRIMARY_KEY_11 = Internal.createIndex("PRIMARY_KEY_11", UserReport.USER_REPORT, new OrderField[] { UserReport.USER_REPORT.ID }, true);
         public static Index UKD8H5NIRV4QEVOSRD38T6ATCD6_INDEX_1 = Internal.createIndex("UKD8H5NIRV4QEVOSRD38T6ATCD6_INDEX_1", UserReport.USER_REPORT, new OrderField[] { UserReport.USER_REPORT.REPORTED, UserReport.USER_REPORT.COMPLAINANT }, true);
-        public static Index FK4B5NVKOUA6RK047A3BLLBO4I7_INDEX_B = Internal.createIndex("FK4B5NVKOUA6RK047A3BLLBO4I7_INDEX_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.ROLE_ID }, false);
-        public static Index FKAJV9EEKANU4QVFWEDRXCJV7CC_INDEX_B = Internal.createIndex("FKAJV9EEKANU4QVFWEDRXCJV7CC_INDEX_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.USER_ID }, false);
+        public static Index FK52VEH3J2TGVKROGJW2I0TUCAC_INDEX_B = Internal.createIndex("FK52VEH3J2TGVKROGJW2I0TUCAC_INDEX_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.ROLE_ID }, false);
+        public static Index FKSN0101OEGD6LSFNUMN271CH3I_INDEX_B = Internal.createIndex("FKSN0101OEGD6LSFNUMN271CH3I_INDEX_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.USER_ID }, false);
         public static Index PRIMARY_KEY_B = Internal.createIndex("PRIMARY_KEY_B", UserRole.USER_ROLE, new OrderField[] { UserRole.USER_ROLE.USER_ID, UserRole.USER_ROLE.ROLE_ID }, true);
     }
 }
