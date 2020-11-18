@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserBadge extends TableImpl<UserBadgeRecord> {
 
-    private static final long serialVersionUID = 582941858;
+    private static final long serialVersionUID = 580248911;
 
     /**
      * The reference instance of <code>geoly.USER_BADGE</code>
@@ -122,7 +122,7 @@ public class UserBadge extends TableImpl<UserBadgeRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK2JW9FPOTMMBDA07K27QC9T2UL_INDEX_C, Indexes.FKJQX9N26PK9MQF1QO8F7XVVOQ9_INDEX_C, Indexes.PRIMARY_KEY_C5);
+        return Arrays.<Index>asList(Indexes.FK4ON6HHXOAHTILT08QQX5H23AC_INDEX_C, Indexes.FKGEX61AGBF44TMRPANNFIIAFSN_INDEX_C, Indexes.PRIMARY_KEY_C5);
     }
 
     /**
@@ -146,15 +146,15 @@ public class UserBadge extends TableImpl<UserBadgeRecord> {
      */
     @Override
     public List<ForeignKey<UserBadgeRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserBadgeRecord, ?>>asList(Keys.FKJQX9N26PK9MQF1QO8F7XVVOQ9, Keys.FK2JW9FPOTMMBDA07K27QC9T2UL);
+        return Arrays.<ForeignKey<UserBadgeRecord, ?>>asList(Keys.FK4ON6HHXOAHTILT08QQX5H23AC, Keys.FKGEX61AGBF44TMRPANNFIIAFSN);
     }
 
     public Badge badge() {
-        return new Badge(this, Keys.FKJQX9N26PK9MQF1QO8F7XVVOQ9);
+        return new Badge(this, Keys.FK4ON6HHXOAHTILT08QQX5H23AC);
     }
 
     public User user() {
-        return new User(this, Keys.FK2JW9FPOTMMBDA07K27QC9T2UL);
+        return new User(this, Keys.FKGEX61AGBF44TMRPANNFIIAFSN);
     }
 
     /**

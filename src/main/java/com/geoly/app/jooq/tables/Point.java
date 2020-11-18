@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Point extends TableImpl<PointRecord> {
 
-    private static final long serialVersionUID = 1713396730;
+    private static final long serialVersionUID = -567154510;
 
     /**
      * The reference instance of <code>geoly.POINT</code>
@@ -122,7 +122,7 @@ public class Point extends TableImpl<PointRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FKH4QXMN9MIG6KITH0ISH2R67KA_INDEX_4, Indexes.PRIMARY_KEY_48C);
+        return Arrays.<Index>asList(Indexes.FKR653LUQTDPVNME1QEHLR753IF_INDEX_4, Indexes.PRIMARY_KEY_48C);
     }
 
     /**
@@ -146,11 +146,11 @@ public class Point extends TableImpl<PointRecord> {
      */
     @Override
     public List<ForeignKey<PointRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<PointRecord, ?>>asList(Keys.FKH4QXMN9MIG6KITH0ISH2R67KA);
+        return Arrays.<ForeignKey<PointRecord, ?>>asList(Keys.FKR653LUQTDPVNME1QEHLR753IF);
     }
 
     public User user() {
-        return new User(this, Keys.FKH4QXMN9MIG6KITH0ISH2R67KA);
+        return new User(this, Keys.FKR653LUQTDPVNME1QEHLR753IF);
     }
 
     /**

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "badge")
+@Table(name = "BADGE")
 public class Badge {
 
     @Id

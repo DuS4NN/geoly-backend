@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class QuestReview extends TableImpl<QuestReviewRecord> {
 
-    private static final long serialVersionUID = -1453639295;
+    private static final long serialVersionUID = -538438131;
 
     /**
      * The reference instance of <code>geoly.QUEST_REVIEW</code>
@@ -137,7 +137,7 @@ public class QuestReview extends TableImpl<QuestReviewRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK1HJWWRR4XDDJJ9C7IICVVM78J_INDEX_1, Indexes.FKQG1FBVCAVQ2LBPP8G8W8VTIAM_INDEX_1, Indexes.PRIMARY_KEY_105, Indexes.UKBO8AKQYL97OHGFN6T4O83Q6DR_INDEX_1);
+        return Arrays.<Index>asList(Indexes.FKOA8G1SQLAKW01VBFXRVMU6XT_INDEX_1, Indexes.FKP2DHOFAPWR1TTP5CVW19SIT25_INDEX_1, Indexes.PRIMARY_KEY_105, Indexes.UKTIP5DD0129ALBKCV3KRX41IBO_INDEX_1);
     }
 
     /**
@@ -153,7 +153,7 @@ public class QuestReview extends TableImpl<QuestReviewRecord> {
      */
     @Override
     public List<UniqueKey<QuestReviewRecord>> getKeys() {
-        return Arrays.<UniqueKey<QuestReviewRecord>>asList(Keys.CONSTRAINT_105, Keys.UKBO8AKQYL97OHGFN6T4O83Q6DR);
+        return Arrays.<UniqueKey<QuestReviewRecord>>asList(Keys.CONSTRAINT_105, Keys.UKTIP5DD0129ALBKCV3KRX41IBO);
     }
 
     /**
@@ -161,15 +161,15 @@ public class QuestReview extends TableImpl<QuestReviewRecord> {
      */
     @Override
     public List<ForeignKey<QuestReviewRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<QuestReviewRecord, ?>>asList(Keys.FK1HJWWRR4XDDJJ9C7IICVVM78J, Keys.FKQG1FBVCAVQ2LBPP8G8W8VTIAM);
+        return Arrays.<ForeignKey<QuestReviewRecord, ?>>asList(Keys.FKOA8G1SQLAKW01VBFXRVMU6XT, Keys.FKP2DHOFAPWR1TTP5CVW19SIT25);
     }
 
     public Quest quest() {
-        return new Quest(this, Keys.FK1HJWWRR4XDDJJ9C7IICVVM78J);
+        return new Quest(this, Keys.FKOA8G1SQLAKW01VBFXRVMU6XT);
     }
 
     public User user() {
-        return new User(this, Keys.FKQG1FBVCAVQ2LBPP8G8W8VTIAM);
+        return new User(this, Keys.FKP2DHOFAPWR1TTP5CVW19SIT25);
     }
 
     /**

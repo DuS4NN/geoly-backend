@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserQuest extends TableImpl<UserQuestRecord> {
 
-    private static final long serialVersionUID = -141615391;
+    private static final long serialVersionUID = 2047791805;
 
     /**
      * The reference instance of <code>geoly.USER_QUEST</code>
@@ -132,7 +132,7 @@ public class UserQuest extends TableImpl<UserQuestRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK8JDYAKV4ATARQD05U7AXUBMYK_INDEX_C, Indexes.FKKMK9IF2IG0F3GQ6TTISKHIO7C_INDEX_C, Indexes.PRIMARY_KEY_C6);
+        return Arrays.<Index>asList(Indexes.FK977NSU6QESBJIQNOJ44GN7880_INDEX_C, Indexes.FKIBRQXFYCOQIS0E2L8A5SWRCR2_INDEX_C, Indexes.PRIMARY_KEY_C6);
     }
 
     /**
@@ -156,15 +156,15 @@ public class UserQuest extends TableImpl<UserQuestRecord> {
      */
     @Override
     public List<ForeignKey<UserQuestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserQuestRecord, ?>>asList(Keys.FKKMK9IF2IG0F3GQ6TTISKHIO7C, Keys.FK8JDYAKV4ATARQD05U7AXUBMYK);
+        return Arrays.<ForeignKey<UserQuestRecord, ?>>asList(Keys.FK977NSU6QESBJIQNOJ44GN7880, Keys.FKIBRQXFYCOQIS0E2L8A5SWRCR2);
     }
 
     public Stage stage() {
-        return new Stage(this, Keys.FKKMK9IF2IG0F3GQ6TTISKHIO7C);
+        return new Stage(this, Keys.FK977NSU6QESBJIQNOJ44GN7880);
     }
 
     public User user() {
-        return new User(this, Keys.FK8JDYAKV4ATARQD05U7AXUBMYK);
+        return new User(this, Keys.FKIBRQXFYCOQIS0E2L8A5SWRCR2);
     }
 
     /**

@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PartyUser extends TableImpl<PartyUserRecord> {
 
-    private static final long serialVersionUID = -177249357;
+    private static final long serialVersionUID = 2036755640;
 
     /**
      * The reference instance of <code>geoly.PARTY_USER</code>
@@ -122,7 +122,7 @@ public class PartyUser extends TableImpl<PartyUserRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FKGBM3CRUYQ6N25LRIIYC2XAD43_INDEX_3, Indexes.FKOATBT6TV26KK2R5VGUA7OJSM_INDEX_3, Indexes.PRIMARY_KEY_3B);
+        return Arrays.<Index>asList(Indexes.FK310GMMHELI8J9JJ5ANW2QMNRA_INDEX_3, Indexes.FKDR8M467PUQDLNX5JY42ULLE41_INDEX_3, Indexes.PRIMARY_KEY_3B);
     }
 
     /**
@@ -146,15 +146,15 @@ public class PartyUser extends TableImpl<PartyUserRecord> {
      */
     @Override
     public List<ForeignKey<PartyUserRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<PartyUserRecord, ?>>asList(Keys.FKOATBT6TV26KK2R5VGUA7OJSM, Keys.FKGBM3CRUYQ6N25LRIIYC2XAD43);
+        return Arrays.<ForeignKey<PartyUserRecord, ?>>asList(Keys.FKDR8M467PUQDLNX5JY42ULLE41, Keys.FK310GMMHELI8J9JJ5ANW2QMNRA);
     }
 
     public Party party() {
-        return new Party(this, Keys.FKOATBT6TV26KK2R5VGUA7OJSM);
+        return new Party(this, Keys.FKDR8M467PUQDLNX5JY42ULLE41);
     }
 
     public User user() {
-        return new User(this, Keys.FKGBM3CRUYQ6N25LRIIYC2XAD43);
+        return new User(this, Keys.FK310GMMHELI8J9JJ5ANW2QMNRA);
     }
 
     /**

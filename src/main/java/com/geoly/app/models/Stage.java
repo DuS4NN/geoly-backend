@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "stage")
+@Table(name = "STAGE")
 public class Stage {
 
     @Id

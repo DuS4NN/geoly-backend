@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Image extends TableImpl<ImageRecord> {
 
-    private static final long serialVersionUID = -1618914962;
+    private static final long serialVersionUID = -2136022774;
 
     /**
      * The reference instance of <code>geoly.IMAGE</code>
@@ -122,7 +122,7 @@ public class Image extends TableImpl<ImageRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK3N5NEGXV9EYM0STD2EUTTVG6W_INDEX_4, Indexes.PRIMARY_KEY_4);
+        return Arrays.<Index>asList(Indexes.FK4RXXT2CJB76UV4J43SL3QAY2H_INDEX_4, Indexes.PRIMARY_KEY_4);
     }
 
     /**
@@ -146,11 +146,11 @@ public class Image extends TableImpl<ImageRecord> {
      */
     @Override
     public List<ForeignKey<ImageRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ImageRecord, ?>>asList(Keys.FK3N5NEGXV9EYM0STD2EUTTVG6W);
+        return Arrays.<ForeignKey<ImageRecord, ?>>asList(Keys.FK4RXXT2CJB76UV4J43SL3QAY2H);
     }
 
     public Quest quest() {
-        return new Quest(this, Keys.FK3N5NEGXV9EYM0STD2EUTTVG6W);
+        return new Quest(this, Keys.FK4RXXT2CJB76UV4J43SL3QAY2H);
     }
 
     /**

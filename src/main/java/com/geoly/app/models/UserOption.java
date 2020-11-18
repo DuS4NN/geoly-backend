@@ -6,7 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user_option")
+@Table(name = "USER_OPTION")
 public class UserOption {
 
     @Id

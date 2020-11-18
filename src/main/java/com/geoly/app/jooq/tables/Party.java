@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Party extends TableImpl<PartyRecord> {
 
-    private static final long serialVersionUID = 1132088498;
+    private static final long serialVersionUID = -111629409;
 
     /**
      * The reference instance of <code>geoly.PARTY</code>
@@ -122,7 +122,7 @@ public class Party extends TableImpl<PartyRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FKTCAG4FSDQKMO7OWJKK1P25H41_INDEX_4, Indexes.PRIMARY_KEY_48);
+        return Arrays.<Index>asList(Indexes.FKQFWC76LQ1GWTEVTA6KHS862RK_INDEX_4, Indexes.PRIMARY_KEY_48);
     }
 
     /**
@@ -146,11 +146,11 @@ public class Party extends TableImpl<PartyRecord> {
      */
     @Override
     public List<ForeignKey<PartyRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<PartyRecord, ?>>asList(Keys.FKTCAG4FSDQKMO7OWJKK1P25H41);
+        return Arrays.<ForeignKey<PartyRecord, ?>>asList(Keys.FKQFWC76LQ1GWTEVTA6KHS862RK);
     }
 
     public User user() {
-        return new User(this, Keys.FKTCAG4FSDQKMO7OWJKK1P25H41);
+        return new User(this, Keys.FKQFWC76LQ1GWTEVTA6KHS862RK);
     }
 
     /**

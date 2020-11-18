@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Stage extends TableImpl<StageRecord> {
 
-    private static final long serialVersionUID = 1110279238;
+    private static final long serialVersionUID = 1415505681;
 
     /**
      * The reference instance of <code>geoly.STAGE</code>
@@ -156,7 +156,7 @@ public class Stage extends TableImpl<StageRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FKMUJKS4H5F77VK9X2HH1L4YPVG_INDEX_4, Indexes.PRIMARY_KEY_4B);
+        return Arrays.<Index>asList(Indexes.FKN7JEJ65C2NQIV2JKVE9BW9SW4_INDEX_4, Indexes.PRIMARY_KEY_4B);
     }
 
     /**
@@ -180,11 +180,11 @@ public class Stage extends TableImpl<StageRecord> {
      */
     @Override
     public List<ForeignKey<StageRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<StageRecord, ?>>asList(Keys.FKMUJKS4H5F77VK9X2HH1L4YPVG);
+        return Arrays.<ForeignKey<StageRecord, ?>>asList(Keys.FKN7JEJ65C2NQIV2JKVE9BW9SW4);
     }
 
     public Quest quest() {
-        return new Quest(this, Keys.FKMUJKS4H5F77VK9X2HH1L4YPVG);
+        return new Quest(this, Keys.FKN7JEJ65C2NQIV2JKVE9BW9SW4);
     }
 
     /**

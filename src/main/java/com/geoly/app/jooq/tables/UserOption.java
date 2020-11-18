@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserOption extends TableImpl<UserOptionRecord> {
 
-    private static final long serialVersionUID = 1129113753;
+    private static final long serialVersionUID = 13211032;
 
     /**
      * The reference instance of <code>geoly.USER_OPTION</code>
@@ -131,7 +131,7 @@ public class UserOption extends TableImpl<UserOptionRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK8USX5LQY3O113K7K4436XBERW_INDEX_D, Indexes.FKR6EERMF5AQ2NUA7HSSPMFFG02_INDEX_D, Indexes.PRIMARY_KEY_D);
+        return Arrays.<Index>asList(Indexes.FK2P5OTBGWV6TGF70068RSW2JNH_INDEX_D, Indexes.FK300INJW6I3MCW7FVRWO19P7Q5_INDEX_D, Indexes.PRIMARY_KEY_D);
     }
 
     /**
@@ -155,15 +155,15 @@ public class UserOption extends TableImpl<UserOptionRecord> {
      */
     @Override
     public List<ForeignKey<UserOptionRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserOptionRecord, ?>>asList(Keys.FKR6EERMF5AQ2NUA7HSSPMFFG02, Keys.FK8USX5LQY3O113K7K4436XBERW);
+        return Arrays.<ForeignKey<UserOptionRecord, ?>>asList(Keys.FK300INJW6I3MCW7FVRWO19P7Q5, Keys.FK2P5OTBGWV6TGF70068RSW2JNH);
     }
 
     public Language language() {
-        return new Language(this, Keys.FKR6EERMF5AQ2NUA7HSSPMFFG02);
+        return new Language(this, Keys.FK300INJW6I3MCW7FVRWO19P7Q5);
     }
 
     public User user() {
-        return new User(this, Keys.FK8USX5LQY3O113K7K4436XBERW);
+        return new User(this, Keys.FK2P5OTBGWV6TGF70068RSW2JNH);
     }
 
     /**
