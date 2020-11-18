@@ -58,7 +58,7 @@ public class User implements Serializable {
     private String address;
 
     @ManyToMany
-    @JoinTable(name = "user_role")
+    @JoinTable(name = "USER_ROLE")
     private Set<Role> role;
 
     @OneToMany(targetEntity = Quest.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
