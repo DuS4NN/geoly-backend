@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Notification extends TableImpl<NotificationRecord> {
 
-    private static final long serialVersionUID = 399321604;
+    private static final long serialVersionUID = -17826848;
 
     /**
      * The reference instance of <code>geoly.NOTIFICATION</code>
@@ -132,7 +132,7 @@ public class Notification extends TableImpl<NotificationRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FKB0YVOEP4H4K92IPON31WMDF7E_INDEX_A, Indexes.PRIMARY_KEY_A);
+        return Arrays.<Index>asList(Indexes.FK16C2APDKEL73R81ED2DPWV0A2_INDEX_A, Indexes.PRIMARY_KEY_A);
     }
 
     /**
@@ -156,11 +156,11 @@ public class Notification extends TableImpl<NotificationRecord> {
      */
     @Override
     public List<ForeignKey<NotificationRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<NotificationRecord, ?>>asList(Keys.FKB0YVOEP4H4K92IPON31WMDF7E);
+        return Arrays.<ForeignKey<NotificationRecord, ?>>asList(Keys.FK16C2APDKEL73R81ED2DPWV0A2);
     }
 
     public User user() {
-        return new User(this, Keys.FKB0YVOEP4H4K92IPON31WMDF7E);
+        return new User(this, Keys.FK16C2APDKEL73R81ED2DPWV0A2);
     }
 
     /**

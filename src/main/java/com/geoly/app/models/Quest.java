@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Table(name = "quest")
+@Table(name = "QUEST")
 public class Quest {
 
     @Id

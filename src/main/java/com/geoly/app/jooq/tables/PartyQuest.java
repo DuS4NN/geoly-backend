@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PartyQuest extends TableImpl<PartyQuestRecord> {
 
-    private static final long serialVersionUID = 698089702;
+    private static final long serialVersionUID = -42296533;
 
     /**
      * The reference instance of <code>geoly.PARTY_QUEST</code>
@@ -121,7 +121,7 @@ public class PartyQuest extends TableImpl<PartyQuestRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK2GIGO39GG9CLIMKUAALBB2OD0_INDEX_2, Indexes.FK8FL0NU8HGJ8JESC5HPWBIO1UB_INDEX_2, Indexes.PRIMARY_KEY_2);
+        return Arrays.<Index>asList(Indexes.FK4BFMT3TPKS38SN4GW97VYHEM3_INDEX_2, Indexes.FKHFLFH9KMNL4BFFJFQH57IGR76_INDEX_2, Indexes.PRIMARY_KEY_2);
     }
 
     /**
@@ -145,15 +145,15 @@ public class PartyQuest extends TableImpl<PartyQuestRecord> {
      */
     @Override
     public List<ForeignKey<PartyQuestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<PartyQuestRecord, ?>>asList(Keys.FK2GIGO39GG9CLIMKUAALBB2OD0, Keys.FK8FL0NU8HGJ8JESC5HPWBIO1UB);
+        return Arrays.<ForeignKey<PartyQuestRecord, ?>>asList(Keys.FK4BFMT3TPKS38SN4GW97VYHEM3, Keys.FKHFLFH9KMNL4BFFJFQH57IGR76);
     }
 
     public Party party() {
-        return new Party(this, Keys.FK2GIGO39GG9CLIMKUAALBB2OD0);
+        return new Party(this, Keys.FK4BFMT3TPKS38SN4GW97VYHEM3);
     }
 
     public Quest quest() {
-        return new Quest(this, Keys.FK8FL0NU8HGJ8JESC5HPWBIO1UB);
+        return new Quest(this, Keys.FKHFLFH9KMNL4BFFJFQH57IGR76);
     }
 
     /**

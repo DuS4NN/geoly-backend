@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Token extends TableImpl<TokenRecord> {
 
-    private static final long serialVersionUID = -747249856;
+    private static final long serialVersionUID = 1850007509;
 
     /**
      * The reference instance of <code>geoly.TOKEN</code>
@@ -127,7 +127,7 @@ public class Token extends TableImpl<TokenRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FKE32EK7IXANAKFQSDAOKM4Q9Y2_INDEX_4, Indexes.PRIMARY_KEY_4C);
+        return Arrays.<Index>asList(Indexes.FKCR55UO5IEX6L1HS2XQP94G2SS_INDEX_4, Indexes.PRIMARY_KEY_4C);
     }
 
     /**
@@ -151,11 +151,11 @@ public class Token extends TableImpl<TokenRecord> {
      */
     @Override
     public List<ForeignKey<TokenRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TokenRecord, ?>>asList(Keys.FKE32EK7IXANAKFQSDAOKM4Q9Y2);
+        return Arrays.<ForeignKey<TokenRecord, ?>>asList(Keys.FKCR55UO5IEX6L1HS2XQP94G2SS);
     }
 
     public User user() {
-        return new User(this, Keys.FKE32EK7IXANAKFQSDAOKM4Q9Y2);
+        return new User(this, Keys.FKCR55UO5IEX6L1HS2XQP94G2SS);
     }
 
     /**

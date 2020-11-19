@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserReport extends TableImpl<UserReportRecord> {
 
-    private static final long serialVersionUID = -544395819;
+    private static final long serialVersionUID = -1868400229;
 
     /**
      * The reference instance of <code>geoly.USER_REPORT</code>
@@ -132,7 +132,7 @@ public class UserReport extends TableImpl<UserReportRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK2CM7CI55E41B6EAKUNXYDH3LG_INDEX_1, Indexes.FKO1LNULINQCBVABO3W4NI3K4D1_INDEX_1, Indexes.PRIMARY_KEY_11, Indexes.UKPT3UYBUWE0QPIJ09B9LHQV52S_INDEX_1);
+        return Arrays.<Index>asList(Indexes.FKEXPBI245VX37PEBS9ETDEG4G1_INDEX_1, Indexes.FKGNN173IDLEQCFVAJHRI6YGFDD_INDEX_1, Indexes.PRIMARY_KEY_11, Indexes.UKD8H5NIRV4QEVOSRD38T6ATCD6_INDEX_1);
     }
 
     /**
@@ -148,7 +148,7 @@ public class UserReport extends TableImpl<UserReportRecord> {
      */
     @Override
     public List<UniqueKey<UserReportRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserReportRecord>>asList(Keys.CONSTRAINT_11, Keys.UKPT3UYBUWE0QPIJ09B9LHQV52S);
+        return Arrays.<UniqueKey<UserReportRecord>>asList(Keys.CONSTRAINT_11, Keys.UKD8H5NIRV4QEVOSRD38T6ATCD6);
     }
 
     /**
@@ -156,15 +156,15 @@ public class UserReport extends TableImpl<UserReportRecord> {
      */
     @Override
     public List<ForeignKey<UserReportRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserReportRecord, ?>>asList(Keys.FK2CM7CI55E41B6EAKUNXYDH3LG, Keys.FKO1LNULINQCBVABO3W4NI3K4D1);
+        return Arrays.<ForeignKey<UserReportRecord, ?>>asList(Keys.FKEXPBI245VX37PEBS9ETDEG4G1, Keys.FKGNN173IDLEQCFVAJHRI6YGFDD);
     }
 
-    public User fk2cm7ci55e41b6eakunxydh3lg() {
-        return new User(this, Keys.FK2CM7CI55E41B6EAKUNXYDH3LG);
+    public User fkexpbi245vx37pebs9etdeg4g1() {
+        return new User(this, Keys.FKEXPBI245VX37PEBS9ETDEG4G1);
     }
 
-    public User fko1lnulinqcbvabo3w4ni3k4d1() {
-        return new User(this, Keys.FKO1LNULINQCBVABO3W4NI3K4D1);
+    public User fkgnn173idleqcfvajhri6ygfdd() {
+        return new User(this, Keys.FKGNN173IDLEQCFVAJHRI6YGFDD);
     }
 
     /**

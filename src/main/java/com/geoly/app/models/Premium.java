@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "premium")
+@Table(name = "PREMIUM")
 public class Premium {
 
     @Id

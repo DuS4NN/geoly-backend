@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "image")
+@Table(name = "IMAGE")
 public class Image {
 
     @Id

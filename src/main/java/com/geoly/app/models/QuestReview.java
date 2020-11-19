@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Entity
 @Table(
-    name = "quest_review",
+    name = "QUEST_REVIEW",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "quest_id"})}
 )
 

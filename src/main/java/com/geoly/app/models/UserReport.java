@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(
-    name = "user_report",
+    name = "USER_REPORT",
     uniqueConstraints = @UniqueConstraint(columnNames = {"reported", "complainant"}))
 public class UserReport {
 

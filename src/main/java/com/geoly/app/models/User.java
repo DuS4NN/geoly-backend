@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")
+@Table(name = "USER")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 7592344600184573441L;
@@ -58,7 +58,7 @@ public class User implements Serializable {
     private String address;
 
     @ManyToMany
-    @JoinTable(name = "user_role")
+    @JoinTable(name = "USER_ROLE")
     private Set<Role> role;
 
     @OneToMany(targetEntity = Quest.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)

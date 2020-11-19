@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserRole extends TableImpl<UserRoleRecord> {
 
-    private static final long serialVersionUID = -1023807620;
+    private static final long serialVersionUID = 1134767348;
 
     /**
      * The reference instance of <code>geoly.USER_ROLE</code>
@@ -111,7 +111,7 @@ public class UserRole extends TableImpl<UserRoleRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK859N2JVI8IVHUI0RL0ESWS6O_INDEX_B, Indexes.FKA68196081FVOVJHKEK5M97N3Y_INDEX_B, Indexes.PRIMARY_KEY_B);
+        return Arrays.<Index>asList(Indexes.FK52VEH3J2TGVKROGJW2I0TUCAC_INDEX_B, Indexes.FKSN0101OEGD6LSFNUMN271CH3I_INDEX_B, Indexes.PRIMARY_KEY_B);
     }
 
     /**
@@ -135,15 +135,15 @@ public class UserRole extends TableImpl<UserRoleRecord> {
      */
     @Override
     public List<ForeignKey<UserRoleRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserRoleRecord, ?>>asList(Keys.FK859N2JVI8IVHUI0RL0ESWS6O, Keys.FKA68196081FVOVJHKEK5M97N3Y);
+        return Arrays.<ForeignKey<UserRoleRecord, ?>>asList(Keys.FKSN0101OEGD6LSFNUMN271CH3I, Keys.FK52VEH3J2TGVKROGJW2I0TUCAC);
     }
 
     public User user() {
-        return new User(this, Keys.FK859N2JVI8IVHUI0RL0ESWS6O);
+        return new User(this, Keys.FKSN0101OEGD6LSFNUMN271CH3I);
     }
 
     public Role role() {
-        return new Role(this, Keys.FKA68196081FVOVJHKEK5M97N3Y);
+        return new Role(this, Keys.FK52VEH3J2TGVKROGJW2I0TUCAC);
     }
 
     /**

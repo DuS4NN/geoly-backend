@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "party_quest")
+@Table(name = "PARTY_QUEST")
 public class PartyQuest {
 
     @Id

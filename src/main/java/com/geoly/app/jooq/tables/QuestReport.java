@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class QuestReport extends TableImpl<QuestReportRecord> {
 
-    private static final long serialVersionUID = -1681542826;
+    private static final long serialVersionUID = -985777914;
 
     /**
      * The reference instance of <code>geoly.QUEST_REPORT</code>
@@ -132,7 +132,7 @@ public class QuestReport extends TableImpl<QuestReportRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FKJ20N6BQIYJ8MVBJWR5EXDH37T_INDEX_1, Indexes.FKODP2V6API3IL5GL748PXYPKWJ_INDEX_1, Indexes.PRIMARY_KEY_10);
+        return Arrays.<Index>asList(Indexes.FKLX1098F38PYASBE16HYXWOED4_INDEX_1, Indexes.FKONI920KBF1BS1JBC7SALC9K53_INDEX_1, Indexes.PRIMARY_KEY_10);
     }
 
     /**
@@ -156,15 +156,15 @@ public class QuestReport extends TableImpl<QuestReportRecord> {
      */
     @Override
     public List<ForeignKey<QuestReportRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<QuestReportRecord, ?>>asList(Keys.FKJ20N6BQIYJ8MVBJWR5EXDH37T, Keys.FKODP2V6API3IL5GL748PXYPKWJ);
+        return Arrays.<ForeignKey<QuestReportRecord, ?>>asList(Keys.FKONI920KBF1BS1JBC7SALC9K53, Keys.FKLX1098F38PYASBE16HYXWOED4);
     }
 
     public Quest quest() {
-        return new Quest(this, Keys.FKJ20N6BQIYJ8MVBJWR5EXDH37T);
+        return new Quest(this, Keys.FKONI920KBF1BS1JBC7SALC9K53);
     }
 
     public User user() {
-        return new User(this, Keys.FKODP2V6API3IL5GL748PXYPKWJ);
+        return new User(this, Keys.FKLX1098F38PYASBE16HYXWOED4);
     }
 
     /**

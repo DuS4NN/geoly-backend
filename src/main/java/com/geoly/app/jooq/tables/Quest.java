@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Quest extends TableImpl<QuestRecord> {
 
-    private static final long serialVersionUID = -1117092367;
+    private static final long serialVersionUID = -357830654;
 
     /**
      * The reference instance of <code>geoly.QUEST</code>
@@ -157,7 +157,7 @@ public class Quest extends TableImpl<QuestRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK4FOEBLYDMUA10QB2OEUANE6FB_INDEX_4, Indexes.FKLGSC5AJ1JQDFWJ8V3PKHBIDNX_INDEX_4, Indexes.PRIMARY_KEY_49);
+        return Arrays.<Index>asList(Indexes.FK8O38CSDJ7HT1E8BLO3IMVWDGA_INDEX_4, Indexes.FK9GLM6AI8S4XIUJBSUCPGAB31D_INDEX_4, Indexes.PRIMARY_KEY_49);
     }
 
     /**
@@ -181,15 +181,15 @@ public class Quest extends TableImpl<QuestRecord> {
      */
     @Override
     public List<ForeignKey<QuestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<QuestRecord, ?>>asList(Keys.FK4FOEBLYDMUA10QB2OEUANE6FB, Keys.FKLGSC5AJ1JQDFWJ8V3PKHBIDNX);
+        return Arrays.<ForeignKey<QuestRecord, ?>>asList(Keys.FK8O38CSDJ7HT1E8BLO3IMVWDGA, Keys.FK9GLM6AI8S4XIUJBSUCPGAB31D);
     }
 
     public Category category() {
-        return new Category(this, Keys.FK4FOEBLYDMUA10QB2OEUANE6FB);
+        return new Category(this, Keys.FK8O38CSDJ7HT1E8BLO3IMVWDGA);
     }
 
     public User user() {
-        return new User(this, Keys.FKLGSC5AJ1JQDFWJ8V3PKHBIDNX);
+        return new User(this, Keys.FK9GLM6AI8S4XIUJBSUCPGAB31D);
     }
 
     /**
