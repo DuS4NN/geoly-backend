@@ -11,11 +11,11 @@ import com.geoly.app.models.UserOption;
 import com.geoly.app.repositories.LanguageRepository;
 import com.geoly.app.repositories.UserOptionRepository;
 import com.geoly.app.repositories.UserRepository;
-import com.tinify.Source;
 import com.tinify.Tinify;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,14 +35,19 @@ public class SettingsService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private API api;
     private Argon2PasswordEncoder argon2PasswordEncoder;
     private UserRepository userRepository;
     private UserOptionRepository userOptionRepository;
     private LanguageRepository languageRepository;
+    @Value("${azure.container}")
+    private String imageContainer;
 
-    public SettingsService(EntityManager entityManager, DSLContext create, Argon2PasswordEncoder argon2PasswordEncoder, UserRepository userRepository, UserOptionRepository userOptionRepository, LanguageRepository languageRepository) {
+
+    public SettingsService(EntityManager entityManager, DSLContext create, API api, Argon2PasswordEncoder argon2PasswordEncoder, UserRepository userRepository, UserOptionRepository userOptionRepository, LanguageRepository languageRepository) {
         this.entityManager = entityManager;
         this.create = create;
+        this.api = api;
         this.argon2PasswordEncoder = argon2PasswordEncoder;
         this.userRepository = userRepository;
         this.userOptionRepository = userOptionRepository;
@@ -114,20 +118,11 @@ public class SettingsService {
     public Response setProfileImage(MultipartFile file, int userId) throws Exception{
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+        
+        byte[] resultData = Tinify.fromBuffer(file.getBytes()).toBuffer();
+        String url = api.uploadImage(API.userImageUrl+userId+"/"+userId+".jpg", resultData);
 
-
-        File dir = new File(API.userImageUrl+userId);
-        if(!dir.exists()){
-            dir.mkdirs();
-        }else{
-        File oldImage = new File(API.userImageUrl+userId+"/"+userId+".jpg");
-        oldImage.delete();
-        }
-
-        Source source = Tinify.fromBuffer(file.getBytes());
-        source.toFile(API.userImageUrl+userId+"/"+userId+".jpg");
-
-        user.get().setProfileImageUrl(API.userImageUrl+userId+"/"+userId+".jpg");
+        user.get().setProfileImageUrl(url);
         entityManager.merge(user.get());
 
         return new Response(StatusMessage.PROFILE_IMAGE_SET, HttpStatus.ACCEPTED, null);
@@ -138,7 +133,7 @@ public class SettingsService {
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        user.get().setProfileImageUrl(API.userImageUrl+"default_profile_picture.png");
+        user.get().setProfileImageUrl("/"+imageContainer+"/"+API.userImageUrl+"default_profile_picture.png");
         entityManager.merge(user.get());
 
         return new Response(StatusMessage.PROFILE_IMAGE_DELETED, HttpStatus.ACCEPTED, null);
