@@ -1,6 +1,5 @@
 package com.geoly.app.controler;
 
-import com.microsoft.azure.storage.blob.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,17 +15,11 @@ import java.net.URL;
 @RestController
 public class ImageController {
 
-    private CloudBlobContainer cloudBlobContainer;
-    private CloudBlobClient cloudBlobClient;
+
     @Value("${azure.sas}")
     private String sasToken;
     @Value("${azure.images_link}")
     private String imagesLink;
-
-    public ImageController(CloudBlobContainer cloudBlobContainer, CloudBlobClient cloudBlobClient) {
-        this.cloudBlobContainer = cloudBlobContainer;
-        this.cloudBlobClient = cloudBlobClient;
-    }
 
     @GetMapping(value = "/image", produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody
