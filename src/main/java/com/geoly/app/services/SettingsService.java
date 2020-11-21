@@ -118,7 +118,7 @@ public class SettingsService {
     public Response setProfileImage(MultipartFile file, int userId) throws Exception{
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
-        
+
         byte[] resultData = Tinify.fromBuffer(file.getBytes()).toBuffer();
         String url = api.uploadImage(API.userImageUrl+userId+"/"+userId+".jpg", resultData);
 

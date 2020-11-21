@@ -9,6 +9,7 @@ import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.*;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.tinify.Source;
 import com.tinify.Tinify;
 import io.sentry.Sentry;
@@ -35,24 +36,28 @@ public class QuestService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private API api;
     private UserRepository userRepository;
     private QuestRepository questRepository;
     private StageRepository stageRepository;
     private UserQuestRepository userQuestRepository;
     private CategoryRepository categoryRepository;
     private ImageRepository imageRepository;
+    private CloudBlobContainer cloudBlobContainer;
 
     private int QUESTS_ON_PAGE = 5;
 
-    public QuestService(EntityManager entityManager, DSLContext create, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
+    public QuestService(EntityManager entityManager, DSLContext create, API api, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository, ImageRepository imageRepository, CloudBlobContainer cloudBlobContainer) {
         this.entityManager = entityManager;
         this.create = create;
+        this.api = api;
         this.userRepository = userRepository;
         this.questRepository = questRepository;
         this.stageRepository = stageRepository;
         this.userQuestRepository = userQuestRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
+        this.cloudBlobContainer = cloudBlobContainer;
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -145,34 +150,24 @@ public class QuestService {
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
         if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-
         for(int deletedImageId : deleted){
            Optional<Image> image = imageRepository.findByIdAndQuest(deletedImageId, quest.get());
            if(image.isPresent()){
-               File dir = new File(image.get().getImageUrl());
-               if(dir.exists()){
-                   dir.delete();
-               }
-
+               cloudBlobContainer.getBlockBlobReference(image.get().getImageUrl().replace("/images/", "")).delete();
                entityManager.remove(image.get());
            }
-        }
-
-        File dir = new File(API.questImageUrl+questId);
-        if(!dir.exists()){
-            dir.mkdirs();
         }
 
         for(MultipartFile file : files){
 
             long imageName = System.currentTimeMillis();
 
-            Source source = Tinify.fromBuffer(file.getBytes());
-            source.toFile(API.questImageUrl+questId+"/"+imageName+".jpg");
+            byte[] resultData = Tinify.fromBuffer(file.getBytes()).toBuffer();
+            String url = api.uploadImage(API.questImageUrl+questId+"/"+imageName+".jpg", resultData);
 
             Image image = new Image();
             image.setQuest(quest.get());
-            image.setImageUrl(API.questImageUrl+questId+"/"+imageName+".jpg");
+            image.setImageUrl(url);
             entityManager.persist(image);
         }
 
