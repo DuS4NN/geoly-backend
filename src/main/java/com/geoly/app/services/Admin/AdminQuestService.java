@@ -14,13 +14,12 @@ import com.geoly.app.repositories.ImageRepository;
 import com.geoly.app.repositories.QuestRepository;
 import com.geoly.app.repositories.UserRepository;
 import com.google.common.hash.Hashing;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.MatrixToImageConfig;
+import com.google.zxing.common.BitArray;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.tinify.Source;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.tinify.Tinify;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -31,10 +30,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.io.File;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.*;
 
 import static org.jooq.impl.DSL.count;
@@ -48,14 +49,18 @@ public class AdminQuestService {
     private UserRepository userRepository;
     private CategoryRepository categoryRepository;
     private ImageRepository imageRepository;
+    private API api;
+    private CloudBlobContainer cloudBlobContainer;
 
-    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
+    public AdminQuestService(EntityManager entityManager, DSLContext create, QuestRepository questRepository, UserRepository userRepository, CategoryRepository categoryRepository, ImageRepository imageRepository, API api, CloudBlobContainer cloudBlobContainer) {
         this.entityManager = entityManager;
         this.create = create;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
+        this.api = api;
+        this.cloudBlobContainer = cloudBlobContainer;
     }
 
     public Response getQuests(String name, int page){
@@ -231,23 +236,10 @@ public class AdminQuestService {
         for(com.geoly.app.models.Stage stage : addQuest.getStages()){
             stage.setQuest(quest);
             if(stage.getType() == StageType.SCAN_QR_CODE){
-                File file = new File(API.qrCodeImageUrl+"/"+quest.getId()+"/"+stage.getId()+".png");
-                if(!file.exists()){
-                    file.mkdirs();
-                }
-
-                Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<>();
-                hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-
-                Random rand = new Random();
-
-                BitMatrix matrix = new MultiFormatWriter().encode(
-                        new String(Hashing.sha256().hashString(""+rand.nextInt(999999)).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500
-                );
-
-                MatrixToImageWriter.writeToPath(matrix, "png", file.toPath());
-
-                stage.setQrCodeUrl(file.toString().replace("\\", "/"));
+                long imageName = System.currentTimeMillis();
+                byte[] qrCode = generateQrCode();
+                String url = api.uploadImage(API.qrCodeImageUrl+"/"+quest.getId()+"/"+imageName+".jpg", qrCode);
+                stage.setQrCodeUrl(url);
             }
             entityManager.persist(stage);
         }
@@ -268,6 +260,37 @@ public class AdminQuestService {
         return new Response(StatusMessage.QUEST_CREATED, HttpStatus.ACCEPTED, result);
     }
 
+    private byte[] generateQrCode() throws WriterException, IOException {
+        Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<>();
+        hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+
+        Random rand = new Random();
+        BitMatrix matrix = new MultiFormatWriter().encode(new String(Hashing.sha256().hashString(""+rand.nextInt(999999)).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500);
+
+        int height = matrix.getHeight();
+        int width = matrix.getWidth();
+
+        MatrixToImageConfig config = new MatrixToImageConfig();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int onColor = config.getPixelOnColor();
+        int offColor = config.getPixelOffColor();
+
+        int[] rowPixels = new int[width];
+        BitArray row = new BitArray(width);
+        for (int y = 0; y < height; y++) {
+            row = matrix.getRow(y, row);
+            for (int x = 0; x < width; x++) {
+                rowPixels[x] = row.get(x) ? onColor : offColor;
+            }
+            image.setRGB(0, y, width, 1, rowPixels, 0, width);
+        }
+
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", baos);
+        return baos.toByteArray();
+    }
+
     @Transactional(rollbackOn = Exception.class)
     public Response updateImages(List<MultipartFile> files, int adminId, int questId, int[] deleted) throws Exception{
 
@@ -277,29 +300,21 @@ public class AdminQuestService {
         for(int deletedImageId : deleted){
             Optional<Image> image = imageRepository.findByIdAndQuest(deletedImageId, quest.get());
             if(image.isPresent()){
-                File dir = new File(image.get().getImageUrl());
-                if(dir.exists()){
-                    dir.delete();
-                }
+                cloudBlobContainer.getBlockBlobReference(image.get().getImageUrl().replace("/images/", "")).delete();
                 entityManager.remove(image.get());
             }
-        }
-
-        File dir = new File(API.questImageUrl+questId);
-        if(!dir.exists()){
-            dir.mkdirs();
         }
 
         for(MultipartFile file : files){
 
             long imageName = System.currentTimeMillis();
 
-            Source source = Tinify.fromBuffer(file.getBytes());
-            source.toFile(API.questImageUrl+questId+"/"+imageName+".jpg");
+            byte[] resultData = Tinify.fromBuffer(file.getBytes()).toBuffer();
+            String url = api.uploadImage(API.questImageUrl+questId+"/"+imageName+".jpg", resultData);
 
             Image image = new Image();
             image.setQuest(quest.get());
-            image.setImageUrl(API.questImageUrl+questId+"/"+imageName+".jpg");
+            image.setImageUrl(url);
             entityManager.persist(image);
         }
 

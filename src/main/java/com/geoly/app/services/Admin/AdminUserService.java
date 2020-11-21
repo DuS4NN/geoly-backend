@@ -24,6 +24,7 @@ import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.impl.DSL;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,8 @@ public class AdminUserService {
     private QuestReviewRepository questReviewRepository;
     private LanguageRepository languageRepository;
     private RoleRepository roleRepository;
+    @Value("${azure.container}")
+    private String imageContainer;
 
     public AdminUserService(EntityManager entityManager, DSLContext create, UserRepository userRepository, UserOptionRepository userOptionRepository, UserBadgeRepository userBadgeRepository, QuestReviewRepository questReviewRepository, LanguageRepository languageRepository, RoleRepository roleRepository) {
         this.entityManager = entityManager;
@@ -296,8 +299,7 @@ public class AdminUserService {
         log.setLogType(LogType.REMOVE_PROFILE_IMAGE);
         log.setData(jo.toString());
 
-
-        user.get().setProfileImageUrl(API.userImageUrl+"default_profile_picture.png");
+        user.get().setProfileImageUrl("/"+imageContainer+"/"+API.userImageUrl+"default_profile_picture.png");
         entityManager.merge(user.get());
         entityManager.persist(log);
 
