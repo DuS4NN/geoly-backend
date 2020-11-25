@@ -38,8 +38,8 @@ INSERT INTO `ROLE` (`id`, `name`) VALUES
   (3, 'ADMIN');
 
 INSERT INTO `USER` (`id`, `about`, `active`, `address`, `created_at`, `email`, `nick_name`, `password`, `profile_image_url`, `verified`) VALUES
-(1, '', 1, NULL, '2020-11-13 10:41:56', 'info@geoly.com', 'Geoly', '$argon2id$v=19$m=4096,t=3,p=1$aMe4tkdEcHSWMMhAqzoq/A$/3+cnAVHW6FTkd8L8QaxHqBhTksETd34ERHaGz+N3wU', 'static/images/user/default_profile_picture.png', 1),
-(2, '', 1, NULL, '2020-11-13 10:41:56', 'admin@geoly.com', 'Admin', '$argon2id$v=19$m=4096,t=3,p=1$aMe4tkdEcHSWMMhAqzoq/A$/3+cnAVHW6FTkd8L8QaxHqBhTksETd34ERHaGz+N3wU', 'static/images/user/default_profile_picture.png', 1);
+(1, '', 1, NULL, '2020-11-13 10:41:56', 'info@geoly.com', 'Geoly', '$argon2id$v=19$m=4096,t=3,p=1$aMe4tkdEcHSWMMhAqzoq/A$/3+cnAVHW6FTkd8L8QaxHqBhTksETd34ERHaGz+N3wU', '/images/user/default_profile_picture.png', 1),
+(2, '', 1, NULL, '2020-11-13 10:41:56', 'admin@geoly.com', 'Admin', '$argon2id$v=19$m=4096,t=3,p=1$aMe4tkdEcHSWMMhAqzoq/A$/3+cnAVHW6FTkd8L8QaxHqBhTksETd34ERHaGz+N3wU', '/images/user/default_profile_picture.png', 1);
 
 INSERT INTO `NOTIFICATION` (`id`, `created_at`, `data`, `seen`, `user_id`, `type`) VALUES
 (1, '2020-11-13 10:41:56', '{\"userId\":1}', 0, 1, 'WELCOME'),
