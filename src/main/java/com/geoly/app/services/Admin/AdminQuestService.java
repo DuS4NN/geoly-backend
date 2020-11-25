@@ -36,6 +36,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static org.jooq.impl.DSL.count;
@@ -265,7 +266,7 @@ public class AdminQuestService {
         hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 
         Random rand = new Random();
-        BitMatrix matrix = new MultiFormatWriter().encode(new String(Hashing.sha256().hashString(""+rand.nextInt(999999)).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500);
+        BitMatrix matrix = new MultiFormatWriter().encode(new String(Hashing.sha256().hashString(""+rand.nextInt(999999), Charset.defaultCharset()).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500);
 
         int height = matrix.getHeight();
         int width = matrix.getWidth();

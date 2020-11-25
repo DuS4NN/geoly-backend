@@ -104,11 +104,6 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 			<version>2.2.5.RELEASE</version>
 		</dependency>
-		<dependency>
-			<groupId>com.socketlabs</groupId>
-			<artifactId>injectionApi</artifactId>
-			<version>1.0.4</version>
-		</dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
@@ -117,7 +112,7 @@
 		<dependency>
 			<groupId>com.tinify</groupId>
 			<artifactId>tinify</artifactId>
-			<version>RELEASE</version>
+			<version>1.6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.paypal.sdk</groupId>
@@ -148,51 +143,6 @@
 
     <build>
 		<plugins>
-            <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>${jooq.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-h2-jpa</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <generator>
-                                <database>
-                                    <name>org.jooq.meta.extensions.jpa.JPADatabase</name>
-                                    <inputSchema>PUBLIC</inputSchema>
-                                    <outputSchema>geoly</outputSchema>
-                                    <properties>
-                                        <property>
-                                            <key>packages</key>
-                                            <value>com.geoly.app.models</value>
-                                        </property>
-                                        <property>
-                                            <key>use-attribute-converters</key>
-                                            <value>true</value>
-                                        </property>
-                                    </properties>
-                                </database>
-                                <target>
-                                    <packageName>com.geoly.app.jooq</packageName>
-                                    <directory>src/main/java</directory>
-                                </target>
-                            </generator>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jooq</groupId>
-                        <artifactId>jooq-meta-extensions</artifactId>
-                        <version>${jooq.version}</version>
-                    </dependency>
-
-                </dependencies>
-            </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -200,6 +150,7 @@
 		</plugins>
         <finalName>geoly-backend</finalName>
 	</build>
+
 </project>
 
 
