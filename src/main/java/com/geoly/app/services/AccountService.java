@@ -161,12 +161,17 @@ public class AccountService {
                 "<br><br>  \n" +
                 "\n" +
                 "  \n" +
-                "  <a href=\"localhost:3000/verify/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
+                "  <a href=\"20.52.233.11:3000/verify/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
                 "VERIFY\n" +
                 "</a>\n" +
                 "  \n" +
                 "  \n" +
-                "</div>\n";
+                "</div>\n" +
+                "<div style=\"margin-top:50px;text-align: center;border-top: 1px solid #eeeeee;width:50%;margin-left:auto;margin-right:auto;padding-top:10px\">\n" +
+                "  If you do not see the email correctly, click here:\n" +
+                "  <br>\n" +
+                "  20.52.233.11:3000/verify/"+tokenValue+
+                "</div>";
         api.sendEmail(emailText, user.getEmail(), "Geoly - Email Verification");
 
         return new Response(StatusMessage.USER_CREATED, HttpStatus.ACCEPTED, null);
@@ -177,8 +182,8 @@ public class AccountService {
             File database = new File("src/main/resources/GeoLite2-City.mmdb");
             DatabaseReader dbReader = new DatabaseReader.Builder(database).build();
 
-            InetAddress ipAdress = InetAddress.getByName(ip);
-            CityResponse response = dbReader.city(ipAdress);
+            InetAddress ipAddress = InetAddress.getByName(ip);
+            CityResponse response = dbReader.city(ipAddress);
 
             Coordinates coordinates = new Coordinates();
             coordinates.setLatitude(response.getLocation().getLatitude());
@@ -235,12 +240,17 @@ public class AccountService {
                 "<br><br>  \n" +
                 "\n" +
                 "  \n" +
-                "  <a href=\"localhost:3000/forgot/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
+                "  <a href=\"20.52.233.11:3000/forgot/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
                 "RESET\n" +
                 "</a>\n" +
                 "  \n" +
                 "  \n" +
-                "</div>\n";
+                "</div>\n" +
+                "<div style=\"margin-top:50px;text-align: center;border-top: 1px solid #eeeeee;width:50%;margin-left:auto;margin-right:auto;padding-top:10px\">\n" +
+                "  If you do not see the email correctly, click here:\n" +
+                "  <br>\n" +
+                "  20.52.233.11:3000/forgot/"+tokenValue+
+                "</div>";
 
 
         api.sendEmail(emailText, user.get().getEmail(), "Geoly - Password Reset");
