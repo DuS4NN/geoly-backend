@@ -216,7 +216,7 @@ public class AdminQuestService {
     @Transactional(rollbackOn = Exception.class)
     public Response addQuest(AddQuest addQuest, int adminId) throws Exception{
 
-        Optional<com.geoly.app.models.User> user = userRepository.findByEmail("geoly@info.com");
+        Optional<com.geoly.app.models.User> user = userRepository.findByEmail("info@geoly.com");
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         Optional<Category> category = categoryRepository.findById(addQuest.getCategoryId());
