@@ -3,7 +3,9 @@ INSERT INTO `CATEGORY` (`id`, `image_url`, `name`) VALUES
   (2, 'assets/images/categoryImages/art.svg', 'ART'),
   (3, 'assets/images/categoryImages/view.svg', 'VIEW'),
   (4, 'assets/images/categoryImages/architecture.svg', 'ARCHITECTURE'),
-  (5, 'assets/images/categoryImages/nature.svg', 'NATURE');
+  (5, 'assets/images/categoryImages/nature.svg', 'NATURE'),
+  (6, 'assets/images/categoryImages/game.svg', 'GAME'),
+  (7, 'assets/images/categoryImages/other.svg', 'OTHER');
 
 INSERT INTO `BADGE` (`id`, `name`, `image_url`) VALUES
   (1, 'FIRST_IN_SEASON','assets/images/badgeImages/season_1.svg'),
