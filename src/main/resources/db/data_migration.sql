@@ -48,10 +48,10 @@ INSERT INTO `NOTIFICATION` (`id`, `created_at`, `data`, `seen`, `user_id`, `type
 (2, '2020-11-13 10:41:56', '{\"userId\":2}', 0, 2, 'WELCOME');
 
 INSERT INTO `QUEST` (`id`, `active`, `created_at`, `daily`, `description`, `difficulty`, `private_quest`, `category_id`, `user_id`, `name`, `premium`) VALUES
-(1, 1, '2020-11-10 10:58:24', 1, 'Daily', 1, 0, 1, 1, 'Daily', 0);
+(1, 1, '2020-11-10 10:58:24', 1, 'Daily', 1, 0, 7, 1, 'Daily', 0);
 
 INSERT INTO `STAGE` (`id`, `answer`, `latitude`, `longitude`, `qr_code_url`, `question`, `type`, `quest_id`, `advise`, `note`, `answers_list`) VALUES
-(1, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL);
+(1, NULL, NULL, NULL, NULL, NULL, 'GO_TO_PLACE', 1, NULL, NULL, NULL);
 
 INSERT INTO `USER_OPTION` (`id`, `dark_mode`, `map_theme`, `private_profile`, `language_id`, `user_id`) VALUES
 (1, 0, 1, 0, 2, 1),

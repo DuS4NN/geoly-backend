@@ -147,6 +147,55 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+<!--
+			<plugin>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>${jooq.version}</version>
+				<executions>
+					<execution>
+						<id>generate-h2-jpa</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<generator>
+						<database>
+							<name>org.jooq.meta.extensions.jpa.JPADatabase</name>
+							<inputSchema>PUBLIC</inputSchema>
+							<outputSchema>geoly</outputSchema>
+							<properties>
+								<property>
+									<key>packages</key>
+									<value>com.geoly.app.models</value>
+								</property>
+								<property>
+									<key>use-attribute-converters</key>
+									<value>true</value>
+								</property>
+							</properties>
+						</database>
+						<target>
+							<packageName>com.geoly.app.jooq</packageName>
+							<directory>src/main/java</directory>
+						</target>
+					</generator>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.jooq</groupId>
+						<artifactId>jooq-meta-extensions</artifactId>
+						<version>${jooq.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+-->
+
+
 		</plugins>
         <finalName>geoly-backend</finalName>
 	</build>

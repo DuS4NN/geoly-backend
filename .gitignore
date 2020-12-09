@@ -32,3 +32,4 @@ build/
 classes/artifacts/models_jar/models.jar
 src/main/java/META-INF/MANIFEST.MF
 static/
+docker-compose.yml
