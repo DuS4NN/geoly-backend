@@ -105,6 +105,62 @@ public class QuestService {
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 
+    public Response getAllActiveQuests(int userId){
+        Select<?> dailyQuest =
+            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID)
+                .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
+                .and(Quest.QUEST.DAILY.isTrue())
+                .and(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()));
+
+        Query q1 = entityManager.createNativeQuery(dailyQuest.getSQL());
+        API.setBindParameterValues(q1, dailyQuest);
+        List dailyQuestResult = q1.getResultList();
+
+        Select<?> quest =
+            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID)
+                .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
+                .and(Quest.QUEST.DAILY.isFalse())
+                .and(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()));
+
+        Query q2 = entityManager.createNativeQuery(quest.getSQL());
+        API.setBindParameterValues(q2, quest);
+        List questResult = q2.getResultList();
+
+        Select<?> partyQuests =
+            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID, com.geoly.app.jooq.tables.Party.PARTY.NAME.as("partyName"))
+                .from(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST)
+                .leftJoin(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST)
+                    .on(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST.ID.eq(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID))
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST.QUEST_ID))
+                .leftJoin(com.geoly.app.jooq.tables.Party.PARTY)
+                    .on(com.geoly.app.jooq.tables.Party.PARTY.ID.eq(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST.PARTY_ID))
+                .where(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST.USER_ID.eq(userId))
+                .and(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()));
+
+        Query q3 = entityManager.createNativeQuery(partyQuests.getSQL());
+        API.setBindParameterValues(q3, partyQuests);
+        List partyQuestsResult = q3.getResultList();
+
+        List<List> result = new ArrayList<>();
+        result.add(dailyQuestResult);
+        result.add(questResult);
+        result.add(partyQuestsResult);
+
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
     public Response getAllCreatedQuests(int userId, int page){
         Select<?> query =
                 create.select(Quest.QUEST.ID, Quest.QUEST.CREATED_AT, Quest.QUEST.DESCRIPTION, Quest.QUEST.DIFFICULTY, Quest.QUEST.PRIVATE_QUEST, com.geoly.app.jooq.tables.Category.CATEGORY.NAME, com.geoly.app.jooq.tables.Category.CATEGORY.IMAGE_URL, Quest.QUEST.NAME.as("questName"))
