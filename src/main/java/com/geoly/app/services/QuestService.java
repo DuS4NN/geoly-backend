@@ -107,7 +107,7 @@ public class QuestService {
 
     public Response getAllActiveQuests(int userId){
         Select<?> dailyQuest =
-            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID)
+            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID, Quest.QUEST.ID)
                 .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
                 .leftJoin(Stage.STAGE)
                     .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
@@ -122,7 +122,7 @@ public class QuestService {
         List dailyQuestResult = q1.getResultList();
 
         Select<?> quest =
-            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID)
+            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID, Quest.QUEST.ID)
                 .from(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
                 .leftJoin(Stage.STAGE)
                     .on(Stage.STAGE.ID.eq(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID))
@@ -137,7 +137,7 @@ public class QuestService {
         List questResult = q2.getResultList();
 
         Select<?> partyQuests =
-            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID, com.geoly.app.jooq.tables.Party.PARTY.NAME.as("partyName"))
+            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID, com.geoly.app.jooq.tables.Party.PARTY.NAME.as("partyName"), Quest.QUEST.ID)
                 .from(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST)
                 .leftJoin(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST)
                     .on(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST.ID.eq(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID))
