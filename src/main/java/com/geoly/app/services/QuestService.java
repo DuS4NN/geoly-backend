@@ -137,7 +137,7 @@ public class QuestService {
         List questResult = q2.getResultList();
 
         Select<?> partyQuests =
-            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID, com.geoly.app.jooq.tables.Party.PARTY.NAME.as("partyName"), Quest.QUEST.ID)
+            create.select(Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID, com.geoly.app.jooq.tables.Party.PARTY.NAME.as("partyName"), Quest.QUEST.ID, com.geoly.app.jooq.tables.Party.PARTY.ID.as("partyId"))
                 .from(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST)
                 .leftJoin(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST)
                     .on(com.geoly.app.jooq.tables.PartyQuest.PARTY_QUEST.ID.eq(com.geoly.app.jooq.tables.UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID))
