@@ -54,7 +54,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         List rolesResult = q1.getResultList();
 
         Select<?> options =
-            create.select(UserOption.USER_OPTION.LANGUAGE_ID, UserOption.USER_OPTION.MAP_THEME, UserOption.USER_OPTION.DARK_MODE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL)
+            create.select(UserOption.USER_OPTION.LANGUAGE_ID, UserOption.USER_OPTION.MAP_THEME, UserOption.USER_OPTION.DARK_MODE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ADDRESS)
                 .from(UserOption.USER_OPTION)
                 .leftJoin(User.USER)
                     .on(User.USER.ID.eq(UserOption.USER_OPTION.USER_ID))
