@@ -58,7 +58,12 @@ public class QuestDetailService {
         Select<?> activeQuest =
                 create.select(count())
                     .from(UserQuest.USER_QUEST)
+                    .leftJoin(Stage.STAGE)
+                        .on(Stage.STAGE.ID.eq(UserQuest.USER_QUEST.STAGE_ID))
+                    .leftJoin(Quest.QUEST)
+                        .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
                     .where(UserQuest.USER_QUEST.USER_ID.eq(userId))
+                    .and(Quest.QUEST.DAILY.isFalse())
                     .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.name()));
 
         Query q = entityManager.createNativeQuery(activeQuest.getSQL());
