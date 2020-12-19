@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserQuest extends TableImpl<UserQuestRecord> {
 
-    private static final long serialVersionUID = 2047791805;
+    private static final long serialVersionUID = -1950039075;
 
     /**
      * The reference instance of <code>geoly.USER_QUEST</code>
@@ -60,6 +60,11 @@ public class UserQuest extends TableImpl<UserQuestRecord> {
      * The column <code>geoly.USER_QUEST.ID</code>.
      */
     public final TableField<UserQuestRecord, Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>geoly.USER_QUEST.ADVISE_USED</code>.
+     */
+    public final TableField<UserQuestRecord, Byte> ADVISE_USED = createField("ADVISE_USED", org.jooq.impl.SQLDataType.TINYINT, this, "");
 
     /**
      * The column <code>geoly.USER_QUEST.CREATED_AT</code>.

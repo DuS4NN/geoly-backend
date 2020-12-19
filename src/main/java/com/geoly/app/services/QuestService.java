@@ -394,6 +394,7 @@ public class QuestService {
         userQuest.setUser(user.get());
         userQuest.setStage(stage.get());
         userQuest.setStatus(UserQuestStatus.ON_STAGE);
+        userQuest.setAdviseUsed(false);
         entityManager.persist(userQuest);
 
         return new Response(StatusMessage.USER_SIGNED_UP_ON_QUEST, HttpStatus.ACCEPTED, null);

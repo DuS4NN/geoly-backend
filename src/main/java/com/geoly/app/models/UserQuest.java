@@ -27,6 +27,10 @@ public class UserQuest {
     @NotNull
     private Stage stage;
 
+    @Column(name = "advise_used", columnDefinition = "TINYINT")
+    @NotNull
+    private boolean adviseUsed;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @NotNull
@@ -89,5 +93,13 @@ public class UserQuest {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isAdviseUsed() {
+        return adviseUsed;
+    }
+
+    public void setAdviseUsed(boolean adviseUsed) {
+        this.adviseUsed = adviseUsed;
     }
 }
