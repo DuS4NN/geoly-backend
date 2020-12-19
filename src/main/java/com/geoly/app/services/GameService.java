@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +101,31 @@ public class GameService {
 
     @Transactional(rollbackOn = Exception.class)
     public Response getAdvise(int stageId, int userId){
+        Response response = getUserQuest(stageId, userId);
+        if(response.getResponseEntity().getStatusCode() == HttpStatus.NOT_FOUND) return response;
+
+        com.geoly.app.models.UserQuest userQuest = (com.geoly.app.models.UserQuest) response.getData().get(0);
+
+        userQuest.setAdviseUsed(true);
+        entityManager.merge(userQuest);
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response addWrongAnswer(int stageId, int userId){
+        Response response = getUserQuest(stageId, userId);
+        if(response.getResponseEntity().getStatusCode() == HttpStatus.NOT_FOUND) return response;
+
+        com.geoly.app.models.UserQuest userQuest = (com.geoly.app.models.UserQuest) response.getData().get(0);
+
+        userQuest.setWrongAnswers(userQuest.getWrongAnswers() + 1);
+        entityManager.merge(userQuest);
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
+
+    private Response getUserQuest(int stageId, int userId){
         Optional<com.geoly.app.models.Stage> stage = stageRepository.findById(stageId);
         if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
@@ -109,11 +135,9 @@ public class GameService {
         Optional<com.geoly.app.models.UserQuest> userQuest = userQuestRepository.findByUserAndStageAndStatus(user.get(), stage.get(), UserQuestStatus.ON_STAGE);
         if(!userQuest.isPresent()) return new Response(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        userQuest.get().setAdviseUsed(true);
-        entityManager.merge(userQuest.get());
+        List<com.geoly.app.models.UserQuest> result = new ArrayList<>();
+        result.add(userQuest.get());
 
-        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
-
-
 }

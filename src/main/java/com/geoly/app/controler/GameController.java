@@ -50,4 +50,15 @@ public class GameController {
             return API.catchException(e);
         }
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/addWrongAnswer")
+    public Response addWrongAnswer(@RequestParam(name = "stageId") int stageId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return gameService.addWrongAnswer(stageId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }
