@@ -39,4 +39,15 @@ public class GameController {
             return API.catchException(e);
         }
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getAdvise")
+    public Response getAdvise(@RequestParam(name = "stageId") int stageId, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return gameService.getAdvise(stageId, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }
