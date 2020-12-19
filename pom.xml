@@ -143,12 +143,12 @@
 
     <build>
 		<plugins>
-			<plugin>
+		<!--	<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+			</plugin>-->
 
-<!--
+
 			<plugin>
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen-maven</artifactId>
@@ -193,7 +193,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
--->
+
 
 
 		</plugins>

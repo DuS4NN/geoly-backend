@@ -31,6 +31,10 @@ public class UserQuest {
     @NotNull
     private boolean adviseUsed;
 
+    @Column(name = "wrong_answers", columnDefinition = "INT")
+    @NotNull
+    private int wrongAnswers;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @NotNull
@@ -101,5 +105,13 @@ public class UserQuest {
 
     public void setAdviseUsed(boolean adviseUsed) {
         this.adviseUsed = adviseUsed;
+    }
+
+    public int getWrongAnswers() {
+        return wrongAnswers;
+    }
+
+    public void setWrongAnswers(int wrongAnswers) {
+        this.wrongAnswers = wrongAnswers;
     }
 }

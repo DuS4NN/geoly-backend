@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserQuest extends TableImpl<UserQuestRecord> {
 
-    private static final long serialVersionUID = -1950039075;
+    private static final long serialVersionUID = 338557543;
 
     /**
      * The reference instance of <code>geoly.USER_QUEST</code>
@@ -80,6 +80,11 @@ public class UserQuest extends TableImpl<UserQuestRecord> {
      * The column <code>geoly.USER_QUEST.UPDATED_AT</code>.
      */
     public final TableField<UserQuestRecord, Timestamp> UPDATED_AT = createField("UPDATED_AT", org.jooq.impl.SQLDataType.TIMESTAMP.precision(6), this, "");
+
+    /**
+     * The column <code>geoly.USER_QUEST.WRONG_ANSWERS</code>.
+     */
+    public final TableField<UserQuestRecord, Integer> WRONG_ANSWERS = createField("WRONG_ANSWERS", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>geoly.USER_QUEST.STAGE_ID</code>.
