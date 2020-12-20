@@ -6,16 +6,13 @@ import com.geoly.app.jooq.tables.PartyQuest;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.UserPartyQuest;
 import com.geoly.app.jooq.tables.UserQuest;
-import com.geoly.app.models.StatusMessage;
-import com.geoly.app.models.User;
-import com.geoly.app.models.UserQuestStatus;
-import com.geoly.app.repositories.StageRepository;
-import com.geoly.app.repositories.UserPartyQuestRepository;
-import com.geoly.app.repositories.UserQuestRepository;
-import com.geoly.app.repositories.UserRepository;
+import com.geoly.app.models.*;
+import com.geoly.app.repositories.*;
 import org.jooq.DSLContext;
 import org.jooq.Select;
+import org.jooq.impl.DSL;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -34,14 +31,16 @@ public class GameService {
     private StageRepository stageRepository;
     private UserRepository userRepository;
     private UserPartyQuestRepository userPartyQuestRepository;
+    private QuestRepository questRepository;
 
-    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository, UserPartyQuestRepository userPartyQuestRepository) {
+    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository, UserPartyQuestRepository userPartyQuestRepository, QuestRepository questRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userQuestRepository = userQuestRepository;
         this.stageRepository = stageRepository;
         this.userRepository = userRepository;
         this.userPartyQuestRepository = userPartyQuestRepository;
+        this.questRepository = questRepository;
     }
 
     public Response getUnfinishedStagesClassic(int questId, int userId){
@@ -252,8 +251,68 @@ public class GameService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Response givePoints(){
+    @Async
+    public void givePoints(int questId, int userId, String type){
+        int finalPoints;
 
-        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return;
+
+        if(type.equals("DAILY")){
+            finalPoints = 30;
+        }else{
+            finalPoints = 100;
+
+            int answerQuestionPoints = 20;
+            int scanQrCodePoints = 30;
+            int goToPlacePoints = 40;
+
+            int useAdvise = 10;
+            int wrongAnswer = 2;
+            int maxMinusPoints = 20;
+
+            Optional<Quest> quest = questRepository.findById(questId);
+            if(!quest.isPresent()) return;
+
+            int countOfStages = quest.get().getStage().size();
+
+            for(com.geoly.app.models.Stage stage : quest.get().getStage()){
+                switch (stage.getType()){
+                    case ANSWER_QUESTION:
+                        finalPoints += answerQuestionPoints;
+                        break;
+                    case SCAN_QR_CODE:
+                        finalPoints += scanQrCodePoints;
+                        break;
+                    case GO_TO_PLACE:
+                        finalPoints += goToPlacePoints;
+                        break;
+                }
+            }
+
+            Select<?> query =
+                    create.select(DSL.sum(UserQuest.USER_QUEST.WRONG_ANSWERS), DSL.sum(UserQuest.USER_QUEST.ADVISE_USED))
+                            .from(UserQuest.USER_QUEST)
+                            .leftJoin(Stage.STAGE)
+                            .on(Stage.STAGE.ID.eq(UserQuest.USER_QUEST.STAGE_ID))
+                            .where(UserQuest.USER_QUEST.USER_ID.eq(userId))
+                            .and(UserQuest.USER_QUEST.STATUS.notEqual(UserQuestStatus.CANCELED.name()))
+                            .and(Stage.STAGE.QUEST_ID.eq(questId))
+                            .orderBy(UserQuest.USER_QUEST.ID.desc())
+                            .limit(countOfStages);
+
+            Query q = entityManager.createNativeQuery(query.getSQL());
+            API.setBindParameterValues(q, query);
+            Object[] result = (Object[]) q.getSingleResult();
+
+            int minusPoints = Integer.parseInt(String.valueOf(result[1]))*useAdvise + Integer.parseInt(String.valueOf(result[0]))*wrongAnswer;
+            if(minusPoints > maxMinusPoints) finalPoints -= maxMinusPoints;
+            else finalPoints -= minusPoints;
+        }
+
+       Point point = new Point();
+       point.setUser(user.get());
+       point.setAmount(finalPoints);
+       entityManager.persist(point);
     }
 }

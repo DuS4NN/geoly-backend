@@ -80,13 +80,14 @@ public class GameController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/finishQuest")
-    public Response finishQuest(@RequestParam(name = "stageId") int stageId, @RequestParam(name = "type") String type, Authentication authentication){
+    public Response finishQuest(@RequestParam(name = "stageId") int stageId, @RequestParam(name = "type") String type, @RequestParam(name = "questId") int questId, Authentication authentication){
         try{
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
             if(type.equals("PARTY")){
                 return gameService.finishQuestInParty(stageId, customUserDetails.getUser().getId());
             }else{
+                gameService.givePoints(questId, customUserDetails.getUser().getId(), type);
                 return gameService.finishQuestInClassic(stageId, customUserDetails.getUser().getId());
             }
         }catch (Exception e){
