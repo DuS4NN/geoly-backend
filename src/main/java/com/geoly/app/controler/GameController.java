@@ -61,4 +61,36 @@ public class GameController {
             return API.catchException(e);
         }
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/finishStageAndStartNew")
+    public Response finishStageAndStartNew(@RequestParam(name = "stageId") int stageId, @RequestParam(name = "questId") int questId, @RequestParam(name = "type") String type, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            if(type.equals("PARTY")){
+                return gameService.finishStageAndStartNewInParty(stageId, questId, customUserDetails.getUser().getId());
+            }else{
+                return gameService.finishStageAndStartNewInClassic(stageId, questId, customUserDetails.getUser().getId());
+            }
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/finishQuest")
+    public Response finishQuest(@RequestParam(name = "stageId") int stageId, @RequestParam(name = "type") String type, Authentication authentication){
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            if(type.equals("PARTY")){
+                return gameService.finishQuestInParty(stageId, customUserDetails.getUser().getId());
+            }else{
+                return gameService.finishQuestInClassic(stageId, customUserDetails.getUser().getId());
+            }
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }

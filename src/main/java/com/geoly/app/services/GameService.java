@@ -7,8 +7,10 @@ import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.jooq.tables.UserPartyQuest;
 import com.geoly.app.jooq.tables.UserQuest;
 import com.geoly.app.models.StatusMessage;
+import com.geoly.app.models.User;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.StageRepository;
+import com.geoly.app.repositories.UserPartyQuestRepository;
 import com.geoly.app.repositories.UserQuestRepository;
 import com.geoly.app.repositories.UserRepository;
 import org.jooq.DSLContext;
@@ -31,13 +33,15 @@ public class GameService {
     private UserQuestRepository userQuestRepository;
     private StageRepository stageRepository;
     private UserRepository userRepository;
+    private UserPartyQuestRepository userPartyQuestRepository;
 
-    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository) {
+    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository, UserPartyQuestRepository userPartyQuestRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userQuestRepository = userQuestRepository;
         this.stageRepository = stageRepository;
         this.userRepository = userRepository;
+        this.userPartyQuestRepository = userPartyQuestRepository;
     }
 
     public Response getUnfinishedStagesClassic(int questId, int userId){
@@ -58,7 +62,7 @@ public class GameService {
 
 
         Select<?> query =
-            create.select(Stage.STAGE.ID, Stage.STAGE.ANSWER, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.TYPE, Stage.STAGE.ADVISE, Stage.STAGE.NOTE, Stage.STAGE.ANSWERS_LIST)
+            create.select(Stage.STAGE.ID, Stage.STAGE.ANSWER, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.TYPE, Stage.STAGE.ADVISE, Stage.STAGE.NOTE, Stage.STAGE.ANSWERS_LIST, Stage.STAGE.QUEST_ID)
                 .from(Stage.STAGE)
                 .where(Stage.STAGE.QUEST_ID.eq(questId))
                 .and(Stage.STAGE.ID.greaterOrEqual(stage));
@@ -87,7 +91,7 @@ public class GameService {
         int stage = Integer.parseInt(String.valueOf(qStage.getSingleResult()));
 
         Select<?> query =
-            create.select(Stage.STAGE.ID, Stage.STAGE.ANSWER, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.TYPE, Stage.STAGE.ADVISE, Stage.STAGE.NOTE, Stage.STAGE.ANSWERS_LIST)
+            create.select(Stage.STAGE.ID, Stage.STAGE.ANSWER, Stage.STAGE.LATITUDE, Stage.STAGE.LONGITUDE, Stage.STAGE.QR_CODE_URL, Stage.STAGE.QUESTION, Stage.STAGE.TYPE, Stage.STAGE.ADVISE, Stage.STAGE.NOTE, Stage.STAGE.ANSWERS_LIST, Stage.STAGE.QUEST_ID)
                 .from(Stage.STAGE)
                 .where(Stage.STAGE.QUEST_ID.eq(questId))
                 .and(Stage.STAGE.ID.greaterOrEqual(stage));
@@ -125,6 +129,73 @@ public class GameService {
         return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public Response finishStageAndStartNewInClassic(int stageId, int questId, int userId){
+        Response response = getUserQuest(stageId, userId);
+        if(response.getResponseEntity().getStatusCode() == HttpStatus.NOT_FOUND) return response;
+
+        List data = response.getData();
+        com.geoly.app.models.UserQuest userQuest = (com.geoly.app.models.UserQuest) data.get(0);
+        User user = (User) data.get(1);
+
+        userQuest.setStatus(UserQuestStatus.FINISHED);
+        entityManager.merge(userQuest);
+
+        Optional<com.geoly.app.models.Stage> stage = stageRepository.findById(getIdOfNewStage(questId, stageId));
+        if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        com.geoly.app.models.UserQuest newUserQuest = new com.geoly.app.models.UserQuest();
+        newUserQuest.setStatus(UserQuestStatus.ON_STAGE);
+        newUserQuest.setWrongAnswers(0);
+        newUserQuest.setAdviseUsed(false);
+        newUserQuest.setStage(stage.get());
+        newUserQuest.setUser(user);
+        entityManager.persist(newUserQuest);
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response finishStageAndStartNewInParty(int stageId, int questId, int userId){
+        Optional<com.geoly.app.models.Stage> stage = stageRepository.findById(stageId);
+        if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.UserPartyQuest> userPartyQuest = userPartyQuestRepository.findByUserAndStageAndStatus(user.get(), stage.get(), UserQuestStatus.ON_STAGE);
+        if(!userPartyQuest.isPresent()) return new Response(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        userPartyQuest.get().setStatus(UserQuestStatus.FINISHED);
+        entityManager.merge(userPartyQuest.get());
+
+        Optional<com.geoly.app.models.Stage> newStage = stageRepository.findById(getIdOfNewStage(questId, stageId));
+        if(!newStage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        com.geoly.app.models.UserPartyQuest newUserPartyQuest = new com.geoly.app.models.UserPartyQuest();
+        newUserPartyQuest.setStatus(UserQuestStatus.ON_STAGE);
+        newUserPartyQuest.setStage(newStage.get());
+        newUserPartyQuest.setUser(user.get());
+        entityManager.persist(newUserPartyQuest);
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
+
+    private int getIdOfNewStage(int questId, int stageId){
+        Select<?> newStageIdQuery =
+                create.select(Stage.STAGE.ID)
+                        .from(Stage.STAGE)
+                        .where(Stage.STAGE.QUEST_ID.eq(questId))
+                        .and(Stage.STAGE.ID.greaterThan(stageId))
+                        .orderBy(Stage.STAGE.ID)
+                        .limit(1);
+
+        Query q = entityManager.createNativeQuery(newStageIdQuery.getSQL());
+        API.setBindParameterValues(q, newStageIdQuery);
+        Object newStageIdObject = q.getSingleResult();
+
+        return Integer.parseInt(String.valueOf(newStageIdObject));
+    }
+
     private Response getUserQuest(int stageId, int userId){
         Optional<com.geoly.app.models.Stage> stage = stageRepository.findById(stageId);
         if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
@@ -135,9 +206,54 @@ public class GameService {
         Optional<com.geoly.app.models.UserQuest> userQuest = userQuestRepository.findByUserAndStageAndStatus(user.get(), stage.get(), UserQuestStatus.ON_STAGE);
         if(!userQuest.isPresent()) return new Response(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        List<com.geoly.app.models.UserQuest> result = new ArrayList<>();
+        List<Object> result = new ArrayList<>();
         result.add(userQuest.get());
+        result.add(user.get());
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response finishQuestInClassic(int stageId, int userId){
+        Optional<com.geoly.app.models.Stage> stage = stageRepository.findById(stageId);
+        if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.UserQuest> userQuest = userQuestRepository.findByUserAndStageAndStatus(user.get(), stage.get(), UserQuestStatus.ON_STAGE);
+        if(!userQuest.isPresent()) return new Response(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        userQuest.get().setStatus(UserQuestStatus.FINISHED);
+        entityManager.merge(userQuest.get());
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response finishQuestInParty(int stageId, int userId){
+        Optional<com.geoly.app.models.Stage> stage = stageRepository.findById(stageId);
+        if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+        Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<com.geoly.app.models.UserPartyQuest> userPartyQuest = userPartyQuestRepository.findByUserAndStageAndStatus(user.get(), stage.get(), UserQuestStatus.ON_STAGE);
+        if(!userPartyQuest.isPresent()) return new Response(StatusMessage.USER_QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        userPartyQuest.get().setStatus(UserQuestStatus.FINISHED);
+        entityManager.merge(userPartyQuest.get());
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response giveBadge(){
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response givePoints(){
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
     }
 }
