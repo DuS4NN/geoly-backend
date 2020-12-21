@@ -7,7 +7,11 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "USER_BADGE")
+@Table(
+    name = "USER_BADGE",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "badge_id"})}
+
+)
 public class UserBadge {
 
     @Id

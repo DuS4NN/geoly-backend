@@ -3,6 +3,10 @@ package com.geoly.app.controler;
 import com.geoly.app.config.API;
 import com.geoly.app.dao.Response;
 import com.geoly.app.models.CustomUserDetails;
+import com.geoly.app.models.Stage;
+import com.geoly.app.models.User;
+import com.geoly.app.repositories.StageRepository;
+import com.geoly.app.repositories.UserRepository;
 import com.geoly.app.services.GameService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -10,13 +14,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 public class GameController {
 
     private GameService gameService;
+    private StageRepository stageRepository;
+    private UserRepository userRepository;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, StageRepository stageRepository, UserRepository userRepository) {
         this.gameService = gameService;
+        this.stageRepository = stageRepository;
+        this.userRepository = userRepository;
     }
 
     @PreAuthorize("isAuthenticated()")

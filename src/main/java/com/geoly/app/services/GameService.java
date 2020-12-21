@@ -32,8 +32,10 @@ public class GameService {
     private UserRepository userRepository;
     private UserPartyQuestRepository userPartyQuestRepository;
     private QuestRepository questRepository;
+    private BadgeRepository badgeRepository;
+    private UserBadgeRepository userBadgeRepository;
 
-    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository, UserPartyQuestRepository userPartyQuestRepository, QuestRepository questRepository) {
+    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository, UserPartyQuestRepository userPartyQuestRepository, QuestRepository questRepository, BadgeRepository badgeRepository, UserBadgeRepository userBadgeRepository) {
         this.entityManager = entityManager;
         this.create = create;
         this.userQuestRepository = userQuestRepository;
@@ -41,6 +43,8 @@ public class GameService {
         this.userRepository = userRepository;
         this.userPartyQuestRepository = userPartyQuestRepository;
         this.questRepository = questRepository;
+        this.badgeRepository = badgeRepository;
+        this.userBadgeRepository = userBadgeRepository;
     }
 
     public Response getUnfinishedStagesClassic(int questId, int userId){
@@ -225,8 +229,8 @@ public class GameService {
         userQuest.get().setStatus(UserQuestStatus.FINISHED);
         entityManager.merge(userQuest.get());
 
-        givePoints(questId, userId, type);
-        giveBadge(stage.get(), user.get(), true);
+        givePoints(questId, userId, type, stage.get());
+        giveFinishBadge(user.get());
 
         return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
     }
@@ -249,7 +253,7 @@ public class GameService {
 
     @Transactional(rollbackOn = Exception.class)
     @Async
-    public void givePoints(int questId, int userId, String type){
+    public void givePoints(int questId, int userId, String type, com.geoly.app.models.Stage stage){
         int finalPoints;
 
         Optional<User> user = userRepository.findById(userId);
@@ -257,6 +261,7 @@ public class GameService {
 
         if(type.equals("DAILY")){
             finalPoints = 30;
+            giveStageBadge(stage, user.get());
         }else{
             finalPoints = 100;
 
@@ -273,8 +278,8 @@ public class GameService {
 
             int countOfStages = quest.get().getStage().size();
 
-            for(com.geoly.app.models.Stage stage : quest.get().getStage()){
-                switch (stage.getType()){
+            for(com.geoly.app.models.Stage s : quest.get().getStage()){
+                switch (s.getType()){
                     case ANSWER_QUESTION:
                         finalPoints += answerQuestionPoints;
                         break;
@@ -285,6 +290,8 @@ public class GameService {
                         finalPoints += goToPlacePoints;
                         break;
                 }
+
+                giveStageBadge(s, user.get());
             }
 
             Select<?> query =
@@ -315,7 +322,115 @@ public class GameService {
 
     @Transactional(rollbackOn = Exception.class)
     @Async
-    public void giveBadge(com.geoly.app.models.Stage stage, User user, boolean finish){
+    public void giveStageBadge(com.geoly.app.models.Stage stage, User user){
+        int[] questionTiers = {200, 100, 50, 10};
+        int[] qrCodeTiers = {100, 50, 10, 5};
+        int[] placeTiers = {300, 150, 50, 20};
+
+        int[] stageTiers = {0,0,0,0};
+
+        switch (stage.getType()){
+            case GO_TO_PLACE:
+                stageTiers = placeTiers;
+                break;
+            case SCAN_QR_CODE:
+                stageTiers = qrCodeTiers;
+                break;
+            case ANSWER_QUESTION:
+                stageTiers = questionTiers;
+                break;
+        }
+
+        Select<?> query =
+            create.select(DSL.count())
+                .from(UserQuest.USER_QUEST)
+                .leftJoin(Stage.STAGE)
+                    .on(Stage.STAGE.ID.eq(UserQuest.USER_QUEST.STAGE_ID))
+                .where(UserQuest.USER_QUEST.USER_ID.eq(user.getId()))
+                .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
+                .and(Stage.STAGE.TYPE.eq(stage.getType().name()));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        API.setBindParameterValues(q, query);
+        int count = Integer.parseInt(String.valueOf(q.getSingleResult()));
+
+        Badge badge;
+
+        UserBadge userBadge = new UserBadge();
+        userBadge.setUser(user);
+
+
+        if(count >= stageTiers[0]){
+            switch (stage.getType()){
+                case GO_TO_PLACE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.PLACE_300.name());
+                    break;
+                case SCAN_QR_CODE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QRCODE_100.name());
+                    break;
+                case ANSWER_QUESTION:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QUESTION_200.name());
+                    break;
+                default:
+                    return;
+            }
+        }else if(count >= stageTiers[1]){
+            switch (stage.getType()){
+                case GO_TO_PLACE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.PLACE_150.name());
+                    break;
+                case SCAN_QR_CODE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QRCODE_50.name());
+                    break;
+                case ANSWER_QUESTION:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QUESTION_100.name());
+                    break;
+                default:
+                    return;
+            }
+        }else if(count >= stageTiers[2]){
+            switch (stage.getType()){
+                case GO_TO_PLACE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.PLACE_50.name());
+                    break;
+                case SCAN_QR_CODE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QRCODE_10.name());
+                    break;
+                case ANSWER_QUESTION:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QUESTION_50.name());
+                    break;
+                default:
+                    return;
+            }
+        }else if(count >= stageTiers[3]){
+            switch (stage.getType()){
+                case GO_TO_PLACE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.PLACE_20.name());
+                    break;
+                case SCAN_QR_CODE:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QRCODE_5.name());
+                    break;
+                case ANSWER_QUESTION:
+                    badge = badgeRepository.getBadgeByName(BadgeType.QUESTION_10.name());
+                    break;
+                default:
+                    return;
+            }
+        }else{
+            return;
+        }
+
+        userBadge.setBadge(badge);
+
+        Optional<UserBadge> userBadgeExist = userBadgeRepository.findByUserAndBadge(user, badge);
+        if(!userBadgeExist.isPresent()){
+            entityManager.persist(userBadge);
+        }
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    @Async
+    public void giveFinishBadge(User user){
 
     }
 }
