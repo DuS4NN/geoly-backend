@@ -87,8 +87,7 @@ public class GameController {
             if(type.equals("PARTY")){
                 return gameService.finishQuestInParty(stageId, customUserDetails.getUser().getId());
             }else{
-                gameService.givePoints(questId, customUserDetails.getUser().getId(), type);
-                return gameService.finishQuestInClassic(stageId, customUserDetails.getUser().getId());
+                return gameService.finishQuestInClassic(stageId, customUserDetails.getUser().getId(), questId, type);
             }
         }catch (Exception e){
             return API.catchException(e);

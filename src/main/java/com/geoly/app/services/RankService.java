@@ -15,6 +15,7 @@ import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
@@ -106,6 +107,7 @@ public class RankService {
 
     @Transactional(rollbackOn = Exception.class)
     @Scheduled(cron = "0 0 0 1 1/1 *")
+    @Async
     public void createUserBadge(){
         try{
             Badge badge_1st = badgeRepository.getBadgeByName(BadgeType.FIRST_IN_SEASON.name());

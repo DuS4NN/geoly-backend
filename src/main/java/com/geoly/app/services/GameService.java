@@ -213,7 +213,7 @@ public class GameService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Response finishQuestInClassic(int stageId, int userId){
+    public Response finishQuestInClassic(int stageId, int userId, int questId, String type){
         Optional<com.geoly.app.models.Stage> stage = stageRepository.findById(stageId);
         if(!stage.isPresent()) return new Response(StatusMessage.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND, null);
         Optional<com.geoly.app.models.User> user = userRepository.findById(userId);
@@ -224,6 +224,9 @@ public class GameService {
 
         userQuest.get().setStatus(UserQuestStatus.FINISHED);
         entityManager.merge(userQuest.get());
+
+        givePoints(questId, userId, type);
+        giveBadge(stage.get(), user.get(), true);
 
         return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
     }
@@ -240,12 +243,6 @@ public class GameService {
 
         userPartyQuest.get().setStatus(UserQuestStatus.FINISHED);
         entityManager.merge(userPartyQuest.get());
-
-        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
-    }
-
-    @Transactional(rollbackOn = Exception.class)
-    public Response giveBadge(){
 
         return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
     }
@@ -296,7 +293,7 @@ public class GameService {
                             .leftJoin(Stage.STAGE)
                             .on(Stage.STAGE.ID.eq(UserQuest.USER_QUEST.STAGE_ID))
                             .where(UserQuest.USER_QUEST.USER_ID.eq(userId))
-                            .and(UserQuest.USER_QUEST.STATUS.notEqual(UserQuestStatus.CANCELED.name()))
+                            .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
                             .and(Stage.STAGE.QUEST_ID.eq(questId))
                             .orderBy(UserQuest.USER_QUEST.ID.desc())
                             .limit(countOfStages);
@@ -314,5 +311,11 @@ public class GameService {
        point.setUser(user.get());
        point.setAmount(finalPoints);
        entityManager.persist(point);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    @Async
+    public void giveBadge(com.geoly.app.models.Stage stage, User user, boolean finish){
+
     }
 }
