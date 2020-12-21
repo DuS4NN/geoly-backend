@@ -10,6 +10,7 @@ import com.geoly.app.models.*;
 import com.geoly.app.repositories.*;
 import org.jooq.DSLContext;
 import org.jooq.Select;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
@@ -431,6 +432,47 @@ public class GameService {
     @Transactional(rollbackOn = Exception.class)
     @Async
     public void giveFinishBadge(User user){
+        int[] finalTiers = {500, 250, 100, 50};
 
+        Table<?> stageIds =
+            create.select(DSL.max(Stage.STAGE.ID).as("maxStageId"))
+                .from(Stage.STAGE)
+                .groupBy(Stage.STAGE.QUEST_ID)
+                .asTable("stageIds");
+
+        Select<?> query =
+            create.select(DSL.count())
+                .from(UserQuest.USER_QUEST, stageIds)
+                .where(UserQuest.USER_QUEST.USER_ID.eq(user.getId()))
+                .and(UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.FINISHED.name()))
+                .and(UserQuest.USER_QUEST.STAGE_ID.in(stageIds.field("maxStageId")));
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        API.setBindParameterValues(q, query);
+        int count = Integer.parseInt(String.valueOf(q.getSingleResult()));
+
+        Badge badge;
+
+        UserBadge userBadge = new UserBadge();
+        userBadge.setUser(user);
+
+        if(count >= finalTiers[0]){
+            badge = badgeRepository.getBadgeByName(BadgeType.FINISH_500.name());
+        }else if(count >= finalTiers[1]){
+            badge = badgeRepository.getBadgeByName(BadgeType.FINISH_250.name());
+        }else if(count >= finalTiers[2]){
+            badge = badgeRepository.getBadgeByName(BadgeType.FINISH_100.name());
+        }else if(count >= finalTiers[3]){
+            badge = badgeRepository.getBadgeByName(BadgeType.FINISH_50.name());
+        }else{
+            return;
+        }
+
+        userBadge.setBadge(badge);
+
+        Optional<UserBadge> userBadgeExist = userBadgeRepository.findByUserAndBadge(user, badge);
+        if(!userBadgeExist.isPresent()){
+            entityManager.persist(userBadge);
+        }
     }
 }
