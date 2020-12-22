@@ -108,6 +108,7 @@ public class Keys {
     public static final UniqueKey<UserRecord> UK_OSO07PUDW19E66BS4YP8HWPUX = UniqueKeys0.UK_OSO07PUDW19E66BS4YP8HWPUX;
     public static final UniqueKey<UserRecord> UK_41DMWQT0G1WFLBC7PNQHER1A = UniqueKeys0.UK_41DMWQT0G1WFLBC7PNQHER1A;
     public static final UniqueKey<UserBadgeRecord> CONSTRAINT_C5 = UniqueKeys0.CONSTRAINT_C5;
+    public static final UniqueKey<UserBadgeRecord> UKAIMDKV0GJ056642Q3O85CMGHE = UniqueKeys0.UKAIMDKV0GJ056642Q3O85CMGHE;
     public static final UniqueKey<UserOptionRecord> CONSTRAINT_D = UniqueKeys0.CONSTRAINT_D;
     public static final UniqueKey<UserPartyQuestRecord> CONSTRAINT_55 = UniqueKeys0.CONSTRAINT_55;
     public static final UniqueKey<UserQuestRecord> CONSTRAINT_C6 = UniqueKeys0.CONSTRAINT_C6;
@@ -180,6 +181,7 @@ public class Keys {
         public static final UniqueKey<UserRecord> UK_OSO07PUDW19E66BS4YP8HWPUX = Internal.createUniqueKey(User.USER, "UK_OSO07PUDW19E66BS4YP8HWPUX", User.USER.EMAIL);
         public static final UniqueKey<UserRecord> UK_41DMWQT0G1WFLBC7PNQHER1A = Internal.createUniqueKey(User.USER, "UK_41DMWQT0G1WFLBC7PNQHER1A", User.USER.NICK_NAME);
         public static final UniqueKey<UserBadgeRecord> CONSTRAINT_C5 = Internal.createUniqueKey(UserBadge.USER_BADGE, "CONSTRAINT_C5", UserBadge.USER_BADGE.ID);
+        public static final UniqueKey<UserBadgeRecord> UKAIMDKV0GJ056642Q3O85CMGHE = Internal.createUniqueKey(UserBadge.USER_BADGE, "UKAIMDKV0GJ056642Q3O85CMGHE", UserBadge.USER_BADGE.USER_ID, UserBadge.USER_BADGE.BADGE_ID);
         public static final UniqueKey<UserOptionRecord> CONSTRAINT_D = Internal.createUniqueKey(UserOption.USER_OPTION, "CONSTRAINT_D", UserOption.USER_OPTION.ID);
         public static final UniqueKey<UserPartyQuestRecord> CONSTRAINT_55 = Internal.createUniqueKey(UserPartyQuest.USER_PARTY_QUEST, "CONSTRAINT_55", UserPartyQuest.USER_PARTY_QUEST.ID);
         public static final UniqueKey<UserQuestRecord> CONSTRAINT_C6 = Internal.createUniqueKey(UserQuest.USER_QUEST, "CONSTRAINT_C6", UserQuest.USER_QUEST.ID);

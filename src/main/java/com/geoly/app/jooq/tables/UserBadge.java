@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserBadge extends TableImpl<UserBadgeRecord> {
 
-    private static final long serialVersionUID = 580248911;
+    private static final long serialVersionUID = 806402066;
 
     /**
      * The reference instance of <code>geoly.USER_BADGE</code>
@@ -122,7 +122,7 @@ public class UserBadge extends TableImpl<UserBadgeRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.FK4ON6HHXOAHTILT08QQX5H23AC_INDEX_C, Indexes.FKGEX61AGBF44TMRPANNFIIAFSN_INDEX_C, Indexes.PRIMARY_KEY_C5);
+        return Arrays.<Index>asList(Indexes.FK4ON6HHXOAHTILT08QQX5H23AC_INDEX_C, Indexes.FKGEX61AGBF44TMRPANNFIIAFSN_INDEX_C, Indexes.PRIMARY_KEY_C5, Indexes.UKAIMDKV0GJ056642Q3O85CMGHE_INDEX_C);
     }
 
     /**
@@ -138,7 +138,7 @@ public class UserBadge extends TableImpl<UserBadgeRecord> {
      */
     @Override
     public List<UniqueKey<UserBadgeRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserBadgeRecord>>asList(Keys.CONSTRAINT_C5);
+        return Arrays.<UniqueKey<UserBadgeRecord>>asList(Keys.CONSTRAINT_C5, Keys.UKAIMDKV0GJ056642Q3O85CMGHE);
     }
 
     /**

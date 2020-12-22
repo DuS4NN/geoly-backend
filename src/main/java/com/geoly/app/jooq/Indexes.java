@@ -98,6 +98,7 @@ public class Indexes {
     public static final Index FK4ON6HHXOAHTILT08QQX5H23AC_INDEX_C = Indexes0.FK4ON6HHXOAHTILT08QQX5H23AC_INDEX_C;
     public static final Index FKGEX61AGBF44TMRPANNFIIAFSN_INDEX_C = Indexes0.FKGEX61AGBF44TMRPANNFIIAFSN_INDEX_C;
     public static final Index PRIMARY_KEY_C5 = Indexes0.PRIMARY_KEY_C5;
+    public static final Index UKAIMDKV0GJ056642Q3O85CMGHE_INDEX_C = Indexes0.UKAIMDKV0GJ056642Q3O85CMGHE_INDEX_C;
     public static final Index FK2P5OTBGWV6TGF70068RSW2JNH_INDEX_D = Indexes0.FK2P5OTBGWV6TGF70068RSW2JNH_INDEX_D;
     public static final Index FK300INJW6I3MCW7FVRWO19P7Q5_INDEX_D = Indexes0.FK300INJW6I3MCW7FVRWO19P7Q5_INDEX_D;
     public static final Index PRIMARY_KEY_D = Indexes0.PRIMARY_KEY_D;
@@ -165,6 +166,7 @@ public class Indexes {
         public static Index FK4ON6HHXOAHTILT08QQX5H23AC_INDEX_C = Internal.createIndex("FK4ON6HHXOAHTILT08QQX5H23AC_INDEX_C", UserBadge.USER_BADGE, new OrderField[] { UserBadge.USER_BADGE.BADGE_ID }, false);
         public static Index FKGEX61AGBF44TMRPANNFIIAFSN_INDEX_C = Internal.createIndex("FKGEX61AGBF44TMRPANNFIIAFSN_INDEX_C", UserBadge.USER_BADGE, new OrderField[] { UserBadge.USER_BADGE.USER_ID }, false);
         public static Index PRIMARY_KEY_C5 = Internal.createIndex("PRIMARY_KEY_C5", UserBadge.USER_BADGE, new OrderField[] { UserBadge.USER_BADGE.ID }, true);
+        public static Index UKAIMDKV0GJ056642Q3O85CMGHE_INDEX_C = Internal.createIndex("UKAIMDKV0GJ056642Q3O85CMGHE_INDEX_C", UserBadge.USER_BADGE, new OrderField[] { UserBadge.USER_BADGE.USER_ID, UserBadge.USER_BADGE.BADGE_ID }, true);
         public static Index FK2P5OTBGWV6TGF70068RSW2JNH_INDEX_D = Internal.createIndex("FK2P5OTBGWV6TGF70068RSW2JNH_INDEX_D", UserOption.USER_OPTION, new OrderField[] { UserOption.USER_OPTION.USER_ID }, false);
         public static Index FK300INJW6I3MCW7FVRWO19P7Q5_INDEX_D = Internal.createIndex("FK300INJW6I3MCW7FVRWO19P7Q5_INDEX_D", UserOption.USER_OPTION, new OrderField[] { UserOption.USER_OPTION.LANGUAGE_ID }, false);
         public static Index PRIMARY_KEY_D = Internal.createIndex("PRIMARY_KEY_D", UserOption.USER_OPTION, new OrderField[] { UserOption.USER_OPTION.ID }, true);

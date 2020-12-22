@@ -57,6 +57,9 @@ public class User implements Serializable {
     @Column(name = "address", columnDefinition = "VARCHAR(100)")
     private String address;
 
+    @Column(name = "address_update", columnDefinition = "DATETIME")
+    private Date addressUpdate;
+
     @ManyToMany
     @JoinTable(name = "USER_ROLE")
     private Set<Role> role;
@@ -318,5 +321,13 @@ public class User implements Serializable {
 
     public void setUserPartyQuest(Set<UserPartyQuest> userPartyQuest) {
         this.userPartyQuest = userPartyQuest;
+    }
+
+    public Date getAddressUpdate() {
+        return addressUpdate;
+    }
+
+    public void setAddressUpdate(Date addressUpdate) {
+        this.addressUpdate = addressUpdate;
     }
 }

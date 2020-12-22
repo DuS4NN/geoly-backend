@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-    private static final long serialVersionUID = -421289879;
+    private static final long serialVersionUID = 131987440;
 
     /**
      * The reference instance of <code>geoly.USER</code>
@@ -75,6 +75,11 @@ public class User extends TableImpl<UserRecord> {
      * The column <code>geoly.USER.ADDRESS</code>.
      */
     public final TableField<UserRecord, String> ADDRESS = createField("ADDRESS", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
+
+    /**
+     * The column <code>geoly.USER.ADDRESS_UPDATE</code>.
+     */
+    public final TableField<UserRecord, Timestamp> ADDRESS_UPDATE = createField("ADDRESS_UPDATE", org.jooq.impl.SQLDataType.TIMESTAMP.precision(6), this, "");
 
     /**
      * The column <code>geoly.USER.CREATED_AT</code>.
