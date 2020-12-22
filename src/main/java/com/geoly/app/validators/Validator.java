@@ -39,6 +39,11 @@ public class Validator {
         return new ValidatorResponse(true);
     }
 
+    public ValidatorResponse checkOnlyAddress(String address){
+        if (!validatorMethods.addressIsValid(address)) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_ADDRESS);
+        return new ValidatorResponse(true);
+    }
+
     public ValidatorResponse getAllQuestByParametersInRadius(QuestSearch questSearch){
         if(questSearch.getCategoryId() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_CATEGORY);
         if(questSearch.getStageType() == null) return new ValidatorResponse(false, HttpStatus.BAD_REQUEST, StatusMessage.INVALID_STAGE_TYPE);

@@ -276,4 +276,15 @@ public class AccountService {
         return new Response(StatusMessage.PASSWORD_RESET, HttpStatus.ACCEPTED, null);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public Response setAddress(String address, int userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        user.get().setAddress(address);
+        user.get().setAddressUpdate(new Date());
+        entityManager.merge(user.get());
+
+        return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
+    }
 }

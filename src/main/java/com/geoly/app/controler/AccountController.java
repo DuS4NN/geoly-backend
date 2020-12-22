@@ -97,4 +97,19 @@ public class AccountController {
             return API.catchException(e);
         }
     }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/setAddress")
+    public Response setAddress(@RequestParam("address") String address, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.checkOnlyAddress(address);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return accountService.setAddress(address, customUserDetails.getUser().getId());
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }
