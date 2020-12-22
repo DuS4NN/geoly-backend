@@ -85,7 +85,7 @@ public class AccountService {
         List rolesResult = q1.getResultList();
 
         Select<?> options =
-                create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.DARK_MODE, com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL)
+                create.select(com.geoly.app.jooq.tables.UserOption.USER_OPTION.LANGUAGE_ID, com.geoly.app.jooq.tables.UserOption.USER_OPTION.MAP_THEME, com.geoly.app.jooq.tables.UserOption.USER_OPTION.DARK_MODE, com.geoly.app.jooq.tables.User.USER.NICK_NAME, com.geoly.app.jooq.tables.User.USER.PROFILE_IMAGE_URL, com.geoly.app.jooq.tables.User.USER.ADDRESS, com.geoly.app.jooq.tables.User.USER.ADDRESS_UPDATE)
                         .from(com.geoly.app.jooq.tables.UserOption.USER_OPTION)
                         .leftJoin(com.geoly.app.jooq.tables.User.USER)
                         .on(com.geoly.app.jooq.tables.User.USER.ID.eq(com.geoly.app.jooq.tables.UserOption.USER_OPTION.USER_ID))
@@ -98,7 +98,6 @@ public class AccountService {
         List<List> result = new ArrayList<>();
         result.add(rolesResult);
         result.add(optionsResult);
-
 
         if(optionsResult.isEmpty()) return new Response(StatusMessage.USER_NOT_LOGGED_IN, HttpStatus.UNAUTHORIZED, null);
 
@@ -276,4 +275,5 @@ public class AccountService {
 
         return new Response(StatusMessage.PASSWORD_RESET, HttpStatus.ACCEPTED, null);
     }
+
 }
