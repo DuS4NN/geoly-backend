@@ -429,8 +429,17 @@ public class QuestService {
         Optional<User> user = userRepository.findById(userId);
         if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
-        if(user.get().getAddress() == null){
+        if(user.get().getAddress() == null || user.get().getAddressUpdate() == null){
             return new Response(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
+
+        Calendar lastUpdate = Calendar.getInstance();
+        lastUpdate.setTime(user.get().getAddressUpdate());
+
+        Calendar today = Calendar.getInstance();
+
+        if(lastUpdate.get(Calendar.DAY_OF_YEAR) != today.get(Calendar.DAY_OF_YEAR) || lastUpdate.get(Calendar.YEAR) != today.get(Calendar.YEAR)){
+            return new Response(StatusMessage.USER_ADDRESS_OLD, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
         Select<?> query =

@@ -8,6 +8,7 @@ public enum StatusMessage {
     INVALID_ANSWERS_LIST,
 
     NO_IMAGES,
+    USER_ADDRESS_OLD,
     BADGE_NOT_FOUND,
     INVALID_NAME_LENGTH_SIZE,
     BADGE_DELETED,
