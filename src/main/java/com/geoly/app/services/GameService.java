@@ -20,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +36,9 @@ public class GameService {
     private QuestRepository questRepository;
     private BadgeRepository badgeRepository;
     private UserBadgeRepository userBadgeRepository;
+    private NotificationService notificationService;
 
-    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository, UserPartyQuestRepository userPartyQuestRepository, QuestRepository questRepository, BadgeRepository badgeRepository, UserBadgeRepository userBadgeRepository) {
+    public GameService(EntityManager entityManager, DSLContext create, UserQuestRepository userQuestRepository, StageRepository stageRepository, UserRepository userRepository, UserPartyQuestRepository userPartyQuestRepository, QuestRepository questRepository, BadgeRepository badgeRepository, UserBadgeRepository userBadgeRepository, NotificationService notificationService) {
         this.entityManager = entityManager;
         this.create = create;
         this.userQuestRepository = userQuestRepository;
@@ -46,6 +48,7 @@ public class GameService {
         this.questRepository = questRepository;
         this.badgeRepository = badgeRepository;
         this.userBadgeRepository = userBadgeRepository;
+        this.notificationService = notificationService;
     }
 
     public Response getUnfinishedStagesClassic(int questId, int userId){
@@ -231,7 +234,7 @@ public class GameService {
         entityManager.merge(userQuest.get());
 
         givePoints(questId, userId, type, stage.get());
-        giveFinishBadge(user.get());
+        giveFinishBadge(user.get(), questId);
 
         return new Response(StatusMessage.OK, HttpStatus.ACCEPTED, null);
     }
@@ -319,6 +322,11 @@ public class GameService {
        point.setUser(user.get());
        point.setAmount(finalPoints);
        entityManager.persist(point);
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("pointAmount", finalPoints);
+        data.put("questId", questId);
+        notificationService.sendNotification(user.get(), NotificationType.GET_POINTS, data,true);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -426,12 +434,17 @@ public class GameService {
         Optional<UserBadge> userBadgeExist = userBadgeRepository.findByUserAndBadge(user, badge);
         if(!userBadgeExist.isPresent()){
             entityManager.persist(userBadge);
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("badgeName", badge.getName());
+            data.put("questId", stage.getQuest().getId());
+            notificationService.sendNotification(user, NotificationType.GET_BADGE, data,true);
         }
     }
 
     @Transactional(rollbackOn = Exception.class)
     @Async
-    public void giveFinishBadge(User user){
+    public void giveFinishBadge(User user, int questId){
         int[] finalTiers = {500, 250, 100, 50};
 
         Table<?> stageIds =
@@ -473,6 +486,11 @@ public class GameService {
         Optional<UserBadge> userBadgeExist = userBadgeRepository.findByUserAndBadge(user, badge);
         if(!userBadgeExist.isPresent()){
             entityManager.persist(userBadge);
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("badgeName", badge.getName());
+            data.put("questId", questId);
+            notificationService.sendNotification(user, NotificationType.GET_BADGE, data,true);
         }
     }
 }
