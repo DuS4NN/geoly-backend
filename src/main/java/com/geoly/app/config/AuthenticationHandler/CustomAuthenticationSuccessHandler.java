@@ -29,11 +29,11 @@ import java.util.Map;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     private EntityManager entityManager;
     @Autowired
     private DSLContext create;
-
 
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -54,7 +54,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         List rolesResult = q1.getResultList();
 
         Select<?> options =
-            create.select(UserOption.USER_OPTION.LANGUAGE_ID, UserOption.USER_OPTION.MAP_THEME, UserOption.USER_OPTION.DARK_MODE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ADDRESS)
+            create.select(UserOption.USER_OPTION.LANGUAGE_ID, UserOption.USER_OPTION.MAP_THEME, UserOption.USER_OPTION.DARK_MODE, User.USER.NICK_NAME, User.USER.PROFILE_IMAGE_URL, User.USER.ADDRESS, User.USER.ADDRESS_UPDATE, User.USER.ID)
                 .from(UserOption.USER_OPTION)
                 .leftJoin(User.USER)
                     .on(User.USER.ID.eq(UserOption.USER_OPTION.USER_ID))
