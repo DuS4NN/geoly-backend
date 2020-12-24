@@ -10,7 +10,7 @@ import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.*;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.tinify.Source;
+import com.pusher.rest.Pusher;
 import com.tinify.Tinify;
 import io.sentry.Sentry;
 import org.jooq.DSLContext;
@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.io.File;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +36,7 @@ public class QuestService {
     private EntityManager entityManager;
     private DSLContext create;
     private API api;
+    private Pusher pusher;
     private UserRepository userRepository;
     private QuestRepository questRepository;
     private StageRepository stageRepository;
@@ -47,10 +47,11 @@ public class QuestService {
 
     private int QUESTS_ON_PAGE = 5;
 
-    public QuestService(EntityManager entityManager, DSLContext create, API api, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository, ImageRepository imageRepository, CloudBlobContainer cloudBlobContainer) {
+    public QuestService(EntityManager entityManager, DSLContext create, API api, Pusher pusher, UserRepository userRepository, QuestRepository questRepository, StageRepository stageRepository, UserQuestRepository userQuestRepository, CategoryRepository categoryRepository, ImageRepository imageRepository, CloudBlobContainer cloudBlobContainer) {
         this.entityManager = entityManager;
         this.create = create;
         this.api = api;
+        this.pusher = pusher;
         this.userRepository = userRepository;
         this.questRepository = questRepository;
         this.stageRepository = stageRepository;
@@ -259,10 +260,14 @@ public class QuestService {
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByIdAndUser(questId, user.get());
         if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("questId", quest.get().getId());
+
         switch (action){
             case "DISABLE":
                 quest.get().setActive(false);
                 entityManager.merge(quest.get());
+                pusher.trigger("QUEST-"+quest.get().getId(), "QUEST-UPDATE", pusherData);
                 return new Response(StatusMessage.QUEST_DISABLED, HttpStatus.ACCEPTED, null);
             case "ACTIVATE":
                 quest.get().setActive(true);
@@ -270,6 +275,7 @@ public class QuestService {
                 return new Response(StatusMessage.QUEST_ACTIVATED, HttpStatus.ACCEPTED, null);
             case "DELETE":
                 entityManager.remove(quest.get());
+                pusher.trigger("QUEST-"+quest.get().getId(), "QUEST-UPDATE", pusherData);
                 return new Response(StatusMessage.QUEST_DELETED, HttpStatus.ACCEPTED, null);
         }
         return new Response(StatusMessage.INVALID_ACTION, HttpStatus.BAD_REQUEST, null);
@@ -423,6 +429,10 @@ public class QuestService {
         Query q = entityManager.createNativeQuery(query.getSQL());
         API.setBindParameterValues(q, query);
         q.executeUpdate();
+
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("questId", quest.get().getId());
+        pusher.trigger("QUEST-"+quest.get().getId(), "QUEST-UPDATE", pusherData);
     }
 
     public Response getDailyQuest(int userId){

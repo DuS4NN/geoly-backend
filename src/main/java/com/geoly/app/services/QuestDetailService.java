@@ -8,6 +8,7 @@ import com.geoly.app.models.QuestReportReason;
 import com.geoly.app.models.StatusMessage;
 import com.geoly.app.models.UserQuestStatus;
 import com.geoly.app.repositories.*;
+import com.pusher.rest.Pusher;
 import org.jooq.DSLContext;
 import org.jooq.Select;
 import org.jooq.Table;
@@ -27,6 +28,7 @@ public class QuestDetailService {
 
     private EntityManager entityManager;
     private DSLContext create;
+    private Pusher pusher;
     private NotificationService notificationService;
     private QuestRepository questRepository;
     private UserRepository userRepository;
@@ -37,9 +39,10 @@ public class QuestDetailService {
 
     private int REVIEW_ON_PAGE = 5;
 
-    public QuestDetailService(EntityManager entityManager, DSLContext create, NotificationService notificationService, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository, UserQuestRepository userQuestRepository){
+    public QuestDetailService(EntityManager entityManager, DSLContext create, Pusher pusher, NotificationService notificationService, QuestRepository questRepository, UserRepository userRepository, QuestReviewRepository questReviewRepository, StageRepository stageRepository, QuestReportRepository questReportRepository, UserQuestRepository userQuestRepository) {
         this.entityManager = entityManager;
         this.create = create;
+        this.pusher = pusher;
         this.notificationService = notificationService;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
@@ -403,6 +406,10 @@ public class QuestDetailService {
 
         userQuest.get().setStatus(UserQuestStatus.CANCELED);
         entityManager.merge(userQuest.get());
+
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("questId", questId);
+        pusher.trigger("QUEST-"+questId, "QUEST-UPDATE", pusherData);
 
         return new Response(StatusMessage.SIGNED_OUT_OF_QUEST, HttpStatus.ACCEPTED, null);
     }

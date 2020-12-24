@@ -114,6 +114,10 @@ public class PartyService {
             return new Response(StatusMessage.GROUP_DOES_NOT_EXIST_OR_USER_IS_NOT_OWNER, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("partyId", partyId);
+        pusher.trigger("PARTY-"+partyId, "PARTY-UPDATE", pusherData);
+
         return new Response(StatusMessage.GROUP_DELETED, HttpStatus.ACCEPTED, null);
     }
 
@@ -174,6 +178,12 @@ public class PartyService {
         if(!partyQuest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         entityManager.remove(partyQuest.get());
+
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("partyId", partyId);
+        pusherData.put("questId", questId);
+        pusher.trigger("QUEST-"+partyId+"-"+questId, "PARTY-QUEST-UPDATE", pusherData);
+
         return new Response(StatusMessage.QUEST_DELETED, HttpStatus.ACCEPTED, null);
     }
 
@@ -225,6 +235,11 @@ public class PartyService {
         if(!party.isPresent()) return new Response(StatusMessage.GROUP_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
+
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("partyId", partyId);
+        pusherData.put("userId", userId);
+        pusher.trigger("PARTY-"+partyId+"-"+userId, "PARTY-USER-UPDATE", pusherData);
 
         return new Response(StatusMessage.USER_KICKED, HttpStatus.ACCEPTED, null);
     }
@@ -360,6 +375,11 @@ public class PartyService {
         if(party.get().getUser().getId() == userId)  return new Response(StatusMessage.CAN_NOT_LEAVE_OWN_GROUP, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
+
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("partyId", partyId);
+        pusherData.put("userId", userId);
+        pusher.trigger("PARTY-"+partyId+"-"+userId, "PARTY-USER-UPDATE", pusherData);
 
         return new Response(StatusMessage.GROUP_LEAVED, HttpStatus.ACCEPTED, null);
     }
@@ -591,6 +611,12 @@ public class PartyService {
 
         userQuest.get().setStatus(UserQuestStatus.CANCELED);
         entityManager.merge(userQuest.get());
+
+        HashMap<String, Integer> pusherData = new HashMap<>();
+        pusherData.put("partyId", partyId);
+        pusherData.put("questId", questId);
+        pusher.trigger("QUEST-"+partyId+"-"+questId, "PARTY-QUEST-UPDATE", pusherData);
+
         return new Response(StatusMessage.SIGNED_OUT_OF_QUEST, HttpStatus.ACCEPTED, null);
     }
 
