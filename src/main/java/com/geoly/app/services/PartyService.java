@@ -11,7 +11,6 @@ import com.geoly.app.repositories.*;
 import com.google.common.hash.Hashing;
 import com.pusher.rest.Pusher;
 import org.jooq.DSLContext;
-import org.jooq.Delete;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.springframework.http.HttpStatus;
@@ -237,19 +236,6 @@ public class PartyService {
 
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
 
-        Delete<?> query =
-                create.delete(UserPartyQuest.USER_PARTY_QUEST)
-                        .where(UserPartyQuest.USER_PARTY_QUEST.USER_ID.eq(userId))
-                        .and(UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID.in(
-                                create.select(PartyQuest.PARTY_QUEST.ID)
-                                        .from(PartyQuest.PARTY_QUEST)
-                                        .where(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
-                        ));
-
-        Query q = entityManager.createNativeQuery(query.getSQL());
-        API.setBindParameterValues(q, query);
-        q.executeUpdate();
-
         HashMap<String, Integer> pusherData = new HashMap<>();
         pusherData.put("partyId", partyId);
         pusherData.put("userId", userId);
@@ -389,19 +375,6 @@ public class PartyService {
         if(party.get().getUser().getId() == userId)  return new Response(StatusMessage.CAN_NOT_LEAVE_OWN_GROUP, HttpStatus.METHOD_NOT_ALLOWED, null);
 
         partyUserRepository.deleteByPartyAndUser(party.get(), user.get());
-
-        Delete<?> query =
-            create.delete(UserPartyQuest.USER_PARTY_QUEST)
-                .where(UserPartyQuest.USER_PARTY_QUEST.USER_ID.eq(userId))
-                .and(UserPartyQuest.USER_PARTY_QUEST.PARTY_QUEST_ID.in(
-                    create.select(PartyQuest.PARTY_QUEST.ID)
-                        .from(PartyQuest.PARTY_QUEST)
-                        .where(PartyQuest.PARTY_QUEST.PARTY_ID.eq(partyId))
-                ));
-
-        Query q = entityManager.createNativeQuery(query.getSQL());
-        API.setBindParameterValues(q, query);
-        q.executeUpdate();
 
         HashMap<String, Integer> pusherData = new HashMap<>();
         pusherData.put("partyId", partyId);
