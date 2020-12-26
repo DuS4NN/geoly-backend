@@ -193,4 +193,16 @@ public class QuestController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getNearQuests")
+    public Response getNearQuests(@RequestParam(name = "coordinates") String coordinates, @RequestParam(name = "page") int page){
+        ValidatorResponse validatorResponse = validator.checkOnlyAddress(coordinates);
+        if(!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try{
+            return questService.getNearQuests(coordinates, page);
+        }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
 }

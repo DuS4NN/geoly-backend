@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -507,5 +508,35 @@ public class QuestService {
         random.nextFloat();
 
         return random.nextFloat();
+    }
+
+    public Response getNearQuests(String stringCoordinates, int page){
+        Coordinates coordinates = new Coordinates();
+        coordinates.createFromString(stringCoordinates);
+
+        Select<?> query =
+            create.select(Quest.QUEST.ID, Quest.QUEST.NAME, Quest.QUEST.CATEGORY_ID,
+
+                DSL.value(111.111).multiply(DSL.deg(DSL.acos(
+                    DSL.coerce(DSL.least(1.0,
+                        DSL.cos(DSL.rad(Stage.STAGE.LATITUDE))
+                        .multiply(DSL.cos(DSL.rad(coordinates.getLatitude())))
+                        .multiply(DSL.cos(DSL.rad(Stage.STAGE.LONGITUDE.minus(coordinates.getLongitude()))))
+                        .plus(DSL.sin(DSL.rad(Stage.STAGE.LATITUDE)).multiply(DSL.sin(DSL.rad(coordinates.getLatitude()))))),
+                    BigDecimal.class)))).as("distance"))
+                .from(Stage.STAGE)
+                .leftJoin(Quest.QUEST)
+                    .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
+                .where(Stage.STAGE.ID.in(create.select(DSL.min(Stage.STAGE.ID)).from(Stage.STAGE).groupBy(Stage.STAGE.QUEST_ID)))
+                .and(Quest.QUEST.DAILY.isFalse())
+                .orderBy(DSL.field("distance"))
+                .limit(10)
+                .offset((page - 1) * 10);
+
+        Query q = entityManager.createNativeQuery(query.getSQL());
+        API.setBindParameterValues(q, query);
+        List result = q.getResultList();
+
+        return new Response(StatusMessage.OK, HttpStatus.OK, result);
     }
 }
