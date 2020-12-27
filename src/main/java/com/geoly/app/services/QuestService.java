@@ -529,6 +529,7 @@ public class QuestService {
                     .on(Quest.QUEST.ID.eq(Stage.STAGE.QUEST_ID))
                 .where(Stage.STAGE.ID.in(create.select(DSL.min(Stage.STAGE.ID)).from(Stage.STAGE).groupBy(Stage.STAGE.QUEST_ID)))
                 .and(Quest.QUEST.DAILY.isFalse())
+                .and(Quest.QUEST.PRIVATE_QUEST.isFalse())
                 .orderBy(DSL.field("distance"))
                 .limit(10)
                 .offset((page - 1) * 10);
