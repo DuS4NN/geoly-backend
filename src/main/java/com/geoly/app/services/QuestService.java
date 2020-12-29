@@ -2,6 +2,7 @@ package com.geoly.app.services;
 
 import com.geoly.app.config.API;
 
+import com.geoly.app.dao.AddQuest;
 import com.geoly.app.dao.EditQuest;
 import com.geoly.app.dao.EditStage;
 import com.geoly.app.dao.Response;
@@ -9,6 +10,7 @@ import com.geoly.app.jooq.tables.Quest;
 import com.geoly.app.jooq.tables.Stage;
 import com.geoly.app.models.*;
 import com.geoly.app.repositories.*;
+import com.google.zxing.WriterException;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.pusher.rest.Pusher;
 import com.tinify.Tinify;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
@@ -539,5 +542,40 @@ public class QuestService {
         List result = q.getResultList();
 
         return new Response(StatusMessage.OK, HttpStatus.OK, result);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Response addQuest(AddQuest addQuest, int userId) throws IOException, WriterException {
+
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) return new Response(StatusMessage.USER_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        Optional<Category> category = categoryRepository.findById(addQuest.getCategoryId());
+        if(!category.isPresent()) return new Response(StatusMessage.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND, null);
+
+        com.geoly.app.models.Quest quest = new com.geoly.app.models.Quest();
+        quest.setCategory(category.get());
+        quest.setPremium(false);
+        quest.setPrivateQuest(addQuest.isPrivateQuest());
+        quest.setActive(true);
+        quest.setUser(user.get());
+        quest.setDifficulty(addQuest.getDifficulty());
+        quest.setDescription(addQuest.getDescription());
+        quest.setName(addQuest.getName());
+        quest.setDaily(false);
+        entityManager.persist(quest);
+
+        for(com.geoly.app.models.Stage stage : addQuest.getStages()){
+            stage.setQuest(quest);
+            if(stage.getType() == StageType.SCAN_QR_CODE){
+                long imageName = System.currentTimeMillis();
+                byte[] qrCode = api.generateQrCode();
+                String url = api.uploadImage(API.qrCodeImageUrl+"/"+quest.getId()+"/"+imageName+".jpg", qrCode);
+                stage.setQrCodeUrl(url);
+            }
+            entityManager.persist(stage);
+        }
+
+        return new Response(StatusMessage.QUEST_CREATED, HttpStatus.ACCEPTED, null);
     }
 }

@@ -1,6 +1,7 @@
 package com.geoly.app.controler;
 
 import com.geoly.app.config.API;
+import com.geoly.app.dao.AddQuest;
 import com.geoly.app.dao.EditQuest;
 import com.geoly.app.dao.EditStage;
 import com.geoly.app.dao.Response;
@@ -202,6 +203,20 @@ public class QuestController {
         try{
             return questService.getNearQuests(coordinates, page);
         }catch (Exception e){
+            return API.catchException(e);
+        }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/addQuest")
+    public Response addQuest(@RequestBody AddQuest quest, Authentication authentication){
+        ValidatorResponse validatorResponse = validator.addQuest(quest);
+        if (!validatorResponse.isValid()) return new Response(validatorResponse.getStatusMessage(), validatorResponse.getHttpStatus(), null);
+
+        try {
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            return questService.addQuest(quest, customUserDetails.getUser().getId());
+        } catch (Exception e) {
             return API.catchException(e);
         }
     }
