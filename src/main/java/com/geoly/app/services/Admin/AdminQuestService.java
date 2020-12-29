@@ -13,12 +13,6 @@ import com.geoly.app.repositories.CategoryRepository;
 import com.geoly.app.repositories.ImageRepository;
 import com.geoly.app.repositories.QuestRepository;
 import com.geoly.app.repositories.UserRepository;
-import com.google.common.hash.Hashing;
-import com.google.zxing.*;
-import com.google.zxing.client.j2se.MatrixToImageConfig;
-import com.google.zxing.common.BitArray;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.tinify.Tinify;
 import org.jooq.Condition;
@@ -30,13 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.charset.Charset;
 import java.util.*;
 
 import static org.jooq.impl.DSL.count;
@@ -238,7 +228,7 @@ public class AdminQuestService {
             stage.setQuest(quest);
             if(stage.getType() == StageType.SCAN_QR_CODE){
                 long imageName = System.currentTimeMillis();
-                byte[] qrCode = generateQrCode();
+                byte[] qrCode = api.generateQrCode();
                 String url = api.uploadImage(API.qrCodeImageUrl+"/"+quest.getId()+"/"+imageName+".jpg", qrCode);
                 stage.setQrCodeUrl(url);
             }
@@ -261,36 +251,6 @@ public class AdminQuestService {
         return new Response(StatusMessage.QUEST_CREATED, HttpStatus.ACCEPTED, result);
     }
 
-    private byte[] generateQrCode() throws WriterException, IOException {
-        Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<>();
-        hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-
-        Random rand = new Random();
-        BitMatrix matrix = new MultiFormatWriter().encode(new String(Hashing.sha256().hashString(""+rand.nextInt(999999), Charset.defaultCharset()).asBytes(), "UTF-8"), BarcodeFormat.QR_CODE, 500, 500);
-
-        int height = matrix.getHeight();
-        int width = matrix.getWidth();
-
-        MatrixToImageConfig config = new MatrixToImageConfig();
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        int onColor = config.getPixelOnColor();
-        int offColor = config.getPixelOffColor();
-
-        int[] rowPixels = new int[width];
-        BitArray row = new BitArray(width);
-        for (int y = 0; y < height; y++) {
-            row = matrix.getRow(y, row);
-            for (int x = 0; x < width; x++) {
-                rowPixels[x] = row.get(x) ? onColor : offColor;
-            }
-            image.setRGB(0, y, width, 1, rowPixels, 0, width);
-        }
-
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", baos);
-        return baos.toByteArray();
-    }
 
     @Transactional(rollbackOn = Exception.class)
     public Response updateImages(List<MultipartFile> files, int adminId, int questId, int[] deleted) throws Exception{
