@@ -391,6 +391,14 @@ public class QuestService {
             return new Response(StatusMessage.USER_ADDRESS_NULL, HttpStatus.METHOD_NOT_ALLOWED, null);
         }
 
+        Calendar lastUpdate = Calendar.getInstance();
+        lastUpdate.setTime(user.get().getAddressUpdate());
+
+        Calendar today = Calendar.getInstance();
+        if(lastUpdate.get(Calendar.DAY_OF_YEAR) != today.get(Calendar.DAY_OF_YEAR) || lastUpdate.get(Calendar.YEAR) != today.get(Calendar.YEAR)){
+            return new Response(StatusMessage.USER_ADDRESS_OLD, HttpStatus.METHOD_NOT_ALLOWED, null);
+        }
+
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByDaily(true);
         if(!quest.isPresent()) return new Response(StatusMessage.QUEST_NOT_FOUND, HttpStatus.NOT_FOUND, null);
 
