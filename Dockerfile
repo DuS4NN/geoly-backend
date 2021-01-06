@@ -1,5 +1,5 @@
-ARG BUILD_IMAGE=maven:3.6-jdk-8
-ARG RUNTIME_IMAGE=openjdk:8-jdk-slim
+ARG BUILD_IMAGE=maven:3.6.3-openjdk-8-slim
+ARG RUNTIME_IMAGE=openjdk:8-alpine
 
 
 #Stage where Docker is pulling all maven dependencies
