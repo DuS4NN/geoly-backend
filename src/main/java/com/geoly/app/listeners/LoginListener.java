@@ -55,7 +55,7 @@ public class LoginListener implements ApplicationListener<InteractiveAuthenticat
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             httpHeaders.setBasicAuth(context.getClientID(), context.getClientSecret());
 
-            String url = "https://api.sandbox.paypal.com/v1/payments/billing-agreements/"+ premium.get().getAgreementId();
+            String url = "https://api.paypal.com/v1/payments/billing-agreements/"+ premium.get().getAgreementId();
             HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
             HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 
