@@ -173,7 +173,7 @@ public class PremiumService {
         httpHeaders.setBasicAuth(context.getClientID(), context.getClientSecret());
 
         String jsonInputString = "{\"reason\": \"Cancel Geoly Subscription\"}";
-        String url = "https://api.sandbox.paypal.com/v1/billing/subscriptions/"+ premium.get().getAgreementId() +"/cancel";
+        String url = "https://api.paypal.com/v1/billing/subscriptions/"+ premium.get().getAgreementId() +"/cancel";
 
         HttpEntity<String> httpEntity = new HttpEntity<String>(jsonInputString, httpHeaders);
 
