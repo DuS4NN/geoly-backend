@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         data.put("roles", rolesResult);
         data.put("options", optionsResult);
 
-        response.getOutputStream()
-                .println(objectMapper.writeValueAsString(data));
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter printWriter = response.getWriter();
+        printWriter.println(objectMapper.writeValueAsString(data));
     }
 }
