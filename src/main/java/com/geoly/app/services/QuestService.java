@@ -348,6 +348,7 @@ public class QuestService {
                 .leftJoin(com.geoly.app.jooq.tables.Category.CATEGORY)
                     .on(com.geoly.app.jooq.tables.Category.CATEGORY.ID.eq(Quest.QUEST.CATEGORY_ID))
                 .where(Quest.QUEST.ID.in(questOnPage.field("questOnPage_ID")))
+                .and(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.USER_ID.eq(userId))
                 .orderBy(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.ID.desc());
 
 

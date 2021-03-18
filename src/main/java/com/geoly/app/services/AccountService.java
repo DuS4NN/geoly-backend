@@ -160,7 +160,7 @@ public class AccountService {
                 "<br><br>  \n" +
                 "\n" +
                 "  \n" +
-                "  <a href=\"20.52.233.11:3000/verify/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
+                "  <a href=\"https://geoly.tk/verify/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
                 "VERIFY\n" +
                 "</a>\n" +
                 "  \n" +
@@ -169,7 +169,7 @@ public class AccountService {
                 "<div style=\"margin-top:50px;text-align: center;border-top: 1px solid #eeeeee;width:50%;margin-left:auto;margin-right:auto;padding-top:10px\">\n" +
                 "  If you do not see the email correctly, click here:\n" +
                 "  <br>\n" +
-                "  20.52.233.11:3000/verify/"+tokenValue+
+                "  https://geoly.tk/verify/"+tokenValue+
                 "</div>";
         api.sendEmail(emailText, user.getEmail(), "Geoly - Email Verification");
 
@@ -239,7 +239,7 @@ public class AccountService {
                 "<br><br>  \n" +
                 "\n" +
                 "  \n" +
-                "  <a href=\"20.52.233.11:3000/forgot/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
+                "  <a href=\"https://geoly.tk/forgot/"+tokenValue+"\" style=\"background: #30dd8a; border: none; border-radius: 50px; padding: 10px 30px; color: white; font-weight: bold; letter-spacing: 1px; cursor: pointer;text-decoration:none;\">\n" +
                 "RESET\n" +
                 "</a>\n" +
                 "  \n" +
@@ -248,7 +248,7 @@ public class AccountService {
                 "<div style=\"margin-top:50px;text-align: center;border-top: 1px solid #eeeeee;width:50%;margin-left:auto;margin-right:auto;padding-top:10px\">\n" +
                 "  If you do not see the email correctly, click here:\n" +
                 "  <br>\n" +
-                "  20.52.233.11:3000/forgot/"+tokenValue+
+                "  https://geoly.tk/forgot/"+tokenValue+
                 "</div>";
 
 
