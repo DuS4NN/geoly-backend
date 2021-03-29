@@ -435,7 +435,7 @@ public class QuestService {
         }
 
         Update<?> query = create.update(com.geoly.app.jooq.tables.UserQuest.USER_QUEST)
-                .set(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, UserQuestStatus.ON_STAGE.toString())
+                .set(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS, UserQuestStatus.CANCELED.toString())
                 .where(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STAGE_ID.eq(stage.get().get(0).getId()))
                 .and(com.geoly.app.jooq.tables.UserQuest.USER_QUEST.STATUS.eq(UserQuestStatus.ON_STAGE.toString()));
 
