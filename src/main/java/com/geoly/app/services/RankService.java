@@ -106,7 +106,7 @@ public class RankService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @Scheduled(cron = "0 0 0 1 1/1 ? *")
+    @Scheduled(cron = "0 0 0 1 1/1 *")
     @Async
     public void createUserBadge(){
         try{

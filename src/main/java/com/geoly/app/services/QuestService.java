@@ -421,7 +421,7 @@ public class QuestService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @Scheduled(cron = "0 0 0 1/1 * ? *")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void resetDailyQuests(){
         Optional<com.geoly.app.models.Quest> quest = questRepository.findByDaily(true);
         if(!quest.isPresent()){
